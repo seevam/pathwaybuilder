@@ -1,0 +1,113 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - synced with Clerk
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String
+  grade     Int?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  profile   Profile?
+  activities ActivityCompletion[]
+  reflections Reflection[]
+  
+  @@index([clerkId])
+  @@index([email])
+}
+
+// User profile
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  bio       String?
+  avatarUrl String?
+  
+  // Progress tracking
+  moduleOneProgress Int @default(0) // 0-100
+  overallProgress   Int @default(0) // 0-100
+  
+  // Discoveries from Module 1
+  topValues    String[] // Array of top 5 values
+  topStrengths String[] // Array of top 5 strengths
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Activities in Module 1
+model Activity {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  orderIndex  Int
+  type        ActivityType
+  
+  estimatedMinutes Int
+  content     Json? // Flexible content structure
+  
+  completions ActivityCompletion[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([orderIndex])
+}
+
+enum ActivityType {
+  INTERACTIVE
+  REFLECTION
+  UPLOAD
+}
+
+// Track activity completion
+model ActivityCompletion {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  
+  completed  Boolean  @default(false)
+  data       Json?    // Activity-specific response data
+  timeSpent  Int?     // Seconds
+  
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([userId, activityId])
+  @@index([userId])
+  @@index([activityId])
+}
+
+// AI-powered reflections
+model Reflection {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  prompt    String
+  response  String   @db.Text
+  aiInsight String?  @db.Text // AI-generated insight
+  
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+}
