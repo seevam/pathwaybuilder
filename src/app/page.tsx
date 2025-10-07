@@ -104,7 +104,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-              What You'll Achieve
+              What You&apos;ll Achieve
             </h2>
             
             <div className="grid md:grid-cols-2 gap-6">
@@ -153,9 +153,9 @@ export default function Home() {
           <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl p-8 md:p-12 shadow-lg border border-blue-100">
             <div className="text-4xl mb-6 text-center">💬</div>
             <blockquote className="text-xl text-gray-700 italic text-center mb-6">
-              "This platform helped me find my passion for UX design and build a portfolio 
+              &quot;This platform helped me find my passion for UX design and build a portfolio 
               that got me into my dream school. I finally understood what makes me unique 
-              and how to showcase it."
+              and how to showcase it.&quot;
             </blockquote>
             <div className="text-center">
               <div className="font-bold text-lg">Sarah M.</div>
