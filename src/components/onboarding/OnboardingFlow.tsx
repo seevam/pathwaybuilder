@@ -409,9 +409,27 @@ export default function OnboardingFlow() {
   };
 
   const handleFinish = async () => {
-    // Save onboarding data to database
-    // await saveOnboardingData({ goals: selectedGoals });
-    router.push('/dashboard');
+    try {
+      // Save onboarding data to database
+      const response = await fetch('/api/onboarding/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          goals: selectedGoals,
+          assessmentsCompleted: [] 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save onboarding data');
+      }
+
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      // Show error toast
+      alert('Failed to save your progress. Please try again.');
+    }
   };
 
   const StepComponent = steps[currentStep].component;
