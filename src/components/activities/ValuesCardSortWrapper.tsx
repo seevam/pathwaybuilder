@@ -8,15 +8,24 @@ export function ValuesCardSortWrapper() {
   const router = useRouter()
   const { toast } = useToast()
 
-  const handleComplete = async (values: any) => {
-    try {
-      // You can add API call here later to save the values
-      console.log('Values selected:', values)
-      
-      toast({
-        title: 'Success! 🎉',
-        description: 'Your values have been saved.',
-      })
+const handleComplete = async (values: any) => {
+  try {
+    const response = await fetch('/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topValues: values.alwaysTrue,
+      }),
+    })
+    
+    if (!response.ok) throw new Error('Failed to save')
+    
+    // Also mark activity as complete
+    await fetch('/api/activities/[activityId]/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: values }),
+    })
 
       // Redirect back to module page
       router.push('/module-1')
