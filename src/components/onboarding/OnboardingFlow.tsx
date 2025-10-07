@@ -430,34 +430,66 @@ export default function OnboardingFlow({ userName = 'there' }: { userName?: stri
     }
   };
 
-  const StepComponent = steps[currentStep].component;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Progress Bar */}
-      <div className="sticky top-0 z-50 bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-medium text-gray-600">
-              Step {currentStep + 1} of {steps.length}
-            </div>
-            {currentStep < steps.length - 1 && (
-              <button 
-                onClick={handleSkip}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
-                Skip →
-              </button>
-            )}
+ return (
+  <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    {/* Progress Bar */}
+    <div className="sticky top-0 z-50 bg-white border-b">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm font-medium text-gray-600">
+            Step {currentStep + 1} of {steps.length}
           </div>
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500 ease-out"
-              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-            />
-          </div>
+          {currentStep < steps.length - 1 && (
+            <button 
+              onClick={handleSkip}
+              className="text-sm text-gray-500 hover:text-gray-700"
+            >
+              Skip →
+            </button>
+          )}
+        </div>
+        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500 ease-out"
+            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+          />
         </div>
       </div>
+    </div>
+
+    {/* Content */}
+    <div className="container mx-auto px-4 py-12">
+      {currentStep === 0 && (
+        <WelcomeStep 
+          onNext={handleNext} 
+          onSkip={handleSkip} 
+          userName={userName} 
+        />
+      )}
+      {currentStep === 1 && (
+        <GoalSelectionStep 
+          onNext={handleNext} 
+          onBack={handleBack}
+          selectedGoals={selectedGoals}
+          setSelectedGoals={setSelectedGoals}
+        />
+      )}
+      {currentStep === 2 && (
+        <AssessmentStep 
+          onNext={handleNext} 
+          onBack={handleBack}
+          onSkip={handleSkip}
+        />
+      )}
+      {currentStep === 3 && (
+        <CompletionStep 
+          onFinish={handleFinish}
+          userName={userName}
+        />
+      )}
+    </div>
+  </div>
+);
 
       {/* Content */}
       <div className="container mx-auto px-4 py-12">
