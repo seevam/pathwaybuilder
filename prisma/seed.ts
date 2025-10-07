@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, ActivityType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ async function main() {
       title: 'Values Card Sort',
       description: 'Discover your core values through an interactive sorting activity',
       orderIndex: 1,
-      type: 'INTERACTIVE',
+      type: ActivityType.INTERACTIVE,
       estimatedMinutes: 15,
     },
     {
@@ -20,7 +20,7 @@ async function main() {
       title: 'Strengths Discovery',
       description: 'Identify your top strengths across different areas',
       orderIndex: 2,
-      type: 'INTERACTIVE',
+      type: ActivityType.INTERACTIVE,
       estimatedMinutes: 10,
     },
     {
@@ -28,7 +28,7 @@ async function main() {
       title: 'Personal Reflection',
       description: 'Reflect on your discoveries with AI-powered insights',
       orderIndex: 3,
-      type: 'REFLECTION',
+      type: ActivityType.REFLECTION,
       estimatedMinutes: 15,
     },
   ];
