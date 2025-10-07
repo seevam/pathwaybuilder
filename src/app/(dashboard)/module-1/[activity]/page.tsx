@@ -2,7 +2,9 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { notFound } from 'next/navigation';
-import { ValuesCardSort } from '@/components/activities/ValuesCardSort';
+import { ValuesCardSortWrapper } from '@/components/activities/ValuesCardSortWrapper';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default async function ActivityPage({
   params,
@@ -10,32 +12,57 @@ export default async function ActivityPage({
   params: { activity: string };
 }) {
   const { userId } = await auth();
-  if (!userId) redirect('/sign-in');
+  
+  if (!userId) {
+    redirect('/sign-in');
+  }
 
   const activity = await db.activity.findUnique({
     where: { slug: params.activity },
   });
 
-  if (!activity) notFound();
+  if (!activity) {
+    notFound();
+  }
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
+      {/* Back button */}
+      <div className="mb-6">
+        <Link href="/module-1">
+          <Button variant="ghost" size="sm">← Back to Module 1</Button>
+        </Link>
+      </div>
+
+      {/* Activity Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">{activity.title}</h1>
         <p className="text-muted-foreground">{activity.description}</p>
+        <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
+          <span>⏱ {activity.estimatedMinutes} minutes</span>
+        </div>
       </div>
 
-      {/* Render activity based on slug */}
-      {params.activity === 'values-card-sort' && (
-        <ValuesCardSort
-          onComplete={async (values) => {
-            // Handle completion
-            console.log('Values selected:', values);
-          }}
-        />
-      )}
-
-      {/* Add other activities here */}
+      {/* Activity Content */}
+      <div className="bg-card border rounded-lg p-6">
+        {params.activity === 'values-card-sort' && <ValuesCardSortWrapper />}
+        
+        {params.activity === 'strengths-discovery' && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              Strengths Discovery activity coming soon...
+            </p>
+          </div>
+        )}
+        
+        {params.activity === 'reflection-prompts' && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              Personal Reflection activity coming soon...
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
