@@ -15,7 +15,7 @@ function WelcomeStep({ onNext, onSkip, userName }: { onNext: () => void; onSkip:
           👋 Welcome, {userName}!
         </h1>
         <p className="text-xl text-gray-600">
-          Let's get to know you so we can personalize your journey through the platform.
+          Let&apos;s get to know you so we can personalize your journey through the platform.
         </p>
       </div>
 
@@ -63,7 +63,7 @@ function WelcomeStep({ onNext, onSkip, userName }: { onNext: () => void; onSkip:
       {/* CTA Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
         <Button size="lg" onClick={onNext} className="text-lg px-8">
-          Let's Get Started →
+          Let&apos;s Get Started →
         </Button>
         <Button size="lg" variant="ghost" onClick={onSkip}>
           Skip →
@@ -107,7 +107,7 @@ function GoalSelectionStep({ onNext, onBack, selectedGoals, setSelectedGoals }: 
           What are you hoping to achieve?
         </h2>
         <p className="text-lg text-gray-600">
-          Select all that apply - we'll personalize your experience
+          Select all that apply - we&apos;ll personalize your experience
         </p>
       </div>
 
@@ -149,7 +149,7 @@ function GoalSelectionStep({ onNext, onBack, selectedGoals, setSelectedGoals }: 
               type="text"
               value={otherGoal}
               onChange={(e) => setOtherGoal(e.target.value)}
-              placeholder="Tell us what else you'd like to achieve..."
+              placeholder="Tell us what else you&apos;d like to achieve..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -257,7 +257,7 @@ function AssessmentStep({ onNext, onBack, onSkip }: any) {
           <div>
             <div className="font-semibold mb-1">Pro Tip:</div>
             <div className="text-sm text-gray-700">
-              Take these when you're in a good mood and have uninterrupted time. 
+              Take these when you&apos;re in a good mood and have uninterrupted time. 
               Be honest - there are no wrong answers!
             </div>
           </div>
@@ -271,7 +271,7 @@ function AssessmentStep({ onNext, onBack, onSkip }: any) {
         </Button>
         <div className="flex gap-4">
           <Button size="lg" variant="ghost" onClick={onSkip}>
-            I'll Complete These Later
+            I&apos;ll Complete These Later
           </Button>
           <Button size="lg" onClick={onNext}>
             Start First Test →
