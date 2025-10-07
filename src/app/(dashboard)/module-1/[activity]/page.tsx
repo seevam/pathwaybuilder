@@ -9,7 +9,7 @@ export default async function ActivityPage({
 }: {
   params: { activity: string };
 }) {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
   const activity = await db.activity.findUnique({
