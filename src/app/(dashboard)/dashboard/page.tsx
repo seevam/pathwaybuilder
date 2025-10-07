@@ -6,7 +6,7 @@ import { ModuleCard } from '@/components/dashboard/ModuleCard'
 import { StatsCard } from '@/components/dashboard/StatsCard'
 
 export default async function DashboardPage() {
-  const { userId } = auth()
+  const { userId } = await auth()
   
   if (!userId) {
     redirect('/sign-in')
