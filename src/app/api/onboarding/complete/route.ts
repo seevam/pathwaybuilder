@@ -1,4 +1,3 @@
-// src/app/api/onboarding/complete/route.ts
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
@@ -34,7 +33,6 @@ export async function POST(req: Request) {
       where: { userId: user.id },
       update: {
         goals: goals,
-        // Store other goal if provided
         bio: otherGoal || undefined,
       },
       create: {
@@ -43,9 +41,6 @@ export async function POST(req: Request) {
         bio: otherGoal || undefined,
       },
     });
-
-    // Create analytics event
-    // await trackEvent('onboarding_completed', { userId: user.id, goals });
 
     return NextResponse.json({
       success: true,
