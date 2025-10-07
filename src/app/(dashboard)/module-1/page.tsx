@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, Circle } from 'lucide-react';
 
 export default async function Module1Page() {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
   const user = await db.user.findUnique({
