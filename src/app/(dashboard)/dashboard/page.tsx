@@ -39,9 +39,9 @@ export default async function DashboardPage() {
         <h1 className="text-3xl font-bold">
           Welcome back, {user.name}! 👋
         </h1>
-        <p className="text-muted-foreground mt-2">
-          Let's pick up where you left off.
-        </p>
+      <p className="text-muted-foreground mt-2">
+        Let&apos;s pick up where you left off.
+      </p>
       </div>
 
       {/* Progress Overview */}
@@ -106,7 +106,7 @@ export default async function DashboardPage() {
             {user.activities.slice(0, 5).map((completion) => (
               <li key={completion.id} className="flex items-center gap-2 text-sm">
                 <span className="text-green-500">✓</span>
-                <span>Completed "{completion.activity.title}"</span>
+                <span>Completed &quot;{completion.activity.title}&quot;</span>
                 <span className="text-muted-foreground ml-auto">
                   {new Date(completion.completedAt!).toLocaleDateString()}
                 </span>
