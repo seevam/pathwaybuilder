@@ -18,7 +18,7 @@ export default async function OnboardingPage() {
   });
 
   // If user has completed onboarding (check for goals in profile), redirect to dashboard
-  if (user?.profile?.goals && user.profile.goals.length > 0) {
+  if (Array.isArray(user?.profile?.goals) && user.profile.goals.length > 0) {
     redirect('/dashboard');
   }
 
