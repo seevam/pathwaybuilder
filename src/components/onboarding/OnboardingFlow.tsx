@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2, Clock, Target, Users, GraduationCap, Sparkles, Trophy, BookOpen } from 'lucide-react';
+import { CheckCircle2, Clock } from 'lucide-react';
 
 // Step 1: Welcome Screen
 function WelcomeStep({ onNext, onSkip, userName }: { onNext: () => void; onSkip: () => void; userName: string }) {
@@ -37,7 +37,7 @@ function WelcomeStep({ onNext, onSkip, userName }: { onNext: () => void; onSkip:
 
       {/* Key Points */}
       <div className="bg-white rounded-xl p-8 border border-gray-200 space-y-4">
-        <h3 className="font-bold text-lg mb-4">In this program, you'll:</h3>
+        <h3 className="font-bold text-lg mb-4">In this program, you&apos;ll:</h3>
         <div className="space-y-3">
           {[
             { icon: '✨', text: 'Discover your strengths, values, and interests' },
@@ -290,10 +290,10 @@ function CompletionStep({ onFinish, userName }: { onFinish: () => void; userName
       <div className="text-center space-y-6">
         <div className="text-7xl animate-bounce">🎉</div>
         <h2 className="text-4xl md:text-5xl font-bold">
-          You're All Set!
+          You&apos;re All Set!
         </h2>
         <p className="text-xl text-gray-600">
-          Your dashboard is ready. Here's what happens next:
+          Your dashboard is ready. Here&apos;s what happens next:
         </p>
       </div>
 
@@ -379,11 +379,10 @@ function CompletionStep({ onFinish, userName }: { onFinish: () => void; userName
 }
 
 // Main Onboarding Component
-export default function OnboardingFlow() {
+export default function OnboardingFlow({ userName = 'there' }: { userName?: string }) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const userName = "Sarah"; // This should come from auth context
 
   const steps = [
     { title: 'Welcome', component: WelcomeStep },
@@ -427,7 +426,6 @@ export default function OnboardingFlow() {
       router.push('/dashboard');
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      // Show error toast
       alert('Failed to save your progress. Please try again.');
     }
   };
