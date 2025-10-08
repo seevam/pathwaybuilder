@@ -4,8 +4,10 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Lightbulb, Loader2, Sparkles, ArrowRight, TrendingUp, Clock, Star } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'
+import { Lightbulb, Loader2, Sparkles, ArrowRight, TrendingUp, Clock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { ProjectIdeasSkeleton } from '@/components/projects/ProjectIdeasSkeleton'
 
 interface ProjectIdea {
   id: string
@@ -20,9 +22,9 @@ interface ProjectIdea {
 
 export default function ProjectBrainstormPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [ideas, setIdeas] = useState<ProjectIdea[]>([])
-  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     interests: '',
     problemArea: '',
@@ -49,18 +51,35 @@ export default function ProjectBrainstormPage() {
   }
 
   const generateIdeas = async () => {
-    if (!formData.interests || !formData.problemArea) {
-      setError('Please fill in your interests and problem area')
+    // Validation
+    if (!formData.interests.trim()) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please tell us about your interests',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    if (!formData.problemArea.trim()) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please describe a problem area you care about',
+        variant: 'destructive'
+      })
       return
     }
 
     if (formData.projectTypes.length === 0) {
-      setError('Please select at least one project type')
+      toast({
+        title: 'Missing Information',
+        description: 'Please select at least one project type',
+        variant: 'destructive'
+      })
       return
     }
 
     setLoading(true)
-    setError(null)
     
     try {
       const response = await fetch('/api/projects/brainstorm', {
@@ -76,16 +95,24 @@ export default function ProjectBrainstormPage() {
       }
 
       setIdeas(data.ideas)
+      
+      toast({
+        title: 'Ideas Generated!',
+        description: `Found ${data.ideas.length} project ideas for you`,
+      })
     } catch (error) {
       console.error('Error generating ideas:', error)
-      setError(error instanceof Error ? error.message : 'Failed to generate ideas. Please try again.')
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to generate ideas. Please try again.',
+        variant: 'destructive'
+      })
     } finally {
       setLoading(false)
     }
   }
 
-  const selectIdea = async (idea: ProjectIdea) => {
-    // Navigate to project creation with this idea
+  const selectIdea = (idea: ProjectIdea) => {
     const params = new URLSearchParams({
       title: idea.title,
       description: idea.description,
@@ -98,13 +125,13 @@ export default function ProjectBrainstormPage() {
   const getUniquenessColor = (uniqueness: string) => {
     switch (uniqueness) {
       case 'HIGH':
-        return 'bg-green-100 text-green-700'
+        return 'bg-green-100 text-green-700 border-green-200'
       case 'MEDIUM':
-        return 'bg-yellow-100 text-yellow-700'
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200'
       case 'LOW':
-        return 'bg-gray-100 text-gray-700'
+        return 'bg-gray-100 text-gray-700 border-gray-200'
       default:
-        return 'bg-gray-100 text-gray-700'
+        return 'bg-gray-100 text-gray-700 border-gray-200'
     }
   }
 
@@ -118,7 +145,7 @@ export default function ProjectBrainstormPage() {
             AI-Powered Project Brainstorming
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Let&apos;s Find Your Perfect Project
+            Let's Find Your Perfect Project
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Answer a few questions and our AI will generate personalized project ideas 
@@ -126,15 +153,8 @@ export default function ProjectBrainstormPage() {
           </p>
         </div>
 
-        {/* Error Display */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-            {error}
-          </div>
-        )}
-
         {/* Brainstorming Form */}
-        {ideas.length === 0 && (
+        {ideas.length === 0 && !loading && (
           <Card className="p-8 mb-8">
             <div className="space-y-6">
               {/* Interests */}
@@ -224,25 +244,19 @@ export default function ProjectBrainstormPage() {
                   size="lg"
                   className="w-full gap-2"
                 >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Generating Ideas...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-5 h-5" />
-                      Generate Project Ideas
-                    </>
-                  )}
+                  <Sparkles className="w-5 h-5" />
+                  Generate Project Ideas
                 </Button>
               </div>
             </div>
           </Card>
         )}
 
+        {/* Loading State */}
+        {loading && <ProjectIdeasSkeleton />}
+
         {/* Generated Ideas */}
-        {ideas.length > 0 && (
+        {ideas.length > 0 && !loading && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
@@ -267,8 +281,8 @@ export default function ProjectBrainstormPage() {
                         <h3 className="text-xl font-bold text-gray-900 flex-1">
                           {idea.title}
                         </h3>
-                        <span className={`text-xs font-semibold px-2 py-1 rounded ${getUniquenessColor(idea.uniqueness)}`}>
-                          {idea.uniqueness} uniqueness
+                        <span className={`text-xs font-semibold px-2 py-1 rounded border ${getUniquenessColor(idea.uniqueness)}`}>
+                          {idea.uniqueness}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600">{idea.description}</p>
@@ -278,7 +292,7 @@ export default function ProjectBrainstormPage() {
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                       <span className="flex items-center gap-1">
                         <TrendingUp className="w-4 h-4" />
-                        Feasibility: {idea.feasibilityScore}/100
+                        {idea.feasibilityScore}/100
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
@@ -321,9 +335,9 @@ export default function ProjectBrainstormPage() {
                   <h4 className="font-semibold text-amber-900 mb-1">Pro Tips</h4>
                   <ul className="text-sm text-amber-800 space-y-1">
                     <li>• Choose a project that genuinely excites you</li>
-                    <li>• Consider what&apos;s realistic given your time commitment</li>
+                    <li>• Consider what's realistic given your time commitment</li>
                     <li>• Look for projects that develop skills you want to build</li>
-                    <li>• Don&apos;t worry if it&apos;s not perfect - you can adjust as you go!</li>
+                    <li>• Don't worry if it's not perfect - you can adjust as you go!</li>
                   </ul>
                 </div>
               </div>
