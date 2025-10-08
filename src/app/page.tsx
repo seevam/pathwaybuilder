@@ -170,23 +170,67 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trust Indicators */}
-      <section className="bg-white py-12">
+{/* Trust Indicators - Enhanced */}
+      <section className="bg-gradient-to-b from-white to-gray-50 py-16">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-center items-center gap-8 text-gray-600">
-            <div className="flex items-center gap-2">
-              <div className="text-2xl">🏫</div>
-              <span className="font-semibold">Trusted by 50+ schools</span>
+          <div className="text-center mb-8">
+            <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide">
+              Trusted by Students & Schools Nationwide
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {/* Schools */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-gray-100 text-center group hover:-translate-y-1 duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">50+</div>
+              <div className="text-gray-600 font-medium mb-1">Partner Schools</div>
+              <div className="text-sm text-gray-500">Across the United States</div>
             </div>
-            <div className="hidden md:block w-px h-8 bg-gray-300" />
-            <div className="flex items-center gap-2">
-              <div className="text-2xl">👥</div>
-              <span className="font-semibold">10,000+ students</span>
+
+            {/* Students */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-gray-100 text-center group hover:-translate-y-1 duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">10,000+</div>
+              <div className="text-gray-600 font-medium mb-1">Active Students</div>
+              <div className="text-sm text-gray-500">Building their futures</div>
             </div>
-            <div className="hidden md:block w-px h-8 bg-gray-300" />
-            <div className="flex items-center gap-2">
-              <div className="text-2xl">⭐</div>
-              <span className="font-semibold">4.8/5 rating</span>
+
+            {/* Rating */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-gray-100 text-center group hover:-translate-y-1 duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+              </div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">4.8/5</div>
+              <div className="text-gray-600 font-medium mb-1">Average Rating</div>
+              <div className="flex items-center justify-center gap-1 text-amber-400">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Logos Section */}
+          <div className="mt-12 text-center">
+            <p className="text-sm text-gray-500 mb-6">Featured in</p>
+            <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
+              <div className="text-2xl font-bold text-gray-400">TechCrunch</div>
+              <div className="text-2xl font-bold text-gray-400">EdSurge</div>
+              <div className="text-2xl font-bold text-gray-400">Forbes</div>
+              <div className="text-2xl font-bold text-gray-400">The Chronicle</div>
             </div>
           </div>
         </div>
