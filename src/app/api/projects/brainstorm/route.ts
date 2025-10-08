@@ -50,16 +50,20 @@ For each idea, provide:
 - Uniqueness rating (HIGH, MEDIUM, LOW)
 - Key impact metrics (what they could measure)
 
-Return ONLY a valid JSON array with 8 project ideas. Each idea should have this exact structure:
+Return ONLY a valid JSON array with 8 project ideas. Use this EXACT structure:
 {
-  "id": "unique-id",
-  "title": "Project Title",
-  "description": "Detailed description...",
-  "category": "SOCIAL_IMPACT",
-  "feasibilityScore": 85,
-  "timeEstimate": "4-6 months",
-  "uniqueness": "HIGH",
-  "impactMetrics": ["metric1", "metric2"]
+  "ideas": [
+    {
+      "id": "idea_1",
+      "title": "Project Title",
+      "description": "Detailed description...",
+      "category": "SOCIAL_IMPACT",
+      "feasibilityScore": 85,
+      "timeEstimate": "4-6 months",
+      "uniqueness": "HIGH",
+      "impactMetrics": ["metric1", "metric2"]
+    }
+  ]
 }`
 
     const completion = await openai.chat.completions.create({
@@ -67,7 +71,7 @@ Return ONLY a valid JSON array with 8 project ideas. Each idea should have this 
       messages: [
         {
           role: 'system',
-          content: 'You are an expert career counselor specializing in helping high school students develop meaningful passion projects. Always return valid JSON.',
+          content: 'You are an expert career counselor specializing in helping high school students develop meaningful passion projects. Always return valid JSON with an "ideas" array containing exactly 8 project ideas.',
         },
         {
           role: 'user',
@@ -84,27 +88,50 @@ Return ONLY a valid JSON array with 8 project ideas. Each idea should have this 
       throw new Error('No response from AI')
     }
 
-        // Parse the AI response
-      let ideas
-      try {
-        const parsed = JSON.parse(responseText)
-        // Handle both "ideas" and "projects" keys from AI response
-        ideas = parsed.ideas || parsed.projects || parsed
-        
-        // Ensure ideas is an array
-        if (!Array.isArray(ideas)) {
-          throw new Error('Invalid response format')
-        }
+    // Parse the AI response
+    let ideas
+    try {
+      // Trim whitespace from the response
+      const trimmedResponse = responseText.trim()
+      const parsed = JSON.parse(trimmedResponse)
       
-        // Add unique IDs if not present
-        ideas = ideas.map((idea, index) => ({
-          ...idea,
-          id: idea.id || `idea_${Date.now()}_${index}`,
-        }))
-      } catch (parseError) {
-        console.error('Failed to parse AI response:', responseText)
-        throw new Error('Failed to parse AI response')
+      // Handle various AI response formats
+      if (Array.isArray(parsed)) {
+        // AI returned an array directly
+        ideas = parsed
+      } else if (parsed.ideas && Array.isArray(parsed.ideas)) {
+        // AI returned { ideas: [...] }
+        ideas = parsed.ideas
+      } else if (parsed.projects && Array.isArray(parsed.projects)) {
+        // AI returned { projects: [...] }
+        ideas = parsed.projects
+      } else if (typeof parsed === 'object' && parsed.id) {
+        // AI returned a single object - wrap it in an array
+        ideas = [parsed]
+      } else {
+        throw new Error('Invalid response format')
       }
+
+      // Ensure we have at least some ideas
+      if (ideas.length === 0) {
+        throw new Error('No ideas generated')
+      }
+
+      // Add unique IDs if not present
+      ideas = ideas.map((idea, index) => ({
+        ...idea,
+        id: idea.id || `idea_${Date.now()}_${index}`,
+      }))
+
+      // If we got less than 8 ideas, that's okay, but log it
+      if (ideas.length < 8) {
+        console.log(`Generated ${ideas.length} ideas instead of 8`)
+      }
+    } catch (parseError) {
+      console.error('Failed to parse AI response:', responseText.substring(0, 200))
+      throw new Error('Failed to parse AI response')
+    }
+
     return NextResponse.json({
       success: true,
       ideas: ideas.slice(0, 8), // Ensure we only return 8 ideas
