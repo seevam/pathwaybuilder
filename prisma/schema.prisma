@@ -65,6 +65,10 @@ model Activity {
   content     Json? // Flexible content structure
   
   completions ActivityCompletion[]
+
+  streak          Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastStreakDate  DateTime?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -98,6 +102,8 @@ model ActivityCompletion {
   @@index([userId])
   @@index([activityId])
 }
+
+
 
 // AI-powered reflections
 model Reflection {
