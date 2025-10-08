@@ -118,7 +118,7 @@ Return ONLY a valid JSON array with 8 project ideas. Use this EXACT structure:
       }
 
       // Add unique IDs if not present
-      ideas = ideas.map((idea: any, index) => ({
+      ideas = ideas.map((idea: any, index: number) => ({
         ...idea,
         id: idea.id || `idea_${Date.now()}_${index}`,
       }))
