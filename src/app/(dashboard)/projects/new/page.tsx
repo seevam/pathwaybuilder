@@ -146,7 +146,7 @@ export default function NewProjectPage() {
                 Project Description *
               </Label>
               <p className="text-sm text-gray-500 mb-2">
-                Explain what you'll do and why it matters
+                Explain what you&apos;ll do and why it matters
               </p>
               <Textarea
                 id="description"
