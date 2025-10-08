@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -43,13 +44,14 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Hero Image Placeholder */}
-          {/* Hero Image */}
-<div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
-  <img 
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
+  <Image 
     src="/hero.jpg" 
     alt="Diverse students collaborating on creative projects"
+    width={1200}
+    height={675}
     className="w-full h-full object-cover"
+    priority
   />
 </div>
 
