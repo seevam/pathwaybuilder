@@ -37,14 +37,6 @@ export default async function DashboardPage() {
     redirect('/sign-in')
   }
 
-  // Get all modules
-  const modules = await db.activity.findMany({
-    distinct: ['moduleId'],
-    select: {
-      moduleId: true
-    }
-  })
-
   const totalActivities = await db.activity.count()
   const completedActivities = user.activities.filter(a => a.completed).length
   
