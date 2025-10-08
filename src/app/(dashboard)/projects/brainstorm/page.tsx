@@ -335,7 +335,7 @@ export default function ProjectBrainstormPage() {
                   <h4 className="font-semibold text-amber-900 mb-1">Pro Tips</h4>
                   <ul className="text-sm text-amber-800 space-y-1">
                     <li>• Choose a project that genuinely excites you</li>
-                    <li>• Consider what's realistic given your time commitment</li>
+                    <li>• Consider what&apos;s realistic given your time commitment</li>
                     <li>• Look for projects that develop skills you want to build</li>
                     <li>• Don&apos;t worry if it&apos;s not perfect - you can adjust as you go!
 </li>
