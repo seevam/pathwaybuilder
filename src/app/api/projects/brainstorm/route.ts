@@ -84,27 +84,27 @@ Return ONLY a valid JSON array with 8 project ideas. Each idea should have this 
       throw new Error('No response from AI')
     }
 
-    // Parse the AI response
-    let ideas
-    try {
-      const parsed = JSON.parse(responseText)
-      ideas = parsed.ideas || parsed
+        // Parse the AI response
+      let ideas
+      try {
+        const parsed = JSON.parse(responseText)
+        // Handle both "ideas" and "projects" keys from AI response
+        ideas = parsed.ideas || parsed.projects || parsed
+        
+        // Ensure ideas is an array
+        if (!Array.isArray(ideas)) {
+          throw new Error('Invalid response format')
+        }
       
-      // Ensure ideas is an array
-      if (!Array.isArray(ideas)) {
-        throw new Error('Invalid response format')
+        // Add unique IDs if not present
+        ideas = ideas.map((idea, index) => ({
+          ...idea,
+          id: idea.id || `idea_${Date.now()}_${index}`,
+        }))
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', responseText)
+        throw new Error('Failed to parse AI response')
       }
-
-      // Add unique IDs if not present
-      ideas = ideas.map((idea, index) => ({
-        ...idea,
-        id: idea.id || `idea_${Date.now()}_${index}`,
-      }))
-    } catch (parseError) {
-      console.error('Failed to parse AI response:', responseText)
-      throw new Error('Failed to parse AI response')
-    }
-
     return NextResponse.json({
       success: true,
       ideas: ideas.slice(0, 8), // Ensure we only return 8 ideas
