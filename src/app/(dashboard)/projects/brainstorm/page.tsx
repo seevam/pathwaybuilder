@@ -145,7 +145,7 @@ export default function ProjectBrainstormPage() {
             AI-Powered Project Brainstorming
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Let's Find Your Perfect Project
+            Let&apos;s Find Your Perfect Project
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Answer a few questions and our AI will generate personalized project ideas 
