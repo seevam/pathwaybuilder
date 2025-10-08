@@ -11,7 +11,7 @@ const onboardingSchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();  // ✅ Added await
     
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 });
