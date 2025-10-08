@@ -337,7 +337,8 @@ export default function ProjectBrainstormPage() {
                     <li>• Choose a project that genuinely excites you</li>
                     <li>• Consider what's realistic given your time commitment</li>
                     <li>• Look for projects that develop skills you want to build</li>
-                    <li>• Don't worry if it's not perfect - you can adjust as you go!</li>
+                    <li>• Don&apos;t worry if it&apos;s not perfect - you can adjust as you go!
+</li>
                   </ul>
                 </div>
               </div>
