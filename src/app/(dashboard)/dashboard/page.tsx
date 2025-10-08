@@ -40,8 +40,8 @@ export default async function DashboardPage() {
   const totalActivities = await db.activity.count()
   const completedActivities = user.activities.filter(a => a.completed).length
   
-  // Calculate streak (you'll implement this properly later)
-  const currentStreak = user.profile?.streak || 0
+  // Calculate streak (placeholder - will implement streak tracking later)
+  const currentStreak = 0
   
   // Calculate time invested in hours
   const totalTimeSeconds = user.activities.reduce((acc, a) => acc + (a.timeSpent || 0), 0)
@@ -70,7 +70,7 @@ export default async function DashboardPage() {
             title="Overall Progress"
             value={`${user.profile?.overallProgress || 0}%`}
             description="Across all modules"
-            trend={user.profile?.overallProgress > 0 ? '+' + user.profile?.overallProgress : undefined}
+            trend={user.profile?.overallProgress && user.profile.overallProgress > 0 ? '+' + user.profile.overallProgress : undefined}
           />
           <StatsCard
             icon={<Flame className="w-5 h-5 text-orange-500" />}
