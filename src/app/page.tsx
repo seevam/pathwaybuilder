@@ -44,11 +44,14 @@ export default function Home() {
           </div>
 
           {/* Hero Image Placeholder */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-100 to-green-100 aspect-video flex items-center justify-center">
-            <div className="text-gray-400 text-lg">
-              [Diverse students working on projects - Hero Image]
-            </div>
-          </div>
+          {/* Hero Image */}
+<div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
+  <img 
+    src="/hero.jpg" 
+    alt="Diverse students collaborating on creative projects"
+    className="w-full h-full object-cover"
+  />
+</div>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
