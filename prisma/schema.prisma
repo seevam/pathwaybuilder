@@ -23,6 +23,8 @@ model User {
   profile       Profile?
   activities    ActivityCompletion[]
   reflections   Reflection[]
+
+  projects    Project[]
   
   @@index([clerkId])
   @@index([email])
@@ -119,3 +121,146 @@ model Reflection {
   
   @@index([userId])
 }
+
+// Add to prisma/schema.prisma
+
+enum ProjectCategory {
+  RESEARCH
+  CREATIVE
+  SOCIAL_IMPACT
+  ENTREPRENEURIAL
+  TECHNICAL
+  LEADERSHIP
+}
+
+enum ProjectStatus {
+  IDEATION
+  PLANNING
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String   @db.Text
+  category    ProjectCategory
+  
+  status      ProjectStatus @default(IDEATION)
+  healthScore Int      @default(50)
+  
+  // AI-generated idea metadata
+  ideaSource  Json?    // Original AI-generated idea
+  
+  // Goals and planning
+  goals       Json?    // Array of SMART goals
+  resources   Json?    // Resource planning data
+  metrics     Json?    // Impact metrics
+  
+  startedAt   DateTime?
+  targetCompletionAt DateTime?
+  completedAt DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations (we'll add these in later phases)
+  milestones  Milestone[]
+  tasks       Task[]
+  checkIns    ProjectCheckIn[]
+  documents   ProjectDocument[]
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  orderIndex  Int
+  title       String
+  description String?
+  
+  status      MilestoneStatus @default(NOT_STARTED)
+  targetDate  DateTime?
+  completedAt DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([projectId])
+}
+
+enum MilestoneStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Task {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  title         String
+  description   String?
+  estimatedHours Int?
+  
+  completed     Boolean  @default(false)
+  completedAt   DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([projectId])
+}
+
+model ProjectCheckIn {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  accomplishments String   @db.Text
+  challenges      String?  @db.Text
+  learnings       String?  @db.Text
+  nextSteps       String?  @db.Text
+  
+  hoursLogged     Int?
+  moodRating      Int?     // 1-5 scale
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([projectId])
+}
+
+enum DocumentType {
+  PHOTO
+  VIDEO
+  PDF
+  LINK
+  OTHER
+}
+
+model ProjectDocument {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  type        DocumentType
+  title       String
+  url         String
+  fileSize    Int?
+  mimeType    String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([projectId])
+}
+
