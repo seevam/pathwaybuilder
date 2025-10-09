@@ -238,7 +238,7 @@ export default function SkillGapAnalysis({ project, onComplete }: SkillGapAnalys
             <div>
               <p className="font-semibold text-amber-900 mb-1">Pro Tip</p>
               <p className="text-sm text-amber-800">
-                Don't worry if you have skills to learn! Every project is an opportunity to grow. 
+                Do not worry if you have skills to learn! Every project is an opportunity to grow. 
                 Focus on the most critical skills first and build incrementally.
               </p>
             </div>
