@@ -137,7 +137,7 @@ export default function ResourcePlanner({ project, onComplete }: ResourcePlanner
             Resource Planning
           </h2>
           <p className="text-gray-600">
-            Identify what you need and how you'll get it
+            Identify what you need and how you will get it
           </p>
         </div>
 
