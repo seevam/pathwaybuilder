@@ -138,7 +138,7 @@ export default function CharterBuilder({ project, onComplete }: CharterBuilderPr
             Project Charter
           </h2>
           <p className="text-gray-600">
-            Define your project's mission and set SMART goals
+            Define your projects mission and set SMART goals
           </p>
         </div>
 
