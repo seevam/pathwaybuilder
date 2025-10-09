@@ -265,7 +265,7 @@ export default function MilestoneBuilder({ project, onComplete }: MilestoneBuild
 
           {milestones.length === 0 && (
             <div className="text-center py-12 text-gray-500 border-2 border-dashed rounded-lg">
-              <p>No milestones added yet. Click "Add Milestone" to create your roadmap.</p>
+              <p>No milestones added yet. Click Add Milestone to create your roadmap.</p>
             </div>
           )}
         </div>
