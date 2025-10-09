@@ -233,7 +233,7 @@ export default function CharterBuilder({ project, onComplete }: CharterBuilderPr
 
             {goals.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                <p>No goals added yet. Click "Add Goal" to create your first SMART goal.</p>
+                <p>No goals added yet. Click Add Goal to create your first SMART goal.</p>
               </div>
             )}
           </div>
