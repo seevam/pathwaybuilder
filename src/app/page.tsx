@@ -36,7 +36,7 @@ export default async function Home() {
 
           <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
             <Image 
-              src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200" 
+              src="/hero.jpg" 
               alt="Diverse students collaborating on creative projects"
               width={1200}
               height={675}
