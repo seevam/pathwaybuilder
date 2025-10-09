@@ -1,3 +1,4 @@
+// src/app/(dashboard)/projects/[id]/plan/page.tsx
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
@@ -35,6 +36,9 @@ export default async function ProjectPlanPage({
       milestones: {
         orderBy: { orderIndex: 'asc' },
       },
+      tasks: true,
+      checkIns: true,
+      documents: true,
     },
   })
 
