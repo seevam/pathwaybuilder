@@ -1,29 +1,19 @@
+// src/app/page.tsx
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2 } from 'lucide-react';
 import Image from 'next/image';
+import { auth } from '@clerk/nextjs/server';
+import { LandingHeader } from '@/components/landing/LandingHeader';
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = await auth();
+  const isSignedIn = !!userId;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent">
-              🎓 Pathway Builder
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/sign-in">
-              <Button variant="ghost">Sign In</Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button>Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* Header with conditional rendering */}
+      <LandingHeader isSignedIn={isSignedIn} />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
@@ -45,26 +35,43 @@ export default function Home() {
           </div>
 
           <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
-  <Image 
-    src="/hero.jpg" 
-    alt="Diverse students collaborating on creative projects"
-    width={1200}
-    height={675}
-    className="w-full h-full object-cover"
-    priority
-  />
-</div>
+            <Image 
+              src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200" 
+              alt="Diverse students collaborating on creative projects"
+              width={1200}
+              height={675}
+              className="w-full h-full object-cover"
+              priority
+            />
+          </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - Conditional rendering */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/sign-up">
-              <Button size="lg" className="text-lg px-8 py-6">
-                Get Started Free
-              </Button>
-            </Link>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-6">
-              Watch Demo (2 min)
-            </Button>
+            {isSignedIn ? (
+              <>
+                <Link href="/dashboard">
+                  <Button size="lg" className="text-lg px-8 py-6">
+                    Go to Dashboard
+                  </Button>
+                </Link>
+                <Link href="/projects">
+                  <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+                    My Projects
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/sign-up">
+                  <Button size="lg" className="text-lg px-8 py-6">
+                    Get Started Free
+                  </Button>
+                </Link>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+                  Watch Demo (2 min)
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -170,7 +177,7 @@ export default function Home() {
         </div>
       </section>
 
-{/* Trust Indicators - Enhanced */}
+      {/* Trust Indicators - Enhanced */}
       <section className="bg-gradient-to-b from-white to-gray-50 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -236,26 +243,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA Section */}
+      {/* Final CTA Section - Conditional rendering */}
       <section className="container mx-auto px-4 py-20">
         <div className="max-w-3xl mx-auto text-center space-y-8">
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Ready to Build Your Future?
-          </h2>
-          <p className="text-xl text-gray-600">
-            Join thousands of students who are discovering their path and building 
-            compelling profiles for college success.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/sign-up">
-              <Button size="lg" className="text-lg px-8 py-6">
-                Start Your Journey Free
-              </Button>
-            </Link>
-          </div>
-          <p className="text-sm text-gray-500">
-            No credit card required • Complete at your own pace • 3-4 month program
-          </p>
+          {isSignedIn ? (
+            <>
+              <h2 className="text-4xl md:text-5xl font-bold">
+                Welcome Back! 👋
+              </h2>
+              <p className="text-xl text-gray-600">
+                Continue your journey and keep building your future.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/dashboard">
+                  <Button size="lg" className="text-lg px-8 py-6">
+                    Go to Dashboard
+                  </Button>
+                </Link>
+                <Link href="/module-1">
+                  <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+                    Continue Learning
+                  </Button>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-4xl md:text-5xl font-bold">
+                Ready to Build Your Future?
+              </h2>
+              <p className="text-xl text-gray-600">
+                Join thousands of students who are discovering their path and building 
+                compelling profiles for college success.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/sign-up">
+                  <Button size="lg" className="text-lg px-8 py-6">
+                    Start Your Journey Free
+                  </Button>
+                </Link>
+              </div>
+              <p className="text-sm text-gray-500">
+                No credit card required • Complete at your own pace • 3-4 month program
+              </p>
+            </>
+          )}
         </div>
       </section>
 
