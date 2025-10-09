@@ -2,6 +2,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { AIMascot } from '@/components/ai-mascot/AIMascot';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         <body className={inter.className}>
           {children}
           <Toaster />
+          <AIMascot />
         </body>
       </html>
     </ClerkProvider>
