@@ -239,7 +239,7 @@ export default function ResourcePlanner({ project, onComplete }: ResourcePlanner
 
             {resources.length === 0 && (
               <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
-                <p>No resources added yet. Click "Add Resource" to start planning.</p>
+                <p>No resources added yet. Click Add Resource to start planning.</p>
               </div>
             )}
           </div>
