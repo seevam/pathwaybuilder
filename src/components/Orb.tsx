@@ -225,7 +225,7 @@ export default function Orb({
     };
 
     function resize() {
-      if (!canvas) return;
+      if (!canvas || !gl) return;
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
@@ -269,6 +269,8 @@ export default function Orb({
     let rafId: number;
 
     const render = (time: number) => {
+      if (!gl || !canvas) return;
+      
       const dt = (time - lastTime) * 0.001;
       lastTime = time;
 
