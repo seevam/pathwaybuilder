@@ -130,49 +130,52 @@ export default async function Home() {
   </div>
 </section>
 
-      {/* 3. Features Section - "How It Works" with numbered steps and strong shadows */}
-      <section className="container mx-auto px-4 py-24">
-        <div className="text-center max-w-4xl mx-auto mb-16">
-          <p className="text-lg font-bold text-blue-600 uppercase tracking-widest mb-3">
-            How It Works
-          </p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
-            A Structured Path to Your Future
-          </h2>
-        </div>
+      // 3. Features Section - Vibrant, Soft-Edged Cards
+<section className="container mx-auto px-4 py-24">
+  <div className="text-center max-w-4xl mx-auto mb-16">
+    <p className="text-lg font-bold text-purple-600 uppercase tracking-widest mb-3">
+      The AI-Powered Path
+    </p>
+    <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
+      A Structured Journey, Smartly Guided
+    </h2>
+  </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Feature Card 1 (with step number box) */}
-          <div className="bg-white rounded-3xl p-8 shadow-2xl hover:shadow-indigo-300/50 transition-all duration-500 border border-gray-100 group">
-            <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">1</div>
-            <h3 className="text-xl font-bold mb-3 text-gray-900">6 Modules of Self-Discovery</h3>
-            <p className="text-gray-600">
-              Discover your strengths, values, and personality through proven assessments
-              and interactive activities.
-            </p>
-          </div>
+  <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+    {/* Feature Card 1 */}
+    <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
+      {/* Updated Badge Style */}
+      <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">1</div>
+      <h3 className="text-xl font-bold mb-3 text-gray-900">6 Modules of Self-Discovery</h3>
+      <p className="text-gray-600">
+        Discover your strengths, values, and personality through proven assessments
+        and interactive activities.
+      </p>
+    </div>
 
-          {/* Feature Card 2 */}
-          <div className="bg-white rounded-3xl p-8 shadow-2xl hover:shadow-indigo-300/50 transition-all duration-500 border border-gray-100 group">
-            <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">2</div>
-            <h3 className="text-xl font-bold mb-3 text-gray-900">3 Core Career Assessments</h3>
-            <p className="text-gray-600">
-              Take RIASEC, DISC, and TypeFinder assessments to understand your ideal
-              career paths and work styles.
-            </p>
-          </div>
+    {/* Feature Card 2 */}
+    <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
+      {/* Updated Badge Style */}
+      <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">2</div>
+      <h3 className="text-xl font-bold mb-3 text-gray-900">3 Core Career Assessments</h3>
+      <p className="text-gray-600">
+        Take RIASEC, DISC, and TypeFinder assessments to understand your ideal
+        career paths and work styles.
+      </p>
+    </div>
 
-          {/* Feature Card 3 */}
-          <div className="bg-white rounded-3xl p-8 shadow-2xl hover:shadow-indigo-300/50 transition-all duration-500 border border-gray-100 group">
-            <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">3</div>
-            <h3 className="text-xl font-bold mb-3 text-gray-900">Build Your Signature Project</h3>
-            <p className="text-gray-600">
-              Create a meaningful passion project that showcases your unique interests
-              and stands out in college applications.
-            </p>
-          </div>
-        </div>
-      </section>
+    {/* Feature Card 3 */}
+    <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
+      {/* Updated Badge Style */}
+      <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">3</div>
+      <h3 className="text-xl font-bold mb-3 text-gray-900">Build Your Signature Project</h3>
+      <p className="text-gray-600">
+        Create a meaningful passion project that showcases your unique interests
+        and stands out in college applications.
+      </p>
+    </div>
+  </div>
+</section>
 
       {/* 4. What You'll Achieve Section - Dark, high-contrast block for Outcomes */}
       <section className="bg-indigo-900/95 py-24 text-white">
