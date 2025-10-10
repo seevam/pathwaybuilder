@@ -8,6 +8,57 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
+// Enums
+enum ActivityType {
+  INTERACTIVE
+  REFLECTION
+  UPLOAD
+}
+
+enum ModuleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ProjectCategory {
+  RESEARCH
+  CREATIVE
+  SOCIAL_IMPACT
+  ENTREPRENEURIAL
+  TECHNICAL
+  LEADERSHIP
+}
+
+enum ProjectStatus {
+  IDEATION
+  PLANNING
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+enum MilestoneStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum DocumentType {
+  PHOTO
+  VIDEO
+  PDF
+  LINK
+  OTHER
+}
+
 // User model - synced with Clerk
 model User {
   id        String   @id @default(cuid())
@@ -20,11 +71,11 @@ model User {
   updatedAt DateTime @updatedAt
   
   // Relations
-  profile       Profile?
-  activities    ActivityCompletion[]
-  reflections   Reflection[]
-
-  projects    Project[]
+  profile        Profile?
+  activities     ActivityCompletion[]
+  reflections    Reflection[]
+  projects       Project[]
+  moduleProgress ModuleProgress[]
   
   @@index([clerkId])
   @@index([email])
@@ -54,7 +105,51 @@ model Profile {
   updatedAt DateTime @updatedAt
 }
 
-// Activities in Module 1
+// Module model
+model Module {
+  id              String   @id @default(cuid())
+  orderIndex      Int      @unique
+  title           String
+  description     String   @db.Text
+  tagline         String?
+  estimatedHours  Int
+  icon            String?
+  videoUrl        String?
+  status          ModuleStatus @default(PUBLISHED)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  activities      Activity[]
+  moduleProgress  ModuleProgress[]
+  
+  @@index([orderIndex])
+  @@index([status])
+}
+
+// ModuleProgress model
+model ModuleProgress {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moduleId        String
+  module          Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  status          ProgressStatus @default(NOT_STARTED)
+  progressPercent Int      @default(0)
+  
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([userId, moduleId])
+  @@index([userId])
+  @@index([moduleId])
+}
+
+// Activities in modules
 model Activity {
   id          String   @id @default(cuid())
   slug        String   @unique
@@ -62,6 +157,11 @@ model Activity {
   description String
   orderIndex  Int
   type        ActivityType
+  
+  // Module relationship
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  requiredForCompletion Boolean @default(true)
   
   estimatedMinutes Int
   content     Json? // Flexible content structure
@@ -76,12 +176,7 @@ model Activity {
   updatedAt DateTime @updatedAt
   
   @@index([orderIndex])
-}
-
-enum ActivityType {
-  INTERACTIVE
-  REFLECTION
-  UPLOAD
+  @@index([moduleId])
 }
 
 // Track activity completion
@@ -105,8 +200,6 @@ model ActivityCompletion {
   @@index([activityId])
 }
 
-
-
 // AI-powered reflections
 model Reflection {
   id        String   @id @default(cuid())
@@ -122,26 +215,7 @@ model Reflection {
   @@index([userId])
 }
 
-// Add to prisma/schema.prisma
-
-enum ProjectCategory {
-  RESEARCH
-  CREATIVE
-  SOCIAL_IMPACT
-  ENTREPRENEURIAL
-  TECHNICAL
-  LEADERSHIP
-}
-
-enum ProjectStatus {
-  IDEATION
-  PLANNING
-  IN_PROGRESS
-  PAUSED
-  COMPLETED
-  ABANDONED
-}
-
+// Projects
 model Project {
   id          String   @id @default(cuid())
   userId      String
@@ -169,7 +243,7 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // Relations (we'll add these in later phases)
+  // Relations
   milestones  Milestone[]
   tasks       Task[]
   checkIns    ProjectCheckIn[]
@@ -196,12 +270,6 @@ model Milestone {
   updatedAt   DateTime @updatedAt
   
   @@index([projectId])
-}
-
-enum MilestoneStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
 }
 
 model Task {
@@ -240,14 +308,6 @@ model ProjectCheckIn {
   @@index([projectId])
 }
 
-enum DocumentType {
-  PHOTO
-  VIDEO
-  PDF
-  LINK
-  OTHER
-}
-
 model ProjectDocument {
   id          String   @id @default(cuid())
   projectId   String
@@ -263,4 +323,3 @@ model ProjectDocument {
   
   @@index([projectId])
 }
-
