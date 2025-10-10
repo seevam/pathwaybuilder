@@ -55,7 +55,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
             Module Locked
           </h1>
           <p className="text-gray-600 mb-6">
-            Complete Module {orderIndex - 1} to unlock this module.
+            Complete Module {orderIndex - 1} to unlock this moduleData
           </p>
           <Link href="/dashboard">
             <Button>Back to Dashboard</Button>
@@ -66,23 +66,23 @@ export default async function ModulePage({ params }: ModulePageProps) {
   }
 
   // Get module with activities
-  const module = await db.module.findFirst({
-    where: { orderIndex },
-    include: {
-      activities: {
-        orderBy: { orderIndex: 'asc' },
-      },
+const moduleData = await db.moduleDatafindFirst({
+  where: { orderIndex },
+  include: {
+    activities: {
+      orderBy: { orderIndex: 'asc' },
     },
-  })
+  },
+})
 
-  if (!module) notFound()
+if (!moduleData) notFound()
 
   // Get progress and completions (same as before)
-  const progress = await ModuleService.getModuleProgress(user.id, module.id)
+  const progress = await ModuleService.getModuleProgress(user.id, moduleData.id)
   const completions = await db.activityCompletion.findMany({
     where: {
       userId: user.id,
-      activityId: { in: module.activities.map(a => a.id) },
+      activityId: { in: moduleData.activities.map(a => a.id) },
     },
   })
 
@@ -90,7 +90,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
     completions.map(c => [c.activityId, c.completed])
   )
 
-  const nextActivity = await ModuleService.getNextActivity(user.id, module.id)
+  const nextActivity = await ModuleService.getNextActivity(user.id, moduleDataid)
   const deliverableUnlocked = progress === 100
 
   return (
@@ -111,13 +111,13 @@ export default async function ModulePage({ params }: ModulePageProps) {
       />
 
       <ActivityList
-        activities={module.activities}
+        activities={moduleDataactivities}
         completionMap={completionMap}
         moduleSlug={params.moduleSlug}
       />
 
       <ModuleDeliverable
-        moduleId={module.id}
+        moduleId={moduleDataid}
         unlocked={deliverableUnlocked}
         progress={progress}
       />
