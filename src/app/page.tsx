@@ -76,23 +76,16 @@ export default async function Home() {
               )}
             </div>
 
-            {/* Hero Image */}
-            <div className="pt-12">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 backdrop-blur-sm">
-                <Image 
-                  src="/hero.jpg" 
-                  alt="Diverse students collaborating on creative projects"
-                  width={1200}
-                  height={675}
-                  className="w-full h-full object-cover"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/50 to-transparent"></div>
-              </div>
-            </div>
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
+            <Image 
+              src="/hero.jpg" 
+              alt="Diverse students collaborating on creative projects"
+              width={1200}
+              height={675}
+              className="w-full h-full object-cover"
+              priority
+            />
           </div>
-        </div>
-      </section>
 
       {/* Trust Indicators - Enhanced */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-16 border-b">
