@@ -50,7 +50,7 @@ export default async function Module1Page() {
   )
 
   // Get next activity
-  const nextActivity = await ModuleService.getNextActivity(user.id, moduleDataid)
+  const nextActivity = await ModuleService.getNextActivity(user.id, moduleData.id)
 
   // Check if deliverable is unlocked (all activities complete)
   const deliverableUnlocked = progress === 100
