@@ -21,7 +21,7 @@ export default async function Module1Page() {
   if (!user) redirect('/sign-in')
 
   // Get module with activities
-  const module = await db.module.findFirst({
+  const moduleData = await db.module.findFirst({
     where: { orderIndex: 1 },
     include: {
       activities: {
@@ -35,13 +35,13 @@ export default async function Module1Page() {
   }
 
   // Get user's progress for this module
-  const progress = await ModuleService.getModuleProgress(user.id, module.id)
+  const progress = await ModuleService.getModuleProgress(user.id, moduleDataid)
 
   // Get activity completions
   const completions = await db.activityCompletion.findMany({
     where: {
       userId: user.id,
-      activityId: { in: module.activities.map(a => a.id) },
+      activityId: { in: moduleDataactivities.map(a => a.id) },
     },
   })
 
@@ -50,7 +50,7 @@ export default async function Module1Page() {
   )
 
   // Get next activity
-  const nextActivity = await ModuleService.getNextActivity(user.id, module.id)
+  const nextActivity = await ModuleService.getNextActivity(user.id, moduleDataid)
 
   // Check if deliverable is unlocked (all activities complete)
   const deliverableUnlocked = progress === 100
@@ -76,14 +76,14 @@ export default async function Module1Page() {
 
       {/* Activity List */}
       <ActivityList
-        activities={module.activities}
+        activities={moduleDataactivities}
         completionMap={completionMap}
         moduleSlug="module-1"
       />
 
       {/* Module Deliverable */}
       <ModuleDeliverable
-        moduleId={module.id}
+        moduleId={moduleDataid}
         unlocked={deliverableUnlocked}
         progress={progress}
       />
