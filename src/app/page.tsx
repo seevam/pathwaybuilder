@@ -15,7 +15,7 @@ export default async function Home() {
       {/* Header */}
       <LandingHeader isSignedIn={isSignedIn} />
 
-      {/* Hero Section - Enhanced with gradient background */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900">
         {/* Decorative elements */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
@@ -75,8 +75,10 @@ export default async function Home() {
                 </>
               )}
             </div>
+          </div>
 
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
+          {/* FIXED: Close hero content div properly */}
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video mt-12">
             <Image 
               src="/hero.jpg" 
               alt="Diverse students collaborating on creative projects"
@@ -86,7 +88,8 @@ export default async function Home() {
               priority
             />
           </div>
-
+        </div>
+      </section> {/* ✅ FIXED: Closed Hero Section properly */}
       {/* Trust Indicators - Enhanced */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-16 border-b">
         <div className="container mx-auto px-4">
