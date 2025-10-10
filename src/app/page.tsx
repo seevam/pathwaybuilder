@@ -1,33 +1,184 @@
 // src/app/page.tsx
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Star, Zap, Trophy, Users, TrendingUp, Sparkles, Target, Award } from 'lucide-react';
+import { CheckCircle2, Star, Zap, Trophy, Users, TrendingUp, Sparkles, Target, Award, Menu, X } from 'lucide-react';
 import Image from 'next/image';
-import { auth } from '@clerk/nextjs/server';
-import Orb from '@/components/Orb';
-import GlassmorphicHeader from '@/components/GlassmorphicHeader';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@clerk/nextjs';
 
-export default async function Home() {
-  const { userId } = await auth();
+export default function Home() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { userId } = useAuth();
   const isSignedIn = !!userId;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Glassmorphic Header */}
-      <GlassmorphicHeader isSignedIn={isSignedIn} />
+      {/* Glassmorphic Header - Fixed */}
+      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div className="flex justify-center pt-4 px-4">
+          <nav 
+            className={`
+              flex h-16 w-full max-w-6xl items-center justify-between
+              rounded-full border backdrop-blur-2xl
+              px-6 transition-all duration-300
+              ${isScrolled 
+                ? 'bg-white/90 border-white/50 shadow-2xl shadow-indigo-500/10' 
+                : 'bg-white/70 border-white/40 shadow-xl'
+              }
+            `}
+          >
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-3">
+              <div className="relative">
+                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                  <Sparkles className="h-5 w-5 text-white" />
+                </div>
+                {/* Glow effect */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 blur-md opacity-40 -z-10" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hidden sm:block">
+                Pathway
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-2">
+              {isSignedIn ? (
+                <>
+                  <Link href="/dashboard">
+                    <Button 
+                      variant="ghost"
+                      className="rounded-full text-sm font-semibold text-gray-700 hover:bg-white/60"
+                    >
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link href="/projects">
+                    <Button 
+                      variant="ghost"
+                      className="rounded-full text-sm font-semibold text-gray-700 hover:bg-white/60"
+                    >
+                      Projects
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    variant="ghost"
+                    className="rounded-full text-sm font-semibold text-gray-700 hover:bg-white/60"
+                  >
+                    Features
+                  </Button>
+                  <Button 
+                    variant="ghost"
+                    className="rounded-full text-sm font-semibold text-gray-700 hover:bg-white/60"
+                  >
+                    About
+                  </Button>
+                  <div className="w-px h-6 bg-gray-300 mx-2" />
+                  <Link href="/sign-in">
+                    <Button 
+                      variant="ghost"
+                      className="rounded-full text-sm font-semibold text-gray-700 hover:bg-white/60"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/sign-up">
+                    <Button className="rounded-full text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-full hover:bg-white/60 transition-all"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6 text-gray-700" />
+              ) : (
+                <Menu className="h-6 w-6 text-gray-700" />
+              )}
+            </button>
+          </nav>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden mt-2 px-4">
+            <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl p-4 space-y-2">
+              {isSignedIn ? (
+                <>
+                  <Link href="/dashboard" className="block">
+                    <Button 
+                      variant="ghost"
+                      className="w-full justify-start rounded-2xl text-sm font-semibold text-gray-700 hover:bg-white/60"
+                    >
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link href="/projects" className="block">
+                    <Button 
+                      variant="ghost"
+                      className="w-full justify-start rounded-2xl text-sm font-semibold text-gray-700 hover:bg-white/60"
+                    >
+                      Projects
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    variant="ghost"
+                    className="w-full justify-start rounded-2xl text-sm font-semibold text-gray-700 hover:bg-white/60"
+                  >
+                    Features
+                  </Button>
+                  <Button 
+                    variant="ghost"
+                    className="w-full justify-start rounded-2xl text-sm font-semibold text-gray-700 hover:bg-white/60"
+                  >
+                    About
+                  </Button>
+                  <div className="h-px bg-gray-300 my-2" />
+                  <Link href="/sign-in" className="block">
+                    <Button 
+                      variant="ghost"
+                      className="w-full justify-start rounded-2xl text-sm font-semibold text-gray-700 hover:bg-white/60"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/sign-up" className="block">
+                    <Button className="w-full rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg">
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </header>
 
       {/* Hero Section - Duolingo Style */}
       <section className="relative overflow-hidden bg-gradient-to-b from-indigo-50 to-white pt-28">
-        {/* Subtle Orb Background */}
-        <div className="absolute inset-0 opacity-20 z-0">
-          <Orb
-            hue={270}
-            hoverIntensity={1}
-            rotateOnHover={false}
-            forceHoverState={false}
-          />
-        </div>
-
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-4 py-16 lg:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
