@@ -35,7 +35,7 @@ export default async function Module1Page() {
   }
 
   // Get user's progress for this module
-  const progress = await ModuleService.getModuleProgress(user.id, moduleDataid)
+  const progress = await ModuleService.getModuleProgress(user.id, moduleData.id)
 
   // Get activity completions
   const completions = await db.activityCompletion.findMany({
@@ -69,21 +69,21 @@ export default async function Module1Page() {
 
       {/* Module Header */}
       <ModuleHeader
-        module={module}
+        module={moduleData}
         progress={progress}
         nextActivity={nextActivity}
       />
 
       {/* Activity List */}
       <ActivityList
-        activities={moduleDataactivities}
+        activities={moduleData.activities}
         completionMap={completionMap}
         moduleSlug="module-1"
       />
 
       {/* Module Deliverable */}
       <ModuleDeliverable
-        moduleId={moduleDataid}
+        moduleId={moduleData.id}
         unlocked={deliverableUnlocked}
         progress={progress}
       />
