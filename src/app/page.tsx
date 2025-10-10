@@ -14,8 +14,8 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section with Orb Background */}
-      <section className="relative overflow-hidden h-[700px] bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900">
-        {/* Orb Background */}
+      <section className="relative overflow-hidden min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900">
+        {/* Orb Background - Layer 0 */}
         <div className="absolute inset-0 z-0">
           <Orb
             hue={270}
@@ -25,119 +25,132 @@ export default async function Home() {
           />
         </div>
 
-        {/* Glassmorphic Header */}
-        <div className="relative z-10 flex justify-center pt-10">
-          <div className="flex h-[60px] w-[90%] max-w-screen-lg items-center justify-between rounded-full border border-white/20 bg-white/5 px-6 backdrop-blur-xl">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-cyan-400 to-purple-600" />
-              <span className="text-lg font-semibold text-white">Pathway Builder</span>
-            </div>
-            <div className="flex items-center gap-4">
-              {isSignedIn ? (
-                <>
-                  <Link href="/dashboard">
-                    <Button 
-                      size="sm" 
-                      className="rounded-full bg-white text-indigo-900 hover:bg-gray-100"
-                    >
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <Link href="/projects">
-                    <Button 
-                      size="sm" 
-                      variant="ghost"
-                      className="rounded-full text-white hover:bg-white/10"
-                    >
-                      Projects
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/sign-in" className="text-sm text-white/80 hover:text-white">
-                    Sign In
-                  </Link>
-                  <Link href="/sign-up">
-                    <Button 
-                      size="sm" 
-                      className="rounded-full bg-white text-indigo-900 hover:bg-gray-100"
-                    >
-                      Get Started
-                    </Button>
-                  </Link>
-                </>
-              )}
+        {/* Content Container - Layer 1 */}
+        <div className="relative z-10 flex flex-col min-h-screen">
+          {/* Glassmorphic Header */}
+          <div className="flex justify-center pt-10 pb-6">
+            <div className="flex h-[60px] w-[90%] max-w-screen-lg items-center justify-between rounded-full border border-white/20 bg-white/5 px-6 backdrop-blur-xl shadow-xl">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-cyan-400 to-purple-600" />
+                <span className="text-lg font-semibold text-white">Pathway Builder</span>
+              </div>
+              <div className="flex items-center gap-4">
+                {isSignedIn ? (
+                  <>
+                    <Link href="/dashboard">
+                      <Button 
+                        size="sm" 
+                        className="rounded-full bg-white text-indigo-900 hover:bg-gray-100"
+                      >
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Link href="/projects">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        className="rounded-full text-white hover:bg-white/10"
+                      >
+                        Projects
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/sign-in" className="text-sm text-white/80 hover:text-white transition-colors">
+                      Sign In
+                    </Link>
+                    <Link href="/sign-up">
+                      <Button 
+                        size="sm" 
+                        className="rounded-full bg-white text-indigo-900 hover:bg-gray-100"
+                      >
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 flex h-[calc(100%-140px)] items-center justify-center">
-          <div className="max-w-4xl text-center space-y-8 px-4">
-            {/* Pill Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-green-400"></span>
-              Pathway to College Distinction
-            </div>
+          {/* Hero Content - Centered */}
+          <div className="flex-1 flex items-center justify-center px-4 py-12">
+            <div className="max-w-4xl text-center space-y-8">
+              {/* Pill Badge */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm shadow-lg">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-green-400"></span>
+                Pathway to College Distinction
+              </div>
 
-            {/* Main Heading */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
-              Discover Who You Are.
-              <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Build What Matters.
-              </span>
-              <br />
-              Own Your Story.
-            </h1>
+              {/* Main Heading */}
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
+                Discover Who You Are.
+                <br />
+                <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  Build What Matters.
+                </span>
+                <br />
+                Own Your Story.
+              </h1>
 
-            <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto font-light">
-              Transform the overwhelming college preparation process into an engaging, 
-              structured journey of self-discovery and meaningful achievement.
-            </p>
+              {/* Description */}
+              <p className="text-lg sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto font-light leading-relaxed">
+                Transform the overwhelming college preparation process into an engaging, 
+                structured journey of self-discovery and meaningful achievement.
+              </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              {isSignedIn ? (
-                <>
-                  <Link href="/dashboard">
-                    <Button 
-                      size="lg" 
-                      className="rounded-full text-lg px-10 py-7 bg-white text-indigo-900 hover:bg-gray-100 transition-all shadow-2xl font-semibold"
-                    >
-                      Go to Dashboard →
-                    </Button>
-                  </Link>
-                  <Link href="/projects">
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
+                {isSignedIn ? (
+                  <>
+                    <Link href="/dashboard">
+                      <Button 
+                        size="lg" 
+                        className="rounded-full text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 bg-white text-indigo-900 hover:bg-gray-100 transition-all shadow-2xl font-semibold w-full sm:w-auto"
+                      >
+                        Go to Dashboard →
+                      </Button>
+                    </Link>
+                    <Link href="/projects">
+                      <Button 
+                        size="lg" 
+                        variant="outline" 
+                        className="rounded-full text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 border-2 border-white/50 text-white hover:bg-white/10 transition-all backdrop-blur-sm w-full sm:w-auto"
+                      >
+                        My Projects
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/sign-up">
+                      <Button 
+                        size="lg" 
+                        className="rounded-full text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white transition-all shadow-2xl shadow-purple-500/40 font-semibold w-full sm:w-auto"
+                      >
+                        Start Your Journey Free
+                      </Button>
+                    </Link>
                     <Button 
                       size="lg" 
                       variant="outline" 
-                      className="rounded-full text-lg px-10 py-7 border-2 border-white/50 text-white hover:bg-white/10 transition-all backdrop-blur-sm"
+                      className="rounded-full text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 border-2 border-white/50 text-white hover:bg-white/10 transition-all backdrop-blur-sm w-full sm:w-auto"
                     >
-                      My Projects
+                      Watch Demo (2 min)
                     </Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/sign-up">
-                    <Button 
-                      size="lg" 
-                      className="rounded-full text-lg px-10 py-7 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white transition-all shadow-2xl shadow-purple-500/40 font-semibold"
-                    >
-                      Start Your Journey Free
-                    </Button>
-                  </Link>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="rounded-full text-lg px-10 py-7 border-2 border-white/50 text-white hover:bg-white/10 transition-all backdrop-blur-sm"
-                  >
-                    Watch Demo (2 min)
-                  </Button>
-                </>
-              )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Scroll Indicator (Optional) */}
+          <div className="pb-8 flex justify-center">
+            <div className="animate-bounce">
+              <svg className="w-6 h-6 text-white/50" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              </svg>
             </div>
           </div>
         </div>
@@ -201,6 +214,12 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* Rest of the sections remain the same... */}
+      {/* Features, Outcomes, Testimonial, CTA, Footer sections */}
+    </div>
+  );
+}
       {/* Features Section - Modern Cards */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center max-w-4xl mx-auto mb-16">
