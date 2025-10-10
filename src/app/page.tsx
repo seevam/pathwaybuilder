@@ -11,178 +11,178 @@ export default async function Home() {
   const isSignedIn = !!userId;
 
   return (
-    // Base container uses a soft white for a clean look
+    // Base container uses white for overall page background (since Hero is custom colored)
     <div className="min-h-screen bg-white text-gray-800">
       {/* Header with conditional rendering */}
       <LandingHeader isSignedIn={isSignedIn} />
 
-      {/* 1. Hero Section - Bold, High-Impact, with strong contrast */}
-      <section className="container mx-auto px-4 pt-32 pb-24 md:pt-48 md:pb-36 text-center">
-        <div className="max-w-6xl mx-auto space-y-12">
-          {/* Subtle tag line, professional and modern pill shape */}
-          <p className="text-sm font-semibold text-indigo-600 uppercase tracking-widest bg-indigo-50/70 py-1 px-4 inline-block rounded-full border border-indigo-100">
-            Path to College Success
-          </p>
-          
-          <div className="space-y-6">
-            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tighter">
-              Unlock Your Potential.
-              <br />
-              {/* Vibrant, modern gradient for the core value */}
-              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Build a Portfolio That Matters.
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-500 max-w-3xl mx-auto font-normal">
-              Transform the overwhelming college preparation process into an engaging, structured journey
-              of self-discovery and meaningful achievement.
+      {/* 1. Hero Section - Dark, High-Impact, App-Focused (ZuAI Style) */}
+      <section className="bg-indigo-950 text-white">
+        <div className="container mx-auto px-4 pt-32 pb-24 md:pt-48 md:pb-36 text-center">
+          <div className="max-w-6xl mx-auto space-y-12">
+            {/* Subtle tag line, professional and modern pill shape */}
+            <p className="text-sm font-semibold text-pink-400 uppercase tracking-widest bg-white/10 py-1 px-4 inline-block rounded-full border border-pink-400/30">
+              Pathway to College Distinction
             </p>
-          </div>
 
-          {/* CTA Buttons - Large, centered, and visually strong */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            {isSignedIn ? (
-              <>
-                <Link href="/dashboard">
-                  <Button size="lg" className="text-lg px-12 py-7 bg-indigo-600 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/40 font-semibold">
-                    Go to Dashboard &rarr;
-                  </Button>
-                </Link>
-                <Link href="/projects">
-                  <Button size="lg" variant="outline" className="text-lg px-12 py-7 border-2 border-gray-300 text-gray-700 hover:bg-gray-100 transition-all">
-                    My Projects
-                  </Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/sign-up">
-                  <Button size="lg" className="text-lg px-12 py-7 bg-indigo-600 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/40 font-semibold">
-                    Start Your Journey Free
-                  </Button>
-                </Link>
-                <Button size="lg" variant="outline" className="text-lg px-12 py-7 border-2 border-gray-300 text-gray-700 hover:bg-gray-100 transition-all">
-                  Watch Demo (2 min)
-                </Button>
-              </>
-            )}
-          </div>
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tighter">
+                From Confusion to Confidence.
+                <br />
+                {/* Vibrant, modern gradient for the core value */}
+                <span className="bg-gradient-to-r from-pink-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                  Powered by Your AI Study Buddy.
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-indigo-200 max-w-3xl mx-auto font-light">
+                Meet **ZuAI**, the AI-powered companion that transforms college prep into a simple,
+                structured, and stress-free journey of self-discovery.
+              </p>
+            </div>
 
-          {/* Image with a more subtle, high-end design (thicker border for depth) */}
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-indigo-200/50 border-8 border-gray-100/50 mt-16 aspect-[16/9] md:aspect-[2/1]">
-            <Image
-              src="/hero.jpg"
-              alt="Diverse students collaborating on creative projects"
-              layout="fill"
-              objectFit="cover"
-              className="w-full h-full"
-              priority
-            />
+            {/* CTA Buttons - Large, centered, and visually strong */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              {isSignedIn ? (
+                <>
+                  <Link href="/dashboard">
+                    <Button size="lg" className="text-lg px-12 py-7 bg-purple-600 hover:bg-purple-700 transition-all shadow-xl shadow-purple-500/40 font-semibold">
+                      Go to Dashboard &rarr;
+                    </Button>
+                  </Link>
+                  <Link href="/projects">
+                    <Button size="lg" variant="outline" className="text-lg px-12 py-7 border-2 border-white/50 text-white hover:bg-white/10 transition-all">
+                      My Projects
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/sign-up">
+                    <Button size="lg" className="text-lg px-12 py-7 bg-purple-600 hover:bg-purple-700 transition-all shadow-xl shadow-purple-500/40 font-semibold">
+                      Start Your Journey Free
+                    </Button>
+                  </Link>
+                  <Button size="lg" variant="outline" className="text-lg px-12 py-7 border-2 border-white/50 text-white hover:bg-white/10 transition-all">
+                    Watch Demo (2 min)
+                  </Button>
+                </>
+              )}
+            </div>
+
+            {/* Replaced wide image with a centered mobile app mock-up */}
+            <div className="relative w-full max-w-sm mx-auto mt-16 shadow-2xl shadow-purple-500/40">
+              {/* NOTE: You must replace this with an actual image of your app screen inside a phone frame */}
+              <Image
+                src="/zuai-mobile.png" 
+                alt="Mobile app showing personalized learning modules"
+                width={384}
+                height={768}
+                layout="responsive"
+                objectFit="contain"
+                className="w-full h-full"
+                priority
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      // 2. Trust Indicators - Prominent Logos & AI Introduction
-<section className="bg-white py-16 border-t border-b border-gray-100">
-  <div className="container mx-auto px-4 max-w-6xl">
+      {/* 2. Trust Indicators - Prominent Logos & AI Introduction (ZuAI Style) */}
+      <section className="bg-white py-16 border-t border-b border-gray-100">
+        <div className="container mx-auto px-4 max-w-6xl">
 
-    {/* University/Institution Logos Section */}
-    <div className="pt-4 pb-12 text-center">
-      <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-10">
-        Built with minds from leading institutions
-      </p>
-      {/* Placeholder Logos (replace with actual image components) */}
-      <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 opacity-60">
-        {/* Placeholder University Logo 1 */}
-        <div className="text-3xl font-extrabold text-gray-400">Stanford</div>
-        {/* Placeholder University Logo 2 */}
-        <div className="text-3xl font-extrabold text-gray-400">MIT</div>
-        {/* Placeholder University Logo 3 */}
-        <div className="text-3xl font-extrabold text-gray-400">Caltech</div>
-        {/* Placeholder University Logo 4 */}
-        <div className="text-3xl font-extrabold text-gray-400">Northwestern</div>
-        {/* Placeholder University Logo 5 */}
-        <div className="text-3xl font-extrabold text-gray-400">Princeton</div>
-      </div>
-    </div>
+          {/* University/Institution Logos Section */}
+          <div className="pt-4 pb-12 text-center">
+            <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-10">
+              Built with minds from leading institutions
+            </p>
+            {/* Placeholder Logos (replace with actual image components) */}
+            <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 opacity-60">
+              <div className="text-3xl font-extrabold text-gray-400">Stanford</div>
+              <div className="text-3xl font-extrabold text-gray-400">MIT</div>
+              <div className="text-3xl font-extrabold text-gray-400">Caltech</div>
+              <div className="text-3xl font-extrabold text-gray-400">Northwestern</div>
+              <div className="text-3xl font-extrabold text-gray-400">Princeton</div>
+            </div>
+          </div>
 
-    {/* New AI/App CTA Bridge */}
-    <div className="mt-12 pt-8 border-t border-gray-200 text-center space-y-6 max-w-3xl mx-auto">
-        <h2 className="text-3xl font-extrabold text-gray-900">
-          Meet **ZuAI**, The Only Study Companion You'll Ever Need.
-        </h2>
-        <p className="text-xl text-gray-600">
-          Transform the way you prepare for college. No more scattered notes or messy schedules.
-        </p>
+          {/* New AI/App CTA Bridge */}
+          <div className="mt-12 pt-8 border-t border-gray-200 text-center space-y-6 max-w-3xl mx-auto">
+              <h2 className="text-3xl font-extrabold text-gray-900">
+                Meet **ZuAI**, The Only Study Companion You'll Ever Need.
+              </h2>
+              <p className="text-xl text-gray-600">
+                Transform the way you prepare for college. No more scattered notes or messy schedules.
+              </p>
 
-        {/* Dual CTA Button Group (ZuAI style) */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Link href="/sign-up">
-                <Button size="lg" className="text-lg px-12 py-7 bg-purple-600 hover:bg-purple-700 transition-all shadow-xl shadow-purple-500/40 font-semibold">
-                    Start Building Your Portfolio
-                </Button>
-            </Link>
-            <Button size="lg" variant="outline" className="text-lg px-12 py-7 border-2 border-gray-300 text-gray-700 hover:bg-gray-100 transition-all">
-                Download Free Guide
-            </Button>
+              {/* Dual CTA Button Group (ZuAI style) */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+                  <Link href="/sign-up">
+                      <Button size="lg" className="text-lg px-12 py-7 bg-purple-600 hover:bg-purple-700 transition-all shadow-xl shadow-purple-500/40 font-semibold">
+                          Start Building Your Portfolio
+                      </Button>
+                  </Link>
+                  <Button size="lg" variant="outline" className="text-lg px-12 py-7 border-2 border-gray-300 text-gray-700 hover:bg-gray-100 transition-all">
+                      Download Free Guide
+                  </Button>
+              </div>
+          </div>
         </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-      // 3. Features Section - Vibrant, Soft-Edged Cards
-<section className="container mx-auto px-4 py-24">
-  <div className="text-center max-w-4xl mx-auto mb-16">
-    <p className="text-lg font-bold text-purple-600 uppercase tracking-widest mb-3">
-      The AI-Powered Path
-    </p>
-    <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
-      A Structured Journey, Smartly Guided
-    </h2>
-  </div>
+      {/* 3. Features Section - Vibrant, Soft-Edged Cards (ZuAI Style) */}
+      <section className="container mx-auto px-4 py-24">
+        <div className="text-center max-w-4xl mx-auto mb-16">
+          <p className="text-lg font-bold text-purple-600 uppercase tracking-widest mb-3">
+            The AI-Powered Path
+          </p>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
+            A Structured Journey, Smartly Guided
+          </h2>
+        </div>
 
-  <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-    {/* Feature Card 1 */}
-    <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
-      {/* Updated Badge Style */}
-      <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">1</div>
-      <h3 className="text-xl font-bold mb-3 text-gray-900">6 Modules of Self-Discovery</h3>
-      <p className="text-gray-600">
-        Discover your strengths, values, and personality through proven assessments
-        and interactive activities.
-      </p>
-    </div>
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {/* Feature Card 1 (with step number box) */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
+            {/* Updated Badge Style */}
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">1</div>
+            <h3 className="text-xl font-bold mb-3 text-gray-900">6 Modules of Self-Discovery</h3>
+            <p className="text-gray-600">
+              Discover your strengths, values, and personality through proven assessments
+              and interactive activities.
+            </p>
+          </div>
 
-    {/* Feature Card 2 */}
-    <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
-      {/* Updated Badge Style */}
-      <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">2</div>
-      <h3 className="text-xl font-bold mb-3 text-gray-900">3 Core Career Assessments</h3>
-      <p className="text-gray-600">
-        Take RIASEC, DISC, and TypeFinder assessments to understand your ideal
-        career paths and work styles.
-      </p>
-    </div>
+          {/* Feature Card 2 */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
+            {/* Updated Badge Style */}
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">2</div>
+            <h3 className="text-xl font-bold mb-3 text-gray-900">3 Core Career Assessments</h3>
+            <p className="text-gray-600">
+              Take RIASEC, DISC, and TypeFinder assessments to understand your ideal
+              career paths and work styles.
+            </p>
+          </div>
 
-    {/* Feature Card 3 */}
-    <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
-      {/* Updated Badge Style */}
-      <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">3</div>
-      <h3 className="text-xl font-bold mb-3 text-gray-900">Build Your Signature Project</h3>
-      <p className="text-gray-600">
-        Create a meaningful passion project that showcases your unique interests
-        and stands out in college applications.
-      </p>
-    </div>
-  </div>
-</section>
+          {/* Feature Card 3 */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-300/50 transition-all duration-500 border border-gray-100 group">
+            {/* Updated Badge Style */}
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-6 text-2xl font-bold">3</div>
+            <h3 className="text-xl font-bold mb-3 text-gray-900">Build Your Signature Project</h3>
+            <p className="text-gray-600">
+              Create a meaningful passion project that showcases your unique interests
+              and stands out in college applications.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      {/* 4. What You'll Achieve Section - Dark, high-contrast block for Outcomes */}
-      <section className="bg-indigo-900/95 py-24 text-white">
+      {/* 4. What You'll Achieve Section - Dark, high-contrast block for Outcomes (ZuAI Style) */}
+      <section className="bg-indigo-950 py-24 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-16 text-white">
-              Your Transformational Outcomes
+              Your AI-Guided Outcomes
             </h2>
 
             <div className="grid md:grid-cols-2 gap-x-12 gap-y-10">
@@ -212,11 +212,12 @@ export default async function Home() {
                   description: "Clear roadmap from high school to career with specific steps and milestones"
                 }
               ].map((item, idx) => (
-                <div key={idx} className="flex gap-4 items-start border-l-4 border-indigo-400 pl-4 transition-all hover:border-indigo-200 p-2 rounded-lg">
-                  <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+                // Simplified list item with vibrant checkmark
+                <div key={idx} className="flex gap-4 items-start">
+                  <CheckCircle2 className="w-6 h-6 text-lime-300 flex-shrink-0 mt-1" /> 
                   <div>
                     <h3 className="font-bold text-xl mb-1 text-white">{item.title}</h3>
-                    <p className="text-indigo-200">{item.description}</p>
+                    <p className="text-indigo-200 font-light">{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -225,7 +226,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 5. Testimonial Section - Standalone, premium block with subtle decoration */}
+      {/* 5. Testimonial Section - Standalone, premium block (Unchanged from original structure as it's a strong element) */}
       <section className="container mx-auto px-4 py-24">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-3xl p-10 md:p-16 shadow-2xl shadow-purple-200/50 border border-purple-100 relative overflow-hidden">
@@ -246,8 +247,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 6. Final CTA Section - Big, Unmissable Banner (full width color) */}
-      <section className="bg-indigo-600 py-24">
+      {/* 6. Final CTA Section - High-Contrast Banner with Focused CTA (ZuAI Style) */}
+      <section className="bg-gradient-to-br from-indigo-700 to-purple-800 py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-8 text-white">
             {isSignedIn ? (
@@ -282,7 +283,8 @@ export default async function Home() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
                   <Link href="/sign-up">
-                    <Button size="lg" className="text-lg px-10 py-7 bg-white text-indigo-600 hover:bg-gray-100 transition-all shadow-xl font-semibold">
+                    {/* High-contrast, vibrant button */}
+                    <Button size="lg" className="text-lg px-10 py-7 bg-yellow-300 text-indigo-900 hover:bg-yellow-400 transition-all shadow-xl shadow-yellow-500/40 font-bold">
                       Start Your Journey Free
                     </Button>
                   </Link>
@@ -296,7 +298,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 7. Footer - Minimalist and Clean */}
+      {/* 7. Footer - Minimalist and Clean (Unchanged) */}
       <footer className="border-t border-gray-100 bg-gray-50">
         <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-4 gap-8">
