@@ -115,7 +115,7 @@ export function ModuleHeader({ module, progress, nextActivity }: ModuleHeaderPro
             </video>
           </div>
           <p className="text-sm text-gray-600 mt-3">
-            Watch this quick intro to understand what you'll discover in this module.
+            Watch this quick intro to understand what you&aposll discover in this module.
           </p>
         </Card>
       )}
