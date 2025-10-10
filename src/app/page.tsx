@@ -283,7 +283,7 @@ export default async function Home() {
             <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-200 rounded-full blur-3xl opacity-30"></div>
             
             <div className="relative">
-              <div className="text-7xl mb-6 text-center text-purple-600 font-serif leading-none">"</div>
+              <div className="text-7xl mb-6 text-center text-purple-600 font-serif leading-none"> </div>
               <blockquote className="text-xl md:text-2xl text-gray-800 font-medium italic text-center mb-8 leading-relaxed">
                 This platform helped me find my passion for UX design and build a portfolio
                 that got me into my dream school. I finally understood what makes me unique
