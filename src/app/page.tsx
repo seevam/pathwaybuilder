@@ -193,7 +193,7 @@ export default async function Home() {
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
               Your journey in 3 simple steps
             </h2>
-            <p className="text-xl text-gray-600">It's free, fun, and actually works</p>
+            <p className="text-xl text-gray-600">It&aposs free, fun, and actually works</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -278,7 +278,7 @@ export default async function Home() {
               ))}
             </div>
             <blockquote className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-8 leading-relaxed">
-              "This platform helped me discover my passion for UX design. I built an amazing portfolio and got into my dream school!"
+              &quotThis platform helped me discover my passion for UX design. I built an amazing portfolio and got into my dream school!&quot
             </blockquote>
             <div className="flex items-center justify-center gap-4">
               <div className="h-16 w-16 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600" />
