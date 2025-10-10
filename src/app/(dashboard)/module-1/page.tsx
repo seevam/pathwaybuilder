@@ -30,7 +30,7 @@ export default async function Module1Page() {
     },
   })
 
-  if (!module) {
+  if (!moduleData) {
     return <div>Module not found</div>
   }
 
@@ -41,7 +41,7 @@ export default async function Module1Page() {
   const completions = await db.activityCompletion.findMany({
     where: {
       userId: user.id,
-      activityId: { in: moduleDataactivities.map(a => a.id) },
+      activityId: { in: moduleData.activities.map(a => a.id) },
     },
   })
 
