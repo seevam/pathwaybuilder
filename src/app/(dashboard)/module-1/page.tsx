@@ -1,90 +1,92 @@
+// src/app/(dashboard)/module-1/page.tsx
 import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation';
-import { db } from '@/lib/db';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { CheckCircle2, Circle } from 'lucide-react';
+import { redirect } from 'next/navigation'
+import { db } from '@/lib/db'
+import { ModuleService } from '@/lib/services/module-service'
+import { ModuleHeader } from '@/components/modules/ModuleHeader'
+import { ActivityList } from '@/components/modules/ActivityList'
+import { ModuleDeliverable } from '@/components/modules/ModuleDeliverable'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 export default async function Module1Page() {
-  const { userId } = await auth();
-  if (!userId) redirect('/sign-in');
+  const { userId } = await auth()
+  if (!userId) redirect('/sign-in')
 
   const user = await db.user.findUnique({
     where: { clerkId: userId },
+  })
+
+  if (!user) redirect('/sign-in')
+
+  // Get module with activities
+  const module = await db.module.findFirst({
+    where: { orderIndex: 1 },
     include: {
       activities: {
-        include: {
-          activity: true,
-        },
+        orderBy: { orderIndex: 'asc' },
       },
     },
-  });
+  })
 
-  if (!user) redirect('/sign-in');
+  if (!module) {
+    return <div>Module not found</div>
+  }
 
-  const activities = await db.activity.findMany({
-    orderBy: { orderIndex: 'asc' },
-  });
+  // Get user's progress for this module
+  const progress = await ModuleService.getModuleProgress(user.id, module.id)
 
-  const completedActivityIds = new Set(
-    user.activities.filter(a => a.completed).map(a => a.activityId)
-  );
+  // Get activity completions
+  const completions = await db.activityCompletion.findMany({
+    where: {
+      userId: user.id,
+      activityId: { in: module.activities.map(a => a.id) },
+    },
+  })
+
+  const completionMap = new Map(
+    completions.map(c => [c.activityId, c.completed])
+  )
+
+  // Get next activity
+  const nextActivity = await ModuleService.getNextActivity(user.id, module.id)
+
+  // Check if deliverable is unlocked (all activities complete)
+  const deliverableUnlocked = progress === 100
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <div className="mb-8">
+    <div className="container mx-auto p-6 max-w-5xl">
+      {/* Back Navigation */}
+      <div className="mb-6">
         <Link href="/dashboard">
-          <Button variant="ghost" size="sm">← Back to Dashboard</Button>
+          <Button variant="ghost" size="sm" className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
         </Link>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Module 1: Know Yourself 🎯</h1>
-        <p className="text-muted-foreground">
-          Discover your strengths, values, and personality
-        </p>
-      </div>
+      {/* Module Header */}
+      <ModuleHeader
+        module={module}
+        progress={progress}
+        nextActivity={nextActivity}
+      />
 
-      <div className="space-y-4">
-        {activities.map((activity) => {
-          const isCompleted = completedActivityIds.has(activity.id);
-          
-          return (
-            <Link
-              key={activity.id}
-              href={`/module-1/${activity.slug}`}
-              className="block"
-            >
-              <div className="border rounded-lg p-6 hover:shadow-md transition-all">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 mt-1">
-                    {isCompleted ? (
-                      <CheckCircle2 className="w-6 h-6 text-green-500" />
-                    ) : (
-                      <Circle className="w-6 h-6 text-muted-foreground" />
-                    )}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-1">
-                      {activity.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-2">
-                      {activity.description}
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>⏱ {activity.estimatedMinutes} minutes</span>
-                      {isCompleted && (
-                        <span className="text-green-600 font-medium">✓ Completed</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+      {/* Activity List */}
+      <ActivityList
+        activities={module.activities}
+        completionMap={completionMap}
+        moduleSlug="module-1"
+      />
+
+      {/* Module Deliverable */}
+      <ModuleDeliverable
+        moduleId={module.id}
+        unlocked={deliverableUnlocked}
+        progress={progress}
+      />
     </div>
-  );
+  )
 }
