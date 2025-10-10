@@ -82,46 +82,53 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 2. Trust Indicators - Moved up and simplified, often seen immediately after the Hero for credibility */}
-      <section className="bg-gray-50 py-16 border-t border-b border-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto items-center">
-            {/* Trust Headline to the left */}
-            <div className="md:col-span-1 text-center md:text-left">
-              <p className="text-sm font-bold text-indigo-600 uppercase tracking-widest mb-2">
-                Proven Results
-              </p>
-              <h2 className="text-2xl font-extrabold text-gray-900">
-                Trusted by Top Institutions
-              </h2>
-            </div>
-            
-            {/* Metrics */}
-            <div className="text-center">
-              <div className="text-5xl font-extrabold text-indigo-600 mb-1">10k+</div>
-              <div className="text-gray-600 font-medium">Active Students</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-extrabold text-indigo-600 mb-1">50+</div>
-              <div className="text-gray-600 font-medium">Partner Schools</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-extrabold text-indigo-600 mb-1">4.8/5</div>
-              <div className="text-gray-600 font-medium">Average Rating</div>
-            </div>
-          </div>
-          
-          {/* Logos Section */}
-          <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-            <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 opacity-60">
-              <div className="text-3xl font-extrabold text-gray-400">TechCrunch</div>
-              <div className="text-3xl font-extrabold text-gray-400">EdSurge</div>
-              <div className="text-3xl font-extrabold text-gray-400">Forbes</div>
-              <div className="text-3xl font-extrabold text-gray-400">The Chronicle</div>
-            </div>
-          </div>
+      // 2. Trust Indicators - Prominent Logos & AI Introduction
+<section className="bg-white py-16 border-t border-b border-gray-100">
+  <div className="container mx-auto px-4 max-w-6xl">
+
+    {/* University/Institution Logos Section */}
+    <div className="pt-4 pb-12 text-center">
+      <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-10">
+        Built with minds from leading institutions
+      </p>
+      {/* Placeholder Logos (replace with actual image components) */}
+      <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 opacity-60">
+        {/* Placeholder University Logo 1 */}
+        <div className="text-3xl font-extrabold text-gray-400">Stanford</div>
+        {/* Placeholder University Logo 2 */}
+        <div className="text-3xl font-extrabold text-gray-400">MIT</div>
+        {/* Placeholder University Logo 3 */}
+        <div className="text-3xl font-extrabold text-gray-400">Caltech</div>
+        {/* Placeholder University Logo 4 */}
+        <div className="text-3xl font-extrabold text-gray-400">Northwestern</div>
+        {/* Placeholder University Logo 5 */}
+        <div className="text-3xl font-extrabold text-gray-400">Princeton</div>
+      </div>
+    </div>
+
+    {/* New AI/App CTA Bridge */}
+    <div className="mt-12 pt-8 border-t border-gray-200 text-center space-y-6 max-w-3xl mx-auto">
+        <h2 className="text-3xl font-extrabold text-gray-900">
+          Meet **ZuAI**, The Only Study Companion You'll Ever Need.
+        </h2>
+        <p className="text-xl text-gray-600">
+          Transform the way you prepare for college. No more scattered notes or messy schedules.
+        </p>
+
+        {/* Dual CTA Button Group (ZuAI style) */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+            <Link href="/sign-up">
+                <Button size="lg" className="text-lg px-12 py-7 bg-purple-600 hover:bg-purple-700 transition-all shadow-xl shadow-purple-500/40 font-semibold">
+                    Start Building Your Portfolio
+                </Button>
+            </Link>
+            <Button size="lg" variant="outline" className="text-lg px-12 py-7 border-2 border-gray-300 text-gray-700 hover:bg-gray-100 transition-all">
+                Download Free Guide
+            </Button>
         </div>
-      </section>
+    </div>
+  </div>
+</section>
 
       {/* 3. Features Section - "How It Works" with numbered steps and strong shadows */}
       <section className="container mx-auto px-4 py-24">
