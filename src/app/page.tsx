@@ -16,7 +16,7 @@ export default async function Home() {
       {/* Header with conditional rendering */}
       <LandingHeader isSignedIn={isSignedIn} />
 
-      {/* 1. Hero Section - Dark, High-Impact, App-Focused (ZuAI Style) */}
+      {/* 1. Hero Section - Dark, High-Impact, App-Focused (Pathway Builder Style) */}
       <section className="bg-indigo-950 text-white">
         <div className="container mx-auto px-4 pt-32 pb-24 md:pt-48 md:pb-36 text-center">
           <div className="max-w-6xl mx-auto space-y-12">
@@ -35,7 +35,7 @@ export default async function Home() {
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-indigo-200 max-w-3xl mx-auto font-light">
-                Meet **ZuAI**, the AI-powered companion that transforms college prep into a simple,
+                Meet **Pathway Builder**, the AI-powered companion that transforms college prep into a simple,
                 structured, and stress-free journey of self-discovery.
               </p>
             </div>
@@ -73,7 +73,7 @@ export default async function Home() {
             <div className="relative w-full max-w-sm mx-auto mt-16 shadow-2xl shadow-purple-500/40">
               {/* NOTE: You must replace this with an actual image of your app screen inside a phone frame */}
               <Image
-                src="/zuai-mobile.png" 
+                src="/Pathway Builder-mobile.png" 
                 alt="Mobile app showing personalized learning modules"
                 width={384}
                 height={768}
@@ -87,7 +87,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 2. Trust Indicators - Prominent Logos & AI Introduction (ZuAI Style) */}
+      {/* 2. Trust Indicators - Prominent Logos & AI Introduction (Pathway Builder Style) */}
       <section className="bg-white py-16 border-t border-b border-gray-100">
         <div className="container mx-auto px-4 max-w-6xl">
 
@@ -109,13 +109,13 @@ export default async function Home() {
           {/* New AI/App CTA Bridge */}
           <div className="mt-12 pt-8 border-t border-gray-200 text-center space-y-6 max-w-3xl mx-auto">
               <h2 className="text-3xl font-extrabold text-gray-900">
-                Meet **ZuAI**, The Only Study Companion You'll Ever Need.
+                Meet **Pathway Builder**, The Only Study Companion You will Ever Need.
               </h2>
               <p className="text-xl text-gray-600">
                 Transform the way you prepare for college. No more scattered notes or messy schedules.
               </p>
 
-              {/* Dual CTA Button Group (ZuAI style) */}
+              {/* Dual CTA Button Group (Pathway Builder style) */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                   <Link href="/sign-up">
                       <Button size="lg" className="text-lg px-12 py-7 bg-purple-600 hover:bg-purple-700 transition-all shadow-xl shadow-purple-500/40 font-semibold">
@@ -130,7 +130,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 3. Features Section - Vibrant, Soft-Edged Cards (ZuAI Style) */}
+      {/* 3. Features Section - Vibrant, Soft-Edged Cards (Pathway Builder Style) */}
       <section className="container mx-auto px-4 py-24">
         <div className="text-center max-w-4xl mx-auto mb-16">
           <p className="text-lg font-bold text-purple-600 uppercase tracking-widest mb-3">
@@ -177,7 +177,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 4. What You'll Achieve Section - Dark, high-contrast block for Outcomes (ZuAI Style) */}
+      {/* 4. What You'll Achieve Section - Dark, high-contrast block for Outcomes (Pathway Builder Style) */}
       <section className="bg-indigo-950 py-24 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
@@ -247,7 +247,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 6. Final CTA Section - High-Contrast Banner with Focused CTA (ZuAI Style) */}
+      {/* 6. Final CTA Section - High-Contrast Banner with Focused CTA (Pathway Builder Style) */}
       <section className="bg-gradient-to-br from-indigo-700 to-purple-800 py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-8 text-white">
