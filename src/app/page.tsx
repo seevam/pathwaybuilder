@@ -5,6 +5,7 @@ import { CheckCircle2, Star, Zap, Trophy, Users, TrendingUp, Sparkles, Target, A
 import Image from 'next/image';
 import { auth } from '@clerk/nextjs/server';
 import Orb from '@/components/Orb';
+import GlassmorphicHeader from '@/components/GlassmorphicHeader';
 
 export default async function Home() {
   const { userId } = await auth();
@@ -12,8 +13,11 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Glassmorphic Header */}
+      <GlassmorphicHeader isSignedIn={isSignedIn} />
+
       {/* Hero Section - Duolingo Style */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-indigo-50 to-white">
+      <section className="relative overflow-hidden bg-gradient-to-b from-indigo-50 to-white pt-28">
         {/* Subtle Orb Background */}
         <div className="absolute inset-0 opacity-20 z-0">
           <Orb
@@ -23,42 +27,6 @@ export default async function Home() {
             forceHoverState={false}
           />
         </div>
-
-        {/* Header */}
-        <header className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-2xl font-bold text-gray-900">Pathway</span>
-              </div>
-              <div className="flex items-center gap-3">
-                {isSignedIn ? (
-                  <Link href="/dashboard">
-                    <Button className="rounded-2xl bg-indigo-600 hover:bg-indigo-700 font-bold">
-                      Go to Dashboard
-                    </Button>
-                  </Link>
-                ) : (
-                  <>
-                    <Link href="/sign-in">
-                      <Button variant="ghost" className="rounded-2xl font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50">
-                        SIGN IN
-                      </Button>
-                    </Link>
-                    <Link href="/sign-up">
-                      <Button className="rounded-2xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 font-bold shadow-lg">
-                        GET STARTED
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </header>
 
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-4 py-16 lg:py-24">
@@ -92,7 +60,7 @@ export default async function Home() {
                     GET STARTED
                   </Button>
                 </Link>
-                <Link href="/sign-up" className="w-full sm:w-auto">
+                <Link href="/sign-in" className="w-full sm:w-auto">
                   <Button 
                     size="lg" 
                     variant="outline"
@@ -193,7 +161,7 @@ export default async function Home() {
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
               Your journey in 3 simple steps
             </h2>
-            <p className="text-xl text-gray-600">It&aposs free, fun, and actually works</p>
+            <p className="text-xl text-gray-600">It's free, fun, and actually works</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -278,7 +246,7 @@ export default async function Home() {
               ))}
             </div>
             <blockquote className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-8 leading-relaxed">
-              &quotThis platform helped me discover my passion for UX design. I built an amazing portfolio and got into my dream school!&quot
+              "This platform helped me discover my passion for UX design. I built an amazing portfolio and got into my dream school!"
             </blockquote>
             <div className="flex items-center justify-center gap-4">
               <div className="h-16 w-16 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600" />
