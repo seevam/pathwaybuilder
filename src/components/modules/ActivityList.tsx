@@ -60,6 +60,7 @@ function ActivityCard({ activity, isCompleted, isLocked, moduleSlug }: ActivityC
     READING: 'text-orange-600 bg-orange-50',
     QUIZ: 'text-pink-600 bg-pink-50',
     ASSESSMENT: 'text-indigo-600 bg-indigo-50',
+    UPLOAD: "text-pink-600 bg-pink-50",
   }
 
   const typeColor = activityTypeColors[activity.type] || 'text-gray-600 bg-gray-50'
