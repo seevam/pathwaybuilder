@@ -82,7 +82,7 @@ export default async function Home() {
             <Image 
               src="/hero.jpg" 
               alt="Diverse students collaborating on creative projects"
-              width={1200}
+              width={1100}
               height={675}
               className="w-full h-full object-cover"
               priority
