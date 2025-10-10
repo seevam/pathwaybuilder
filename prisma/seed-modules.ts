@@ -8,10 +8,9 @@ async function seedModules() {
 
   // Module 1: Know Yourself
   const module1 = await prisma.module.upsert({
-    where: { id: 'mod_1' },
+    where: { orderIndex: 1 },
     update: {},
     create: {
-      id: 'mod_1',
       orderIndex: 1,
       title: 'Know Yourself',
       description: 'Discover your strengths, values, and personality',
@@ -32,6 +31,7 @@ async function seedModules() {
       orderIndex: 1,
       type: ActivityType.INTERACTIVE,
       estimatedMinutes: 10,
+      moduleId: module1.id,
       content: {
         prompts: [
           { id: 1, question: 'Pick 3 words that describe you', type: 'word_select', options: ['Creative', 'Analytical', 'Social', 'Independent', 'Leader', 'Helper', 'Thinker', 'Doer'] },
@@ -47,12 +47,12 @@ async function seedModules() {
       orderIndex: 2,
       type: ActivityType.INTERACTIVE,
       estimatedMinutes: 15,
+      moduleId: module1.id,
       content: {
         values: [
           { id: 'creativity', label: 'Creativity', icon: '🎨', description: 'Original thinking and artistic expression' },
           { id: 'impact', label: 'Making an Impact', icon: '🌍', description: 'Positive change in the world' },
           { id: 'innovation', label: 'Innovation', icon: '💡', description: 'Developing new ideas and solutions' },
-          // ... rest of values from PRD
         ]
       },
     },
@@ -63,12 +63,12 @@ async function seedModules() {
       orderIndex: 3,
       type: ActivityType.INTERACTIVE,
       estimatedMinutes: 10,
+      moduleId: module1.id,
       content: {
         categories: ['Academic', 'Creative', 'Social', 'Physical/Technical'],
         strengths: [
           { id: 1, name: 'Math', category: 'Academic' },
           { id: 2, name: 'Writing', category: 'Academic' },
-          // ... rest of strengths
         ]
       },
     },
@@ -79,6 +79,7 @@ async function seedModules() {
       orderIndex: 4,
       type: ActivityType.REFLECTION,
       estimatedMinutes: 15,
+      moduleId: module1.id,
       content: {
         prompts: [
           'What patterns emerged across your assessments?',
@@ -94,14 +95,10 @@ async function seedModules() {
     await prisma.activity.upsert({
       where: { slug: activity.slug },
       update: {},
-      create: {
-        ...activity,
-        moduleId: module1.id,
-      },
+      create: activity,
     });
   }
 
-  // Repeat for other modules...
   console.log('✅ Modules seeded successfully!');
 }
 
