@@ -75,7 +75,7 @@ const moduleData = await db.moduleData.findFirst({
   },
 })
 
-if (!moduleData.) notFound()
+if (!moduleData) notFound()
 
   // Get progress and completions (same as before)
   const progress = await ModuleService.getModuleProgress(user.id, moduleData.id)
