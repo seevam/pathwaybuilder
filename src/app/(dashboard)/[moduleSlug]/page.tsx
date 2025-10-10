@@ -105,7 +105,7 @@ if (!moduleData) notFound()
       </div>
 
       <ModuleHeader
-        module={module}
+        module={moduleData}
         progress={progress}
         nextActivity={nextActivity}
       />
