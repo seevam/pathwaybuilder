@@ -9,6 +9,9 @@ import { ModuleDeliverable } from '@/components/modules/ModuleDeliverable'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+// src/app/(dashboard)/[moduleSlug]/page.tsx
+import { Card } from '@/components/ui/card'
+import { Lock } from 'lucide-react'
 
 interface ModulePageProps {
   params: {
