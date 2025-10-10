@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, Star, Zap, Trophy, Users, TrendingUp, Sparkles, Target, Award, Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useClerk } from '@clerk/nextjs';
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { userId } = useAuth();
+  const { signOut } = useClerk();
   const isSignedIn = !!userId;
 
   useEffect(() => {
@@ -72,6 +73,14 @@ export default function Home() {
                       Projects
                     </Button>
                   </Link>
+                  <div className="w-px h-6 bg-gray-300 mx-2" />
+                  <Button 
+                    onClick={() => signOut()}
+                    variant="ghost"
+                    className="rounded-full text-sm font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Sign Out
+                  </Button>
                 </>
               ) : (
                 <>
@@ -141,6 +150,14 @@ export default function Home() {
                       Projects
                     </Button>
                   </Link>
+                  <div className="h-px bg-gray-300 my-2" />
+                  <Button 
+                    onClick={() => signOut()}
+                    variant="ghost"
+                    className="w-full justify-start rounded-2xl text-sm font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Sign Out
+                  </Button>
                 </>
               ) : (
                 <>
