@@ -66,7 +66,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
   }
 
   // Get module with activities
-const moduleData = await db.moduleDatafindFirst({
+const moduleData = await db.module.findFirst({
   where: { orderIndex },
   include: {
     activities: {
