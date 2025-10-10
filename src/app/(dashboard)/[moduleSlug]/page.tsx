@@ -78,11 +78,11 @@ const moduleData = await db.moduleData.findFirst({
 if (!moduleData.) notFound()
 
   // Get progress and completions (same as before)
-  const progress = await ModuleService.getModuleProgress(user.id, moduleData..id)
+  const progress = await ModuleService.getModuleProgress(user.id, moduleData.id)
   const completions = await db.activityCompletion.findMany({
     where: {
       userId: user.id,
-      activityId: { in: moduleData..activities.map(a => a.id) },
+      activityId: { in: moduleData.activities.map(a => a.id) },
     },
   })
 
