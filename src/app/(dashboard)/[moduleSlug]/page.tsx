@@ -55,7 +55,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
             Module Locked
           </h1>
           <p className="text-gray-600 mb-6">
-            Complete Module {orderIndex - 1} to unlock this moduleData
+            Complete Module {orderIndex - 1} to unlock this module.
           </p>
           <Link href="/dashboard">
             <Button>Back to Dashboard</Button>
@@ -66,7 +66,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
   }
 
   // Get module with activities
-const moduleData = await db.module.findFirst({
+const moduleData = await db.moduleData.findFirst({
   where: { orderIndex },
   include: {
     activities: {
@@ -75,14 +75,14 @@ const moduleData = await db.module.findFirst({
   },
 })
 
-if (!moduleData) notFound()
+if (!moduleData.) notFound()
 
   // Get progress and completions (same as before)
-  const progress = await ModuleService.getModuleProgress(user.id, moduleData.id)
+  const progress = await ModuleService.getModuleProgress(user.id, moduleData..id)
   const completions = await db.activityCompletion.findMany({
     where: {
       userId: user.id,
-      activityId: { in: moduleData.activities.map(a => a.id) },
+      activityId: { in: moduleData..activities.map(a => a.id) },
     },
   })
 
@@ -90,7 +90,7 @@ if (!moduleData) notFound()
     completions.map(c => [c.activityId, c.completed])
   )
 
-  const nextActivity = await ModuleService.getNextActivity(user.id, moduleDataid)
+  const nextActivity = await ModuleService.getNextActivity(user.id, moduleData.id)
   const deliverableUnlocked = progress === 100
 
   return (
@@ -111,13 +111,13 @@ if (!moduleData) notFound()
       />
 
       <ActivityList
-        activities={moduleDataactivities}
+        activities={moduleData.activities}
         completionMap={completionMap}
         moduleSlug={params.moduleSlug}
       />
 
       <ModuleDeliverable
-        moduleId={moduleDataid}
+        moduleId={moduleData.id}
         unlocked={deliverableUnlocked}
         progress={progress}
       />
