@@ -24,6 +24,16 @@ export async function POST(
     const body = await req.json()
     const { data, timeSpent } = activityCompletionSchema.parse(body)
 
+    // Get activity from database to find module
+    const activity = await db.activity.findUnique({
+      where: { id: params.id },
+      include: { module: true }
+    })
+
+    if (!activity) {
+      return new NextResponse('Activity not found', { status: 404 })
+    }
+
     // Mark activity as complete
     const completion = await db.activityCompletion.upsert({
       where: {
@@ -48,29 +58,75 @@ export async function POST(
       },
     })
 
-    // Recalculate progress
-    const totalActivities = await db.activity.count()
+    // Recalculate module progress
+    const allActivities = await db.activity.findMany({
+      where: { 
+        moduleId: activity.moduleId,
+        requiredForCompletion: true
+      }
+    })
+
     const completedActivities = await db.activityCompletion.count({
       where: {
         userId: user.id,
+        activityId: { in: allActivities.map(a => a.id) },
         completed: true,
       },
     })
 
-    const progress = Math.round((completedActivities / totalActivities) * 100)
+    const moduleProgress = Math.round((completedActivities / allActivities.length) * 100)
 
-    await db.profile.update({
+    // Update module progress
+    await db.moduleProgress.upsert({
+      where: {
+        userId_moduleId: {
+          userId: user.id,
+          moduleId: activity.moduleId
+        }
+      },
+      update: {
+        progressPercent: moduleProgress,
+        status: moduleProgress === 100 ? 'COMPLETED' : moduleProgress > 0 ? 'IN_PROGRESS' : 'NOT_STARTED',
+        completedAt: moduleProgress === 100 ? new Date() : null,
+      },
+      create: {
+        userId: user.id,
+        moduleId: activity.moduleId,
+        progressPercent: moduleProgress,
+        status: moduleProgress > 0 ? 'IN_PROGRESS' : 'NOT_STARTED',
+        startedAt: new Date(),
+      }
+    })
+
+    // Update overall progress
+    const allModules = await db.module.count()
+    const allModuleProgress = await db.moduleProgress.findMany({
+      where: { userId: user.id }
+    })
+
+    const totalProgress = allModuleProgress.reduce(
+      (sum, mp) => sum + mp.progressPercent,
+      0
+    )
+    const overallProgress = Math.round(totalProgress / allModules)
+
+    await db.profile.upsert({
       where: { userId: user.id },
-      data: {
-        moduleOneProgress: progress,
-        overallProgress: progress,
+      update: { 
+        moduleOneProgress: activity.module.orderIndex === 1 ? moduleProgress : undefined,
+        overallProgress 
+      },
+      create: { 
+        userId: user.id, 
+        moduleOneProgress: activity.module.orderIndex === 1 ? moduleProgress : 0,
+        overallProgress 
       },
     })
 
     return NextResponse.json({
       success: true,
       completion,
-      progress,
+      progress: moduleProgress,
     })
   } catch (error) {
     console.error('[ACTIVITY_COMPLETE]', error)
