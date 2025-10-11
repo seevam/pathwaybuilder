@@ -1,3 +1,4 @@
+// src/app/(dashboard)/dashboard/page.tsx
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
@@ -47,8 +48,61 @@ export default async function DashboardPage() {
   const totalTimeSeconds = user.activities.reduce((acc, a) => acc + (a.timeSpent || 0), 0)
   const hoursInvested = Math.round(totalTimeSeconds / 3600)
 
+  // ✅ FIX: Fetch all modules with progress dynamically
+  const allModules = await db.module.findMany({
+    where: { status: 'PUBLISHED' },
+    orderBy: { orderIndex: 'asc' }
+  })
+
+  const modulesWithProgress = await Promise.all(
+    allModules.map(async (module) => {
+      // Get progress for this module
+      const progress = await db.moduleProgress.findUnique({
+        where: {
+          userId_moduleId: {
+            userId: user.id,
+            moduleId: module.id
+          }
+        }
+      })
+
+      // Check if module is unlocked
+      let isUnlocked = module.orderIndex === 1 // Module 1 always unlocked
+
+      if (module.orderIndex > 1) {
+        // Check if previous module is completed
+        const previousModule = await db.module.findFirst({
+          where: { orderIndex: module.orderIndex - 1 }
+        })
+
+        if (previousModule) {
+          const previousProgress = await db.moduleProgress.findUnique({
+            where: {
+              userId_moduleId: {
+                userId: user.id,
+                moduleId: previousModule.id
+              }
+            }
+          })
+
+          isUnlocked = previousProgress?.status === 'COMPLETED'
+        }
+      }
+
+      return {
+        ...module,
+        progress: progress?.progressPercent || 0,
+        isUnlocked
+      }
+    })
+  )
+
   // Find current/next module
-  const moduleProgress = user.profile?.moduleOneProgress || 0
+  const currentModule = modulesWithProgress.find(m => 
+    m.progress > 0 && m.progress < 100
+  ) || modulesWithProgress[0]
+
+  const moduleProgress = currentModule?.progress || 0
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -94,20 +148,20 @@ export default async function DashboardPage() {
         </div>
 
         {/* Continue Journey Section */}
-        {moduleProgress < 100 && (
+        {currentModule && moduleProgress < 100 && (
           <ContinueJourney 
-            moduleTitle="Module 1: Know Yourself"
+            moduleTitle={currentModule.title}
             progress={moduleProgress}
-            nextActivity="Values Card Sort"
+            nextActivity="Continue your activities"
             estimatedMinutes={15}
-            moduleSlug="module-1"
+            moduleSlug={`module-${currentModule.orderIndex}`}
           />
         )}
 
         {/* Quick Actions */}
         <QuickActions />
 
-        {/* Modules Grid */}
+        {/* ✅ FIXED: Modules Grid with Dynamic Unlocking */}
         <div>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Your Journey</h2>
@@ -117,70 +171,19 @@ export default async function DashboardPage() {
           </div>
           
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <ModuleCard
-              title="Module 1: Know Yourself"
-              description="Discover your strengths, values, and personality"
-              progress={user.profile?.moduleOneProgress || 0}
-              estimatedTime="2-3 weeks"
-              href="/module-1"
-              unlocked={true}
-              icon="🎯"
-            />
-            
-            <ModuleCard
-              title="Module 2: Explore Careers"
-              description="From interests to real-world opportunities"
-              progress={0}
-              estimatedTime="2-3 weeks"
-              href="/module-2"
-              unlocked={false}
-              icon="🗺️"
-              lockMessage="Complete Module 1 first"
-            />
-
-            <ModuleCard
-              title="Module 3: Work Style"
-              description="Understand how you thrive in work environments"
-              progress={0}
-              estimatedTime="1-2 weeks"
-              href="/module-3"
-              unlocked={false}
-              icon="💼"
-              lockMessage="Complete Module 2 first"
-            />
-
-            <ModuleCard
-              title="Module 4: Map Your Path"
-              description="From high school to career readiness"
-              progress={0}
-              estimatedTime="2-3 weeks"
-              href="/module-4"
-              unlocked={false}
-              icon="🧭"
-              lockMessage="Complete Module 3 first"
-            />
-
-            <ModuleCard
-              title="Module 5: Build Action Plan"
-              description="Turn vision into concrete steps"
-              progress={0}
-              estimatedTime="1-2 weeks"
-              href="/module-5"
-              unlocked={false}
-              icon="✅"
-              lockMessage="Complete Module 4 first"
-            />
-
-            <ModuleCard
-              title="Module 6: Own Your Story"
-              description="Craft your narrative and digital presence"
-              progress={0}
-              estimatedTime="1-2 weeks"
-              href="/module-6"
-              unlocked={false}
-              icon="📖"
-              lockMessage="Complete Module 5 first"
-            />
+            {modulesWithProgress.map((module) => (
+              <ModuleCard
+                key={module.id}
+                title={module.title}
+                description={module.description}
+                progress={module.progress}
+                estimatedTime={`${module.estimatedHours} hours`}
+                href={`/module-${module.orderIndex}`}
+                unlocked={module.isUnlocked}
+                icon={module.icon || '📚'}
+                lockMessage={module.isUnlocked ? undefined : `Complete Module ${module.orderIndex - 1} first`}
+              />
+            ))}
           </div>
         </div>
 
