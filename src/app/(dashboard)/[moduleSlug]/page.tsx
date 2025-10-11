@@ -27,6 +27,13 @@ const MODULE_SLUG_MAP: Record<string, number> = {
 }
 
 export default async function ModulePage({ params }: ModulePageProps) {
+  // ✅ Validate slug BEFORE calling auth
+  const orderIndex = MODULE_SLUG_MAP[params.moduleSlug]
+  if (!orderIndex) {
+    notFound() // Return 404 for invalid slugs like "favicon.ico"
+  }
+
+  // Now safe to call auth
   const clerkUser = await currentUser()
   if (!clerkUser) redirect('/sign-in')
 
@@ -35,9 +42,6 @@ export default async function ModulePage({ params }: ModulePageProps) {
   })
 
   if (!user) redirect('/sign-in')
-
-  const orderIndex = MODULE_SLUG_MAP[params.moduleSlug]
-  if (!orderIndex) notFound()
 
   const isUnlocked = await ModuleService.isModuleUnlocked(user.id, orderIndex)
   
