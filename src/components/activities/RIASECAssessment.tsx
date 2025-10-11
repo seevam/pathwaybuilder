@@ -8,8 +8,11 @@ import { Card } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
 import { Slider } from '@/components/ui/slider'
 
+// Type for RIASEC dimensions
+type RIASECDimension = 'R' | 'I' | 'A' | 'S' | 'E' | 'C'
+
 // All 60 RIASEC statements (10 per dimension)
-const RIASEC_STATEMENTS = [
+const RIASEC_STATEMENTS: Array<{ id: string; dimension: RIASECDimension; text: string }> = [
   // REALISTIC (R) - Hands-on, physical work
   { id: 'r1', dimension: 'R', text: 'Work with your hands building or repairing things' },
   { id: 'r2', dimension: 'R', text: 'Work outdoors in nature' },
@@ -145,7 +148,7 @@ const RATING_LABELS = [
 interface RIASECAssessmentProps {
   onComplete: (data: {
     responses: Record<string, number>
-    scores: Record<string, number>
+    scores: Record<RIASECDimension, number>
     code: string
   }) => void
 }
@@ -189,13 +192,14 @@ export function RIASECAssessment({ onComplete }: RIASECAssessmentProps) {
 
   const calculateResults = () => {
     // Calculate scores for each dimension
-    const scores: Record<string, number> = {
+    const scores: Record<RIASECDimension, number> = {
       R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
     }
 
     RIASEC_STATEMENTS.forEach(stmt => {
       const rating = responses[stmt.id] || 3
-      scores[stmt.dimension] += rating
+      const dimension = stmt.dimension as RIASECDimension
+      scores[dimension] += rating
     })
 
     // Get top 3 dimensions for Holland Code
@@ -217,13 +221,14 @@ export function RIASECAssessment({ onComplete }: RIASECAssessmentProps) {
   }
 
   if (showResults) {
-    const scores = {
+    const scores: Record<RIASECDimension, number> = {
       R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
     }
 
     RIASEC_STATEMENTS.forEach(stmt => {
       const rating = responses[stmt.id] || 3
-      scores[stmt.dimension] += rating
+      const dimension = stmt.dimension as RIASECDimension
+      scores[dimension] += rating
     })
 
     const sorted = Object.entries(scores)
