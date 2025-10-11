@@ -5,6 +5,8 @@ import { RIASECAssessment } from './RIASECAssessment'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/use-toast'
 
+type RIASECDimension = 'R' | 'I' | 'A' | 'S' | 'E' | 'C'
+
 interface RIASECAssessmentWrapperProps {
   activityId: string
 }
@@ -15,7 +17,7 @@ export function RIASECAssessmentWrapper({ activityId }: RIASECAssessmentWrapperP
 
   const handleComplete = async (data: {
     responses: Record<string, number>
-    scores: Record<string, number>
+    scores: Record<RIASECDimension, number>
     code: string
   }) => {
     try {
