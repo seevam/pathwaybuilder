@@ -207,7 +207,7 @@ export default function Home() {
               </div>
 
               <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 leading-tight">
-                The free, fun way to{' '}
+                The proven, fun way to{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
                   discover yourself
                 </span>
