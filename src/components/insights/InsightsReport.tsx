@@ -3,21 +3,6 @@
 import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Loader2, Sparkles, TrendingUp, Target, Award, Lightbulb } from 'lucide-react'
-import { 
-  RadarChart, 
-  PolarGrid, 
-  PolarAngleAxis, 
-  PolarRadiusAxis, 
-  Radar,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
-} from 'recharts'
 
 interface InsightsReportProps {
   user: any
@@ -132,7 +117,7 @@ export function InsightsReport({ user }: InsightsReportProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Personality Radar Chart */}
+        {/* Personality Traits */}
         <Card className="p-6">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
             <div className="p-2 bg-blue-100 rounded-lg">
@@ -140,26 +125,28 @@ export function InsightsReport({ user }: InsightsReportProps) {
             </div>
             Personality Profile
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <RadarChart data={insights.personality.traits}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="name" />
-              <PolarRadiusAxis angle={90} domain={[0, 100]} />
-              <Radar 
-                name="Your Profile" 
-                dataKey="score" 
-                stroke="#8b5cf6" 
-                fill="#8b5cf6" 
-                fillOpacity={0.6} 
-              />
-            </RadarChart>
-          </ResponsiveContainer>
-          <p className="text-sm text-gray-600 mt-4 leading-relaxed">
+          <div className="space-y-4">
+            {insights.personality.traits.map((trait, idx) => (
+              <div key={idx} className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium text-gray-700">{trait.name}</span>
+                  <span className="text-gray-600">{trait.score}%</span>
+                </div>
+                <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all"
+                    style={{ width: `${trait.score}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-gray-600 mt-6 leading-relaxed">
             {insights.personality.summary}
           </p>
         </Card>
 
-        {/* Interests Bar Chart */}
+        {/* Interest Areas */}
         <Card className="p-6">
           <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
             <div className="p-2 bg-green-100 rounded-lg">
@@ -167,16 +154,23 @@ export function InsightsReport({ user }: InsightsReportProps) {
             </div>
             Interest Areas
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={insights.interests}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="category" angle={-45} textAnchor="end" height={80} />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="score" fill="#10b981" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-          <p className="text-sm text-gray-600 mt-4">
+          <div className="space-y-4">
+            {insights.interests.map((interest, idx) => (
+              <div key={idx} className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium text-gray-700">{interest.category}</span>
+                  <span className="text-gray-600">{interest.score}%</span>
+                </div>
+                <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-green-500 to-teal-500 rounded-full transition-all"
+                    style={{ width: `${interest.score}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-gray-600 mt-6">
             Your strongest interests based on activity responses
           </p>
         </Card>
@@ -214,11 +208,21 @@ export function InsightsReport({ user }: InsightsReportProps) {
             <div key={idx} className="p-5 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
               <div className="flex items-start justify-between mb-2">
                 <h4 className="text-lg font-bold text-gray-900">{career.title}</h4>
-                <div className="px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-semibold">
-                  {career.match}% Match
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-semibold">
+                    {career.match}% Match
+                  </div>
                 </div>
               </div>
               <p className="text-gray-700 leading-relaxed">{career.description}</p>
+              
+              {/* Visual match indicator */}
+              <div className="mt-3 w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"
+                  style={{ width: `${career.match}%` }}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -233,7 +237,7 @@ export function InsightsReport({ user }: InsightsReportProps) {
         <ul className="space-y-3">
           {insights.recommendations.map((rec, idx) => (
             <li key={idx} className="flex items-start gap-3">
-              <span className="text-2xl">✨</span>
+              <span className="text-2xl flex-shrink-0">✨</span>
               <p className="text-gray-800 leading-relaxed">{rec}</p>
             </li>
           ))}
