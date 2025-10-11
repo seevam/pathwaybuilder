@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { ValuesCardSortWrapper } from '@/components/activities/ValuesCardSortWrapper';
+import { WhoAmI } from '@/components/activities/WhoAmI';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -45,7 +46,13 @@ export default async function ActivityPage({
 
       {/* Activity Content */}
       <div className="bg-card border rounded-lg p-6">
-        {params.activity === 'values-card-sort' && <ValuesCardSortWrapper />}
+        {params.activity === 'who-am-i' && (
+          <WhoAmI activityId={activity.id} />
+        )}
+        
+        {params.activity === 'values-card-sort' && (
+          <ValuesCardSortWrapper />
+        )}
         
         {params.activity === 'strengths-discovery' && (
           <div className="text-center py-12">
@@ -55,10 +62,10 @@ export default async function ActivityPage({
           </div>
         )}
         
-        {params.activity === 'reflection-prompts' && (
+        {params.activity === 'integration-reflection' && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
-              Personal Reflection activity coming soon...
+              Integration & Reflection activity coming soon...
             </p>
           </div>
         )}
