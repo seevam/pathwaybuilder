@@ -1,10 +1,11 @@
 import { z } from 'zod'
 
 export const activityCompletionSchema = z.object({
-  activityId: z.string(),
   data: z.record(z.any()).optional(),
   timeSpent: z.number().optional(),
 })
+
+// Remove activityId from the schema since it comes from URL params
 
 export const reflectionSchema = z.object({
   prompt: z.string().min(1),
