@@ -6,9 +6,16 @@ import { AIMascot } from '@/components/ai-mascot/AIMascot';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
+
+export const metadata: Metadata = {
   title: 'Pathway Builder',
   description: 'Career discovery platform for students',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+  },
 };
 
 export default function RootLayout({
