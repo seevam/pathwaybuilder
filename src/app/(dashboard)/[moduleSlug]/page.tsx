@@ -1,5 +1,4 @@
-// src/app/(dashboard)/[moduleSlug]/page.tsx
-import { auth } from '@clerk/nextjs/server'
+import { currentUser } from '@clerk/nextjs/server'
 import { redirect, notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { ModuleService } from '@/lib/services/module-service'
@@ -9,7 +8,6 @@ import { ModuleDeliverable } from '@/components/modules/ModuleDeliverable'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-// src/app/(dashboard)/[moduleSlug]/page.tsx
 import { Card } from '@/components/ui/card'
 import { Lock } from 'lucide-react'
 
@@ -19,7 +17,6 @@ interface ModulePageProps {
   }
 }
 
-// Map slugs to order indices
 const MODULE_SLUG_MAP: Record<string, number> = {
   'module-1': 1,
   'module-2': 2,
@@ -30,20 +27,18 @@ const MODULE_SLUG_MAP: Record<string, number> = {
 }
 
 export default async function ModulePage({ params }: ModulePageProps) {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const clerkUser = await currentUser()
+  if (!clerkUser) redirect('/sign-in')
 
   const user = await db.user.findUnique({
-    where: { clerkId: userId },
+    where: { clerkId: clerkUser.id },
   })
 
   if (!user) redirect('/sign-in')
 
-  // Get order index from slug
   const orderIndex = MODULE_SLUG_MAP[params.moduleSlug]
   if (!orderIndex) notFound()
 
-  // Check if module is unlocked
   const isUnlocked = await ModuleService.isModuleUnlocked(user.id, orderIndex)
   
   if (!isUnlocked) {
@@ -65,19 +60,17 @@ export default async function ModulePage({ params }: ModulePageProps) {
     )
   }
 
-  // Get module with activities
-const moduleData = await db.module.findFirst({
-  where: { orderIndex },
-  include: {
-    activities: {
-      orderBy: { orderIndex: 'asc' },
+  const moduleData = await db.module.findFirst({
+    where: { orderIndex },
+    include: {
+      activities: {
+        orderBy: { orderIndex: 'asc' },
+      },
     },
-  },
-})
+  })
 
-if (!moduleData) notFound()
+  if (!moduleData) notFound()
 
-  // Get progress and completions (same as before)
   const progress = await ModuleService.getModuleProgress(user.id, moduleData.id)
   const completions = await db.activityCompletion.findMany({
     where: {
