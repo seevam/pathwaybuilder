@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
-import { Loader2, Sparkles, CheckCircle2 } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 
 const PROMPTS = [
   {
@@ -97,17 +97,14 @@ const PROMPTS = [
 
 interface WhoAmIProps {
   activityId: string
-  onComplete?: () => void
 }
 
-export function WhoAmI({ activityId, onComplete }: WhoAmIProps) {
+export function WhoAmI({ activityId }: WhoAmIProps) {
   const router = useRouter()
   const { toast } = useToast()
   const [currentPrompt, setCurrentPrompt] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string[]>>({})
   const [loading, setLoading] = useState(false)
-  const [analyzing, setAnalyzing] = useState(false)
-  const [aiInsight, setAiInsight] = useState<string | null>(null)
 
   const prompt = PROMPTS[currentPrompt]
   const selectedOptions = answers[prompt.id] || []
@@ -137,46 +134,10 @@ export function WhoAmI({ activityId, onComplete }: WhoAmIProps) {
     }
   }
 
-  const analyzeWithAI = async () => {
-    setAnalyzing(true)
-    
-    try {
-      // Create a summary of answers
-      const summary = PROMPTS.map((p, idx) => {
-        const userAnswers = answers[p.id] || []
-        return `${p.question}: ${userAnswers.join(', ')}`
-      }).join('\n')
-
-      const response = await fetch('/api/analyze-identity', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers: summary })
-      })
-
-      if (!response.ok) throw new Error('Failed to analyze')
-
-      const data = await response.json()
-      setAiInsight(data.insight)
-    } catch (error) {
-      console.error('Error analyzing:', error)
-      toast({
-        title: 'Analysis unavailable',
-        description: 'Could not generate AI insights, but your responses were saved.',
-        variant: 'destructive'
-      })
-    } finally {
-      setAnalyzing(false)
-    }
-  }
-
   const handleComplete = async () => {
     setLoading(true)
     
     try {
-      // First, analyze with AI
-      await analyzeWithAI()
-
-      // Then save to database
       const response = await fetch(`/api/activities/${activityId}/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -193,10 +154,7 @@ export function WhoAmI({ activityId, onComplete }: WhoAmIProps) {
         description: 'Your identity snapshot has been saved.',
       })
 
-      // Show AI insights for a few seconds before redirecting
-      setTimeout(() => {
-        router.push('/module-1')
-      }, 8000)
+      router.push('/module-1')
     } catch (error) {
       console.error('Error completing activity:', error)
       toast({
@@ -204,56 +162,9 @@ export function WhoAmI({ activityId, onComplete }: WhoAmIProps) {
         description: 'Failed to save your responses. Please try again.',
         variant: 'destructive'
       })
+    } finally {
       setLoading(false)
     }
-  }
-
-  // Show AI Insight Screen
-  if (aiInsight) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="space-y-6"
-      >
-        <Card className="p-8 bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-purple-600 rounded-full">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Your Identity Snapshot
-              </h2>
-              <p className="text-sm text-gray-600">AI-powered insights about you</p>
-            </div>
-          </div>
-
-          <div className="prose prose-lg max-w-none">
-            <div className="text-gray-800 leading-relaxed whitespace-pre-line">
-              {aiInsight}
-            </div>
-          </div>
-
-          <div className="mt-8 p-4 bg-white/60 rounded-lg border border-purple-200">
-            <div className="flex items-center gap-2 text-sm text-purple-700">
-              <CheckCircle2 className="w-4 h-4" />
-              <span className="font-medium">Your responses have been saved</span>
-            </div>
-            <p className="text-xs text-gray-600 mt-1">
-              Redirecting back to module in a moment...
-            </p>
-          </div>
-        </Card>
-
-        <Button 
-          onClick={() => router.push('/module-1')}
-          className="w-full"
-        >
-          Back to Module 1
-        </Button>
-      </motion.div>
-    )
   }
 
   return (
@@ -347,30 +258,13 @@ export function WhoAmI({ activityId, onComplete }: WhoAmIProps) {
         ) : (
           <Button
             onClick={handleComplete}
-            disabled={!canProceed() || loading || analyzing}
-            className="gap-2"
+            disabled={!canProceed() || loading}
           >
-            {analyzing ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Analyzing...
-              </>
-            ) : loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                Complete & Get Insights
-              </>
-            )}
+            {loading ? 'Saving...' : 'Complete Activity ✓'}
           </Button>
         )}
       </div>
 
-      {/* Helper Text */}
       {!canProceed() && (
         <p className="text-center text-sm text-muted-foreground">
           Please select at least {prompt.minSelections} option{prompt.minSelections > 1 ? 's' : ''} to continue
