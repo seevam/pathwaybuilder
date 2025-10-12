@@ -49,7 +49,7 @@ export default function Home() {
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 blur-md opacity-40 -z-10" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hidden sm:block">
-                Pathway
+                Pathway Builder
               </span>
             </Link>
 
