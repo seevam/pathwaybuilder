@@ -258,22 +258,31 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column - Visual Element */}
-            <div className="relative lg:block hidden">
+<div className="relative lg:block hidden">
               <div className="relative">
-                {/* Character/Mascot Placeholder - Replace with actual illustration */}
-                <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-white shadow-2xl">
-                  <div className="text-center space-y-4">
-                    <div className="text-8xl">🎯</div>
-                    <div className="space-y-2">
-                      <div className="text-2xl font-bold text-gray-900">Your Journey Starts Here</div>
-                      <div className="text-gray-600">Discover, Build, Achieve</div>
+                {/* Character/Mascot Image - Replaced placeholder with Next.js Image */}
+                <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-white shadow-2xl overflow-hidden">
+                  <Image
+                    src={HERO_IMAGE_PATH}
+                    alt="Pathway mascot illustration representing a student building their future"
+                    layout="fill"
+                    objectFit="cover"
+                    className="absolute inset-0"
+                  />
+                  {/* Keep the text content as an overlay if needed, or remove it */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center space-y-4 p-8 bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/80">
+                      <div className="text-5xl">🚀</div>
+                      <div className="space-y-1">
+                        <div className="text-xl font-bold text-gray-900">Your Journey Starts Here</div>
+                        <div className="text-md text-gray-600">Discover, Build, Achieve</div>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
                 {/* Floating Cards */}
-                <div className="absolute -left-8 top-1/4 bg-white rounded-2xl shadow-xl p-4 border-2 border-green-200 transform rotate-[-5deg]">
+                <div className="absolute -left-8 top-1/4 bg-white rounded-2xl shadow-xl p-4 border-2 border-green-200 transform rotate-[-5deg] transition-all hover:rotate-0 hover:scale-105">
                   <div className="flex items-center gap-3">
                     <Zap className="h-8 w-8 text-amber-500 fill-current" />
                     <div>
@@ -283,7 +292,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="absolute -right-8 top-1/2 bg-white rounded-2xl shadow-xl p-4 border-2 border-indigo-200 transform rotate-[5deg]">
+                <div className="absolute -right-8 top-1/2 bg-white rounded-2xl shadow-xl p-4 border-2 border-indigo-200 transform rotate-[5deg] transition-all hover:rotate-0 hover:scale-105">
                   <div className="flex items-center gap-3">
                     <Trophy className="h-8 w-8 text-indigo-600" />
                     <div>
