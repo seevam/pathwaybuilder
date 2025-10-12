@@ -278,12 +278,12 @@ export default function Home() {
 
 
                   {/* Text Overlay positioned at the bottom, directly over the image */}
-                
+                  <div className="absolute inset-x-0 bottom-0 p-8 text-center bg-gradient-to-t from-transparent/60 via-transparent/30 to-transparent z-10">
                     {/* <div className="text-8xl text-white opacity-90 mb-2">🎯</div> */}
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-black">Your Journey Starts Here</div>
                       <div className="text-lg text-indigo-100">Discover, Build, Achieve</div>
-                    
+                  </div>  
                   </div>
                 </div>
                 
