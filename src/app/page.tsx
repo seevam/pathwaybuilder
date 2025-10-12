@@ -258,25 +258,27 @@ export default function Home() {
               </div>
             </div>
 
-<div className="relative lg:block hidden">
+            {/* Right Column - Visual Element (MODIFIED AGAIN) */}
+            <div className="relative lg:block hidden">
               <div className="relative">
-                {/* Character/Mascot Image - Replaced placeholder with Next.js Image */}
+                {/* Outer box with original styling */}
                 <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-white shadow-2xl overflow-hidden">
+                  
+                  {/* Image that fills the entire container */}
                   <Image
                     src="/heroimagev1.png"
                     alt="Pathway mascot illustration representing a student building their future"
                     layout="fill"
-                    objectFit="cover"
-                    className="absolute inset-0"
+                    objectFit="cover" // or 'contain' depending on desired cropping
+                    className="z-0" // Ensure image is behind the text overlay
                   />
-                  {/* Keep the text content as an overlay if needed, or remove it */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center space-y-4 p-8 bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/80">
-                      <div className="text-5xl">🚀</div>
-                      <div className="space-y-1">
-                        <div className="text-xl font-bold text-gray-900">Your Journey Starts Here</div>
-                        <div className="text-md text-gray-600">Discover, Build, Achieve</div>
-                      </div>
+
+                  {/* Text Overlay positioned at the bottom */}
+                  <div className="absolute inset-x-0 bottom-0 p-8 text-center bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10">
+                    <div className="text-8xl text-white opacity-90 mb-2">🎯</div> {/* Moved emoji to the top of the text block */}
+                    <div className="space-y-1">
+                      <div className="text-2xl font-bold text-white">Your Journey Starts Here</div>
+                      <div className="text-lg text-indigo-100">Discover, Build, Achieve</div>
                     </div>
                   </div>
                 </div>
