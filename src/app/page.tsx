@@ -259,6 +259,37 @@ export default function Home() {
             </div>
 
             {/* Right Column - Visual Element */}
+<div className="relative lg:block hidden">
+  <div className="relative">
+    {/* Illustration Container */}
+    <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl border-4 border-white shadow-2xl overflow-hidden flex flex-col items-center justify-center relative">
+      
+      {/* Image Layer */}
+      <img
+        src="/heroimage.png" // replace with your image path
+        alt="K-12 Activities Illustration"
+        className="w-full h-full object-cover rounded-3xl absolute inset-0"
+      />
+
+      {/* Overlay (gradient fade + text) */}
+      <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/30 to-transparent rounded-3xl"></div>
+
+      {/* Text Overlay */}
+      <div className="relative z-10 text-center p-6 space-y-3">
+        <div className="text-7xl">🎯</div>
+        <div className="space-y-1">
+          <div className="text-2xl font-bold text-gray-900 drop-shadow-sm">
+            Your Journey Starts Here
+          </div>
+          <div className="text-gray-700">Discover, Build, Achieve</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+            /* {/* Right Column - Visual Element */}
             <div className="relative lg:block hidden">
               <div className="relative">
                 {/* Character/Mascot Placeholder - Replace with actual illustration */}
@@ -270,7 +301,7 @@ export default function Home() {
                       <div className="text-gray-600">Discover, Build, Achieve</div>
                     </div>
                   </div>
-                </div>
+                </div> */
                 
                 {/* Floating Cards */}
                 <div className="absolute -left-8 top-1/4 bg-white rounded-2xl shadow-xl p-4 border-2 border-green-200 transform rotate-[-5deg]">
