@@ -267,7 +267,7 @@ export default function Home() {
       {/* Image (Replace /hero-illustration.png with your image path) */}
       <div className="flex-1 flex items-center justify-center p-6">
         <Image
-          src="/hero-illustration.png"
+          src="/heroimagev1.png"
           alt="Journey Illustration"
           width={400}
           height={400}
