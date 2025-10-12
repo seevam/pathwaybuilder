@@ -274,14 +274,14 @@ export default function Home() {
                   />
 
                   {/* Optional: Add a subtle overlay directly over the image for better text contrast if needed */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-100/30 via-purple-100/30 to-pink-100/30 z-0"></div>
+                  {/* <div className="absolute inset-0 bg-gradient-to-br from-indigo-100/30 via-purple-100/30 to-pink-100/30 z-0"></div> */}
 
 
                   {/* Text Overlay positioned at the bottom, directly over the image */}
                   <div className="absolute inset-x-0 bottom-0 p-8 text-center bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10">
-                    <div className="text-8xl text-white opacity-90 mb-2">🎯</div>
+                    {/* <div className="text-8xl text-white opacity-90 mb-2">🎯</div> */}
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-white">Your Journey Starts Here</div>
+                      <div className="text-2xl font-bold text-black">Your Journey Starts Here</div>
                       <div className="text-lg text-indigo-100">Discover, Build, Achieve</div>
                     </div>
                   </div>
