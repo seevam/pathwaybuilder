@@ -289,7 +289,7 @@ export default function Home() {
 </div>
 
 
-            /* {/* Right Column - Visual Element */}
+            { /* /* Right Column - Visual Element */ }
             <div className="relative lg:block hidden">
               <div className="relative">
                 {/* Character/Mascot Placeholder - Replace with actual illustration */}
