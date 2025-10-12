@@ -258,28 +258,32 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column - Visual Element (MODIFIED for nested image box) */}
+                   {/* Right Column - Visual Element (MODIFIED to contain outer box) */}
             <div className="relative lg:block hidden">
               <div className="relative">
-                {/* Outer container with original gradient background and border */}
-                <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl p-6 flex flex-col items-center justify-between border-4 border-white shadow-2xl overflow-hidden">
+                {/* Outer container acts as the frame for the image */}
+                <div className="relative w-full aspect-square max-w-md mx-auto rounded-3xl border-4 border-white shadow-2xl overflow-hidden">
                   
-                  {/* Inner box for the Image with its own border and background */}
-                  <div className="relative w-full flex-grow rounded-2xl border-4 border-white shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                    <Image
-                      src="/heroimagev1.png"
-                      alt="Pathway mascot illustration representing a student building their future"
-                      layout="fill"
-                      objectFit="contain" // Use 'contain' to ensure the entire image is visible within its box
-                      className="p-2" // Add some padding inside the image box
-                    />
-                  </div>
+                  {/* Image that fills the entire container, including the area for the previous gradient */}
+                  <Image
+                    src={HERO_IMAGE_PATH}
+                    alt="Pathway mascot illustration representing a student building their future"
+                    layout="fill"
+                    objectFit="cover" // 'cover' or 'contain' depending on desired cropping
+                    className="z-0" // Ensure image is behind the text overlay
+                  />
 
-                  {/* Text positioned at the bottom, within the outer box */}
-                  <div className="text-center space-y-1 mt-4">
-                    {/* <div className="text-8xl text-gray-900 opacity-80">🎯</div> */}
-                    <div className="text-2xl font-bold text-gray-900">Your Journey Starts Here</div>
-                    <div className="text-lg text-gray-600">Discover, Build, Achieve</div>
+                  {/* Optional: Add a subtle overlay directly over the image for better text contrast if needed */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-100/30 via-purple-100/30 to-pink-100/30 z-0"></div>
+
+
+                  {/* Text Overlay positioned at the bottom, directly over the image */}
+                  <div className="absolute inset-x-0 bottom-0 p-8 text-center bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10">
+                    <div className="text-8xl text-white opacity-90 mb-2">🎯</div>
+                    <div className="space-y-1">
+                      <div className="text-2xl font-bold text-white">Your Journey Starts Here</div>
+                      <div className="text-lg text-indigo-100">Discover, Build, Achieve</div>
+                    </div>
                   </div>
                 </div>
                 
