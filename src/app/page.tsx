@@ -266,7 +266,7 @@ export default function Home() {
                   
                   {/* Image that fills the entire container, including the area for the previous gradient */}
                   <Image
-                    src={HERO_IMAGE_PATH}
+                    src="/heroimagev1.png"
                     alt="Pathway mascot illustration representing a student building their future"
                     layout="fill"
                     objectFit="cover" // 'cover' or 'contain' depending on desired cropping
