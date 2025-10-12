@@ -263,7 +263,7 @@ export default function Home() {
                 {/* Character/Mascot Image - Replaced placeholder with Next.js Image */}
                 <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-white shadow-2xl overflow-hidden">
                   <Image
-                    src={HERO_IMAGE_PATH}
+                    src="/heroimagev1.png"
                     alt="Pathway mascot illustration representing a student building their future"
                     layout="fill"
                     objectFit="cover"
