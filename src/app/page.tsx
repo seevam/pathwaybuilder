@@ -258,75 +258,52 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column - Visual Element */}
+{/* Right Column - Visual Element */}
 <div className="relative lg:block hidden">
   <div className="relative">
-    {/* Illustration Container */}
-    <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl border-4 border-white shadow-2xl overflow-hidden flex flex-col items-center justify-center relative">
+    {/* Character/Mascot Illustration Box */}
+    <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl border-4 border-white shadow-2xl flex flex-col justify-between overflow-hidden">
       
-      {/* Image Layer */}
-      <img
-        src="/heroimage.png" // replace with your image path
-        alt="K-12 Activities Illustration"
-        className="w-full h-full object-cover rounded-3xl absolute inset-0"
-      />
+      {/* Image (Replace /hero-illustration.png with your image path) */}
+      <div className="flex-1 flex items-center justify-center p-6">
+        <Image
+          src="/hero-illustration.png"
+          alt="Journey Illustration"
+          width={400}
+          height={400}
+          className="object-contain rounded-2xl drop-shadow-lg"
+        />
+      </div>
 
-      {/* Overlay (gradient fade + text) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/30 to-transparent rounded-3xl"></div>
+      {/* Bottom Text */}
+      <div className="text-center bg-white/70 backdrop-blur-md py-6 px-4 border-t border-white/50">
+        <div className="text-2xl font-bold text-gray-900">Your Journey Starts Here</div>
+        <div className="text-gray-600">Discover, Build, Achieve</div>
+      </div>
+    </div>
 
-      {/* Text Overlay */}
-      <div className="relative z-10 text-center p-6 space-y-3">
-        <div className="text-7xl">🎯</div>
-        <div className="space-y-1">
-          <div className="text-2xl font-bold text-gray-900 drop-shadow-sm">
-            Your Journey Starts Here
-          </div>
-          <div className="text-gray-700">Discover, Build, Achieve</div>
+    {/* Floating Cards */}
+    <div className="absolute -left-8 top-1/4 bg-white rounded-2xl shadow-xl p-4 border-2 border-green-200 transform rotate-[-5deg]">
+      <div className="flex items-center gap-3">
+        <Zap className="h-8 w-8 text-amber-500 fill-current" />
+        <div>
+          <div className="font-bold text-gray-900">7 day streak</div>
+          <div className="text-sm text-gray-500">Keep it up!</div>
+        </div>
+      </div>
+    </div>
+
+    <div className="absolute -right-8 top-1/2 bg-white rounded-2xl shadow-xl p-4 border-2 border-indigo-200 transform rotate-[5deg]">
+      <div className="flex items-center gap-3">
+        <Trophy className="h-8 w-8 text-indigo-600" />
+        <div>
+          <div className="font-bold text-gray-900">Achievement</div>
+          <div className="text-sm text-gray-500">Module complete!</div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-
-            { /* /* Right Column - Visual Element */ }
-            <div className="relative lg:block hidden">
-              <div className="relative">
-                {/* Character/Mascot Placeholder - Replace with actual illustration */}
-                <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-white shadow-2xl">
-                  <div className="text-center space-y-4">
-                    <div className="text-8xl">🎯</div>
-                    <div className="space-y-2">
-                      <div className="text-2xl font-bold text-gray-900">Your Journey Starts Here</div>
-                      <div className="text-gray-600">Discover, Build, Achieve</div>
-                    </div>
-                  </div>
-                </div> */
-                
-                {/* Floating Cards */}
-                <div className="absolute -left-8 top-1/4 bg-white rounded-2xl shadow-xl p-4 border-2 border-green-200 transform rotate-[-5deg]">
-                  <div className="flex items-center gap-3">
-                    <Zap className="h-8 w-8 text-amber-500 fill-current" />
-                    <div>
-                      <div className="font-bold text-gray-900">7 day streak</div>
-                      <div className="text-sm text-gray-500">Keep it up!</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute -right-8 top-1/2 bg-white rounded-2xl shadow-xl p-4 border-2 border-indigo-200 transform rotate-[5deg]">
-                  <div className="flex items-center gap-3">
-                    <Trophy className="h-8 w-8 text-indigo-600" />
-                    <div>
-                      <div className="font-bold text-gray-900">Achievement</div>
-                      <div className="text-sm text-gray-500">Module complete!</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Stats Section - Gamified */}
