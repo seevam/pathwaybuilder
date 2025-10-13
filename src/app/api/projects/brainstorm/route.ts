@@ -79,7 +79,7 @@ Return ONLY a JSON object with this structure:
         ? `\n- Selected Interest Areas: ${selectedInterests.join(', ')}`
         : ''
 
-      prompt = `You are a career counselor analyzing a high school student's profile to suggest problem areas they might care about.
+      prompt = `You are a career counselor analyzing a high school student's profile to suggest interest areas they might care about.
 
 Student Profile:
 - Top Values: ${profile.topValues.join(', ')}
