@@ -1,157 +1,131 @@
-// src/app/api/projects/brainstorm/route.ts
+// src/app/api/projects/generate-options/route.ts
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
 import OpenAI from 'openai'
-import { z } from 'zod'
+import { UserDiscoveryContext } from '@/lib/services/discovery-context'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-
-const brainstormSchema = z.object({
-  interests: z.string().min(10, 'Please describe your interests in more detail'),
-  problemArea: z.string().min(10, 'Please describe the problem area'),
-  timeCommitment: z.enum(['2-3', '4-6', '7-10', '10+']),
-  projectTypes: z.array(z.string()).min(1, 'Select at least one project type'),
+  apiKey: process.env.OPENAI_API_KEY,
 })
 
 export async function POST(req: Request) {
-  try {
-    const { userId } = await auth()
-    if (!userId) {
-      return new NextResponse('Unauthorized', { status: 401 })
-    }
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return new NextResponse('Unauthorized', { status: 401 })
+    }
 
-    const body = await req.json()
-    const validatedData = brainstormSchema.parse(body)
+    const user = await db.user.findUnique({
+      where: { clerkId: userId },
+    })
 
-    // Generate AI-powered project ideas
-    const prompt = `You are a career counselor helping a high school student brainstorm passion project ideas.
+    if (!user) {
+      return new NextResponse('User not found', { status: 404 })
+    }
+
+    // Get user's discovery profile
+    const profile = await UserDiscoveryContext.getUserProfile(user.id)
+
+    if (!profile) {
+      return NextResponse.json(
+        { success: false, error: 'Complete Module 1 activities first' },
+        { status: 400 }
+      )
+    }
+
+    const { type } = await req.json() // 'interests' or 'problems'
+
+    let prompt = ''
+    
+    if (type === 'interests') {
+      prompt = `You are a career counselor analyzing a high school student's profile to suggest **broad interest areas and domains** for a passion project.
 
 Student Profile:
-- Interests: ${validatedData.interests}
-- Problem they care about: ${validatedData.problemArea}
-- Time commitment: ${validatedData.timeCommitment} hours per week
-- Project types they're interested in: ${validatedData.projectTypes.join(', ')}
+- Top Values: ${profile.topValues.join(', ')}
+- Top Strengths: ${profile.topStrengths.map(s => s.name).join(', ')}
+- RIASEC Code: ${profile.riasecCode || 'Not completed'}
+- DISC Profile: ${profile.discProfile?.primary || 'Not completed'}
 
-Generate 8 diverse, creative, and feasible passion project ideas. Each idea should:
-1. Align with their interests and the problem area
-2. Be achievable with their time commitment
-3. Be meaningful and have measurable impact
-4. Be unique and stand out in college applications
-5. Match at least one of their preferred project types
+Based on this profile, generate 5-6 specific **fields of interest** that align with their values and strengths. These should be:
+- **Broad interest domains** (not specific, actionable projects)
+- Relevant to high school students
+- Diverse across different fields (e.g., tech, arts, social issues)
 
-For each idea, provide:
-- Title (creative, catchy)
-- Description (2-3 sentences explaining what they'd do)
-- Category (creative, social_impact, entrepreneurial, research, technical, or leadership)
-- Feasibility score (1-100, considering their time and resources)
-- Time estimate (e.g., "4-6 months")
-- Uniqueness rating (HIGH, MEDIUM, LOW)
-- Key impact metrics (what they could measure)
-
-Return ONLY a valid JSON array with 8 project ideas. Use this EXACT structure:
+Return ONLY a JSON object with this structure:
 {
-  "ideas": [
-    {
-      "id": "idea_1",
-      "title": "Project Title",
-      "description": "Detailed description...",
-      "category": "SOCIAL_IMPACT",
-      "feasibilityScore": 85,
-      "timeEstimate": "4-6 months",
-      "uniqueness": "HIGH",
-      "impactMetrics": ["metric1", "metric2"]
-    }
-  ]
+  "options": [
+    {
+      "id": "interest_1",
+      "label": "User Experience (UX) Design",
+      "description": "The field of designing intuitive and accessible digital or physical products.",
+      "alignment": "Matches your creativity and problem-solving strengths"
+    }
+  ]
 }`
+    } else {
+      prompt = `You are a career counselor analyzing a high school student's profile to suggest problem areas they might care about for a passion project.
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an expert career counselor specializing in helping high school students develop meaningful passion projects. Always return valid JSON with an "ideas" array containing exactly 8 project ideas.',
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      temperature: 0.8,
-      max_tokens: 3000,
-      response_format: { type: 'json_object' },
-    })
+Student Profile:
+- Top Values: ${profile.topValues.join(', ')}
+- Top Strengths: ${profile.topStrengths.map(s => s.name).join(', ')}
+- RIASEC Code: ${profile.riasecCode || 'Not completed'}
+- Career Interests: ${profile.careerInterests.map(c => c.title).join(', ') || 'Not explored'}
 
-    const responseText = completion.choices[0].message.content
-    if (!responseText) {
-      throw new Error('No response from AI')
-    }
+Based on this profile, generate 4-5 specific problem areas or topics they might be passionate about addressing. These should be:
+- Real problems affecting their community or peers
+- Aligned with their values and interests
+- Solvable by a high school student
+- Meaningful and impactful
+- Diverse across social, environmental, educational, and health domains
 
-    // Parse the AI response
-    let ideas
-    try {
-      // Trim whitespace from the response
-      const trimmedResponse = responseText.trim()
-      const parsed = JSON.parse(trimmedResponse)
-      
-      // Handle various AI response formats
-      if (Array.isArray(parsed)) {
-        // AI returned an array directly
-        ideas = parsed
-      } else if (parsed.ideas && Array.isArray(parsed.ideas)) {
-        // AI returned { ideas: [...] }
-        ideas = parsed.ideas
-      } else if (parsed.projects && Array.isArray(parsed.projects)) {
-        // AI returned { projects: [...] }
-        ideas = parsed.projects
-      } else if (typeof parsed === 'object' && parsed.id) {
-        // AI returned a single object - wrap it in an array
-        ideas = [parsed]
-      } else {
-        throw new Error('Invalid response format')
-      }
+Return ONLY a JSON object with this structure:
+{
+  "options": [
+    {
+      "id": "problem_1",
+      "label": "Student Mental Health & Stress",
+      "description": "Teen anxiety and lack of mental health resources in schools",
+      "alignment": "Connects to your helping others value and empathy strength"
+    }
+  ]
+}`
+    }
 
-      // Ensure we have at least some ideas
-      if (ideas.length === 0) {
-        throw new Error('No ideas generated')
-      }
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a career counselor. Always return valid JSON only, no other text.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: 0.8,
+      max_tokens: 2000,
+      response_format: { type: 'json_object' }
+    })
 
-      // Add unique IDs if not present
-      ideas = ideas.map((idea: any, index: number) => ({
-        ...idea,
-        id: idea.id || `idea_${Date.now()}_${index}`,
-      }))
+    const responseText = completion.choices[0].message.content
+    if (!responseText) {
+      throw new Error('No response from AI')
+    }
 
-      // If we got less than 8 ideas, that's okay, but log it
-      if (ideas.length < 8) {
-        console.log(`Generated ${ideas.length} ideas instead of 8`)
-      }
-    } catch (parseError) {
-      console.error('Failed to parse AI response:', responseText.substring(0, 200))
-      throw new Error('Failed to parse AI response')
-    }
+    const parsed = JSON.parse(responseText)
+    const options = parsed.options || []
 
-    return NextResponse.json({
-      success: true,
-      ideas: ideas.slice(0, 8), // Ensure we only return 8 ideas
-    })
-  } catch (error) {
-    console.error('[PROJECT_BRAINSTORM]', error)
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to generate project ideas. Please try again.' 
-      },
-      { status: 500 }
-    )
-  }
+    return NextResponse.json({
+      success: true,
+      options: options.slice(0, 10)
+    })
+  } catch (error) {
+    console.error('[GENERATE_OPTIONS]', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to generate options' },
+      { status: 500 }
+    )
+  }
 }
