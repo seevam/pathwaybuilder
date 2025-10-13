@@ -34,12 +34,12 @@ export async function POST(req: Request) {
       )
     }
 
-    const { type } = await req.json() // 'interests' or 'problems'
+    const { type, selectedInterests } = await req.json() // 'interests' or 'problems', and selectedInterests array
 
     let prompt = ''
     
     if (type === 'interests') {
-      prompt = `You are a career counselor analyzing a high school student's profile to suggest relevant interests for a passion project.
+      prompt = `You are a career counselor analyzing a high school student's profile to suggest broad interest areas and fields of study.
 
 Student Profile:
 - Top Values: ${profile.topValues.join(', ')}
@@ -47,47 +47,63 @@ Student Profile:
 - RIASEC Code: ${profile.riasecCode || 'Not completed'}
 - DISC Profile: ${profile.discProfile?.primary || 'Not completed'}
 
-Based on this profile, generate 8-10 specific interest areas that align with their values and strengths. These should be:
-- Specific and actionable (not too broad)
-- Relevant to high school students
-- Project-worthy (can lead to meaningful work)
-- Diverse across different domains
+Based on this profile, generate 8-10 broad interest areas, fields of study, or domains that align with their values and strengths. These should be:
+- Broad domains or fields (not specific projects)
+- Academic or professional areas of study
+- General interest categories
+- Applicable to various career paths
+- Diverse across different disciplines
+
+Examples of good interest areas:
+- "Environmental Science & Sustainability"
+- "Digital Media & Communications"
+- "Social Justice & Advocacy"
+- "Healthcare & Wellness"
+- "Business & Entrepreneurship"
+- "Technology & Innovation"
 
 Return ONLY a JSON object with this structure:
 {
   "options": [
     {
       "id": "interest_1",
-      "label": "UX Design & User Research",
-      "description": "Designing intuitive digital experiences",
-      "alignment": "Matches your creativity and problem-solving strengths"
+      "label": "Environmental Science & Sustainability",
+      "description": "Study of ecosystems, climate, and sustainable practices",
+      "alignment": "Matches your value of making an impact and analytical strengths"
     }
   ]
 }`
     } else {
-      prompt = `You are a career counselor analyzing a high school student's profile to suggest problem areas they might care about for a passion project.
+      // Problems are now filtered through selected interests
+      const interestContext = selectedInterests && selectedInterests.length > 0
+        ? `\n- Selected Interest Areas: ${selectedInterests.join(', ')}`
+        : ''
+
+      prompt = `You are a career counselor analyzing a high school student's profile to suggest interest areas they might care about.
 
 Student Profile:
 - Top Values: ${profile.topValues.join(', ')}
 - Top Strengths: ${profile.topStrengths.map(s => s.name).join(', ')}
-- RIASEC Code: ${profile.riasecCode || 'Not completed'}
-- Career Interests: ${profile.careerInterests.map(c => c.title).join(', ') || 'Not explored'}
+- RIASEC Code: ${profile.riasecCode || 'Not completed'}${interestContext}
 
-Based on this profile, generate 8-10 specific problem areas or topics they might be passionate about addressing. These should be:
-- Real problems affecting their community or peers
-- Aligned with their values and interests
-- Solvable by a high school student
+IMPORTANT: Focus on problems that are directly relevant to their selected interest areas: ${selectedInterests?.join(', ') || 'their general profile'}.
+
+Based on this profile and their interests, generate 8-10 specific problem areas or challenges within these domains. These should be:
+- Real problems affecting their community, peers, or society
+- Directly related to their selected interest areas
+- Aligned with their values and strengths
+- Solvable or addressable by a high school student
 - Meaningful and impactful
-- Diverse across social, environmental, educational, and health domains
+- Specific enough to inspire action
 
 Return ONLY a JSON object with this structure:
 {
   "options": [
     {
       "id": "problem_1",
-      "label": "Student Mental Health & Stress",
-      "description": "Teen anxiety and lack of mental health resources",
-      "alignment": "Connects to your helping others value and empathy strength"
+      "label": "Teen Mental Health & School Stress",
+      "description": "Students struggling with anxiety, depression, and academic pressure",
+      "alignment": "Relates to your Healthcare & Wellness interest and helping others value"
     }
   ]
 }`
