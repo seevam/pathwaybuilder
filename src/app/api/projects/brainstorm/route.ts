@@ -34,7 +34,8 @@ export async function POST(req: Request) {
       )
     }
 
-    const { type } = await req.json() // 'interests' or 'problems'
+    // ⭐ MODIFICATION 1: Destructure 'selectedInterest' from the request body
+    const { type, selectedInterest } = await req.json() as { type: 'interests' | 'problems', selectedInterest?: string }
 
     let prompt = ''
     
@@ -47,7 +48,7 @@ Student Profile:
 - RIASEC Code: ${profile.riasecCode || 'Not completed'}
 - DISC Profile: ${profile.discProfile?.primary || 'Not completed'}
 
-Based on this profile, generate 5-6 specific **fields of interest** that align with their values and strengths. These should be:
+Based on this profile, generate 8-10 specific **fields of interest** that align with their values and strengths. These should be:
 - **Broad interest domains** (not specific, actionable projects)
 - Relevant to high school students
 - Diverse across different fields (e.g., tech, arts, social issues)
@@ -63,8 +64,19 @@ Return ONLY a JSON object with this structure:
     }
   ]
 }`
-    } else {
+    } else if (type === 'problems') {
+        // ⭐ MODIFICATION 2: Update the problem prompt to include the selected interest
+
+        if (!selectedInterest) {
+             return NextResponse.json(
+                { success: false, error: 'A selected interest is required to generate problems.' },
+                { status: 400 }
+            )
+        }
+
       prompt = `You are a career counselor analyzing a high school student's profile to suggest problem areas they might care about for a passion project.
+        
+**Primary Interest Area:** ${selectedInterest}
 
 Student Profile:
 - Top Values: ${profile.topValues.join(', ')}
@@ -72,25 +84,27 @@ Student Profile:
 - RIASEC Code: ${profile.riasecCode || 'Not completed'}
 - Career Interests: ${profile.careerInterests.map(c => c.title).join(', ') || 'Not explored'}
 
-Based on this profile, generate 4-5 specific problem areas or topics they might be passionate about addressing. These should be:
+Based on this profile **AND the selected Primary Interest Area**, generate 8-10 specific problem areas or topics they might be passionate about addressing. These should be:
 - Real problems affecting their community or peers
-- Aligned with their values and interests
+- **Directly related to the Primary Interest Area**
+- Aligned with their values and strengths/interests
 - Solvable by a high school student
 - Meaningful and impactful
-- Diverse across social, environmental, educational, and health domains
 
 Return ONLY a JSON object with this structure:
 {
   "options": [
     {
       "id": "problem_1",
-      "label": "Student Mental Health & Stress",
-      "description": "Teen anxiety and lack of mental health resources in schools",
-      "alignment": "Connects to your helping others value and empathy strength"
+      "label": "Accessible Public Transit Mapping",
+      "description": "Lack of reliable, real-time mapping information for students using public transportation.",
+      "alignment": "Connects to your interest in technology and your helping others value."
     }
   ]
 }`
-    }
+    } else {
+         return new NextResponse('Invalid type specified', { status: 400 })
+    }
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
