@@ -297,10 +297,10 @@ export default function ProjectBrainstormPage() {
             AI-Powered Project Brainstorming
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Let's Find Your Perfect Project
+            Let&apos;s Find Your Perfect Project
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Using insights from your completed modules, we'll generate personalized project ideas
+            Using insights from your completed modules, we&apos;ll generate personalized project ideas
           </p>
         </div>
 
@@ -477,7 +477,7 @@ export default function ProjectBrainstormPage() {
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
                       <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600">Finding problems you'd care about...</p>
+                      <p className="text-sm text-gray-600">Finding problems you&apos;d care about...</p>
                     </div>
                   </div>
                 )}
@@ -485,7 +485,7 @@ export default function ProjectBrainstormPage() {
                 {!loadingProblems && problemOptions.length > 0 && (
                   <div className="space-y-3 mb-4">
                     <p className="text-sm text-gray-600">
-                      Select problems you're passionate about ({selectedProblems.length} selected)
+                      Select problems you&apos;re passionate about ({selectedProblems.length} selected)
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {problemOptions.map((option) => (
@@ -718,9 +718,9 @@ export default function ProjectBrainstormPage() {
                   <h4 className="font-semibold text-amber-900 mb-1">Pro Tips</h4>
                   <ul className="text-sm text-amber-800 space-y-1">
                     <li>• Choose a project that genuinely excites you</li>
-                    <li>• Consider what's realistic given your time commitment</li>
+                    <li>• Consider what&apos;s realistic given your time commitment</li>
                     <li>• Look for projects that develop skills you want to build</li>
-                    <li>• Don't worry if it's not perfect - you can adjust as you go!</li>
+                    <li>• Don&apos;t worry if it&apos;s not perfect - you can adjust as you go!</li>
                   </ul>
                 </div>
               </div>
