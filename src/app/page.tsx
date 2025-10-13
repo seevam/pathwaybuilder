@@ -281,7 +281,7 @@ export default function Home() {
                   <div className="absolute inset-x-0 bottom-0 p-8 text-center">
                     {/* <div className="text-8xl text-white opacity-90 mb-2">🎯</div> */}
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-black">Your Journey Starts Here</div>
+                      {/* <div className="text-2xl font-bold text-black">Your Journey Starts Here</div> */}
                     
                   </div>  
                   </div>
