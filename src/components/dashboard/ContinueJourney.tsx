@@ -1,4 +1,6 @@
 // src/components/dashboard/ContinueJourney.tsx
+'use client'
+
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
