@@ -1,5 +1,6 @@
-// src/app/(dashboard)/layout.tsx
-import { DashboardNav } from '@/components/dashboard/DashboardNav'
+'use client'
+
+import { SidebarProvider } from '@/contexts/SidebarContext'
 
 export default function DashboardLayout({
   children,
@@ -7,9 +8,8 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen">
-      <DashboardNav />
+    <SidebarProvider>
       {children}
-    </div>
+    </SidebarProvider>
   )
 }
