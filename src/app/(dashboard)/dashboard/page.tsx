@@ -1,14 +1,14 @@
-// src/app/(dashboard)/dashboard/page.tsx
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
-import { ModuleJourney } from '@/components/dashboard/ModuleJourney'
+import { Sidebar } from '@/components/dashboard/Sidebar'
+import { ModuleTracker } from '@/components/dashboard/ModuleTracker'
+import { StrengthsCard } from '@/components/dashboard/StrengthsCard'
+import { PassionProjectCard } from '@/components/dashboard/PassionProjectCard'
 import { StatsCard } from '@/components/dashboard/StatsCard'
 import { QuickActions } from '@/components/dashboard/QuickActions'
 import { RecentActivity } from '@/components/dashboard/RecentActivity'
-import { ContinueJourney } from '@/components/dashboard/ContinueJourney'
-import { ProfileSnapshot } from '@/components/dashboard/ProfileSnapshot'
-import { Flame, Target, Clock, TrendingUp, Award } from 'lucide-react'
+import { Flame, Target, Clock, Award } from 'lucide-react'
 
 export default async function DashboardPage() {
   const { userId } = await auth()
@@ -31,6 +31,19 @@ export default async function DashboardPage() {
         },
         take: 10
       },
+      projects: {
+        where: {
+          status: {
+            in: ['PLANNING', 'IN_PROGRESS']
+          }
+        },
+        include: {
+          milestones: true,
+          tasks: true,
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: 1
+      }
     },
   })
 
@@ -41,7 +54,7 @@ export default async function DashboardPage() {
   const totalActivities = await db.activity.count()
   const completedActivities = user.activities.filter(a => a.completed).length
   
-  const currentStreak = 0
+  const currentStreak = 0 // TODO: Calculate based on actual activity dates
   
   const totalTimeSeconds = user.activities.reduce((acc, a) => acc + (a.timeSpent || 0), 0)
   const hoursInvested = Math.round(totalTimeSeconds / 3600)
@@ -96,117 +109,143 @@ export default async function DashboardPage() {
     })
   )
 
-  const currentModule = modulesWithProgress.find(m => 
-    m.progress > 0 && m.progress < 100
-  ) || modulesWithProgress[0]
+  const completedModules = modulesWithProgress.filter(m => m.status === 'completed').length
+  const totalAchievements = completedModules + (completedActivities >= 10 ? 1 : 0)
 
-  const moduleProgress = currentModule?.progress || 0
-  
+  // Get active project data
+  const activeProject = user.projects[0]
+  const projectData = activeProject ? {
+    projectTitle: activeProject.title,
+    progress: activeProject.healthScore,
+    milestonesCompleted: activeProject.milestones.filter(m => m.status === 'COMPLETED').length,
+    totalMilestones: activeProject.milestones.length,
+    streak: 5, // Calculate based on check-ins
+    nextActions: activeProject.tasks.slice(0, 3).map(task => ({
+      id: task.id,
+      title: task.title,
+      completed: task.completed
+    }))
+  } : {}
+
+  // Get strengths data from activities
+  const strengthsActivity = await db.activityCompletion.findFirst({
+    where: {
+      userId: user.id,
+      activity: { slug: 'strengths-discovery' },
+      completed: true
+    }
+  })
+
+  const strengthsData = strengthsActivity?.data as any
+  const traits = strengthsData?.categoryScores ? Object.entries(strengthsData.categoryScores).map(([name, score]) => ({
+    name: name.charAt(0).toUpperCase() + name.slice(1),
+    score: score as number,
+    color: 'bg-blue-100 text-blue-700 border-blue-300'
+  })) : undefined
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Welcome Section */}
-        <div className="space-y-2">
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 bg-clip-text text-transparent">
-            Welcome back, {user.name}! 👋
-          </h1>
-          <p className="text-lg text-gray-600">
-            Let&apos;s continue building your pathway to success.
-          </p>
-        </div>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Fixed Sidebar */}
+      <Sidebar
+        userName={user.name}
+        completedModules={completedModules}
+        currentStreak={currentStreak}
+        totalAchievements={totalAchievements}
+      />
 
-        {/* Stats Overview - More Visual */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatsCard
-            icon={<Target className="w-6 h-6 text-blue-600" />}
-            title="Overall Progress"
-            value={`${user.profile?.overallProgress || 0}%`}
-            description="Across all modules"
-            trend={user.profile?.overallProgress && user.profile.overallProgress > 0 ? '+' + user.profile.overallProgress : undefined}
-            circularProgress={user.profile?.overallProgress || 0}
-          />
-          <StatsCard
-            icon={<Flame className="w-6 h-6 text-orange-500" />}
-            title="Current Streak"
-            value={`${currentStreak}`}
-            description="Keep it going!"
-            highlighted={currentStreak >= 7}
-            unit="days"
-          />
-          <StatsCard
-            icon={<TrendingUp className="w-6 h-6 text-green-600" />}
-            title="Activities Complete"
-            value={`${completedActivities}`}
-            description={`of ${totalActivities} total`}
-            progress={(completedActivities / totalActivities) * 100}
-          />
-          <StatsCard
-            icon={<Clock className="w-6 h-6 text-purple-600" />}
-            title="Time Invested"
-            value={`${hoursInvested}`}
-            description="Hours spent learning"
-            unit="hours"
-          />
-        </div>
-
-        {/* Journey Visualization - New Design */}
-        <ModuleJourney modules={modulesWithProgress} />
-
-        {/* Two Column Layout */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Continue Journey - Takes 2 columns */}
-          <div className="lg:col-span-2">
-            {currentModule && moduleProgress < 100 && (
-              <ContinueJourney 
-                moduleTitle={currentModule.title}
-                progress={moduleProgress}
-                nextActivity="Continue your activities"
-                estimatedMinutes={15}
-                moduleSlug={`module-${currentModule.orderIndex}`}
-              />
-            )}
-          </div>
-
-          {/* Profile Snapshot */}
-          <div className="lg:col-span-1">
-            <ProfileSnapshot 
-              overallProgress={user.profile?.overallProgress || 0}
-              completedActivities={completedActivities}
-              totalActivities={totalActivities}
-            />
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <QuickActions />
-
-        {/* Recent Activity - Enhanced Design */}
-        {user.activities.length > 0 && (
-          <RecentActivity activities={user.activities} />
-        )}
-
-        {/* Achievements Preview */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Award className="w-6 h-6 text-yellow-500" />
-              Your Achievements
-            </h2>
-          </div>
-          <div className="flex gap-4 items-center">
-            <div className="flex gap-3">
-              <span className="text-4xl opacity-100" title="First Steps">🏅</span>
-              <span className="text-4xl opacity-100" title="Module Complete">🎯</span>
-              <span className="text-4xl opacity-40" title="Locked">🔒</span>
-              <span className="text-4xl opacity-40" title="Locked">🔒</span>
-              <span className="text-4xl opacity-40" title="Locked">🔒</span>
-            </div>
-            <p className="text-sm text-gray-500 ml-4">
-              Unlock more achievements as you progress through your journey!
+      {/* Main Content */}
+      <main className="flex-1 ml-56 p-8">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Welcome Section */}
+          <div className="space-y-2">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 bg-clip-text text-transparent">
+              Welcome back, {user.name}! 👋
+            </h1>
+            <p className="text-lg text-gray-600">
+              Let&apos;s continue building your pathway to success.
             </p>
           </div>
+
+          {/* Stats Overview - 4 Cards */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatsCard
+              icon={<Target className="w-6 h-6 text-blue-600" />}
+              title="Overall Progress"
+              value={`${user.profile?.overallProgress || 0}%`}
+              description="Across all modules"
+              circularProgress={user.profile?.overallProgress || 0}
+            />
+            <StatsCard
+              icon={<Flame className="w-6 h-6 text-orange-500" />}
+              title="Current Streak"
+              value={`${currentStreak}`}
+              description="Keep it going!"
+              highlighted={currentStreak >= 7}
+              unit="days"
+            />
+            <StatsCard
+              icon={<Award className="w-6 h-6 text-green-600" />}
+              title="Activities"
+              value={`${completedActivities}`}
+              description={`of ${totalActivities} total`}
+              progress={(completedActivities / totalActivities) * 100}
+            />
+            <StatsCard
+              icon={<Clock className="w-6 h-6 text-purple-600" />}
+              title="Time Invested"
+              value={`${hoursInvested}`}
+              description="Hours learning"
+              unit="hours"
+            />
+          </div>
+
+          {/* Module Tracker - Full Width */}
+          <ModuleTracker modules={modulesWithProgress} />
+
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Passion Project Card - 2 columns */}
+            <div className="lg:col-span-2">
+              <PassionProjectCard {...projectData} />
+            </div>
+
+            {/* Strengths Card - 1 column */}
+            <div className="lg:col-span-1">
+              <StrengthsCard traits={traits} />
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <QuickActions />
+
+          {/* Recent Activity */}
+          {user.activities.length > 0 && (
+            <RecentActivity activities={user.activities} />
+          )}
+
+          {/* Achievements Preview */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <Award className="w-6 h-6 text-yellow-500" />
+                Your Achievements
+              </h2>
+            </div>
+            <div className="flex gap-4 items-center">
+              <div className="flex gap-3">
+                <span className="text-4xl opacity-100" title="First Steps">🏅</span>
+                <span className="text-4xl opacity-100" title="Module Complete">🎯</span>
+                <span className="text-4xl opacity-40" title="Locked">🔒</span>
+                <span className="text-4xl opacity-40" title="Locked">🔒</span>
+                <span className="text-4xl opacity-40" title="Locked">🔒</span>
+              </div>
+              <p className="text-sm text-gray-500 ml-4">
+                Unlock more achievements as you progress through your journey!
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
