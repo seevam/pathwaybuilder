@@ -83,11 +83,14 @@ export default async function DashboardPage() {
         }
       }
 
+      // Fix TypeScript error by extracting progressPercent first
+      const progressPercent = progress?.progressPercent ?? 0
+      
       return {
         ...module,
-        progress: progress?.progressPercent || 0,
-        status: progress?.progressPercent === 100 ? 'completed' : 
-                progress?.progressPercent > 0 ? 'active' : 'pending',
+        progress: progressPercent,
+        status: progressPercent === 100 ? 'completed' : 
+                progressPercent > 0 ? 'active' : 'pending',
         isUnlocked
       }
     })
