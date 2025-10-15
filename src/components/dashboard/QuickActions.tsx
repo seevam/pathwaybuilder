@@ -1,4 +1,6 @@
 // src/components/dashboard/QuickActions.tsx
+'use client'
+
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { BarChart3, Rocket, MessageCircle, Award } from 'lucide-react'
