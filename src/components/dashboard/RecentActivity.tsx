@@ -1,68 +1,76 @@
+// src/components/dashboard/QuickActions.tsx
+import Link from 'next/link'
 import { Card } from '@/components/ui/card'
-import { CheckCircle2, Award, TrendingUp } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
+import { BarChart3, Rocket, MessageCircle, Award } from 'lucide-react'
 
-interface Activity {
-  id: string
-  completed: boolean
-  completedAt: Date | null
-  activity: {
-    id: string
-    title: string
-    type: string
-  }
-}
+const quickActions = [
+  {
+    icon: BarChart3,
+    title: 'View Insights',
+    description: 'See your personalized results',
+    href: '/insights',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100',
+    iconBg: 'bg-blue-100',
+    iconColor: 'text-blue-600',
+  },
+  {
+    icon: Rocket,
+    title: 'Start Project',
+    description: 'Build your portfolio',
+    href: '/projects/brainstorm',
+    gradient: 'from-green-500 to-green-600',
+    bgGradient: 'from-green-50 to-green-100',
+    iconBg: 'bg-green-100',
+    iconColor: 'text-green-600',
+  },
+  {
+    icon: Award,
+    title: 'View Badges',
+    description: 'See achievements',
+    href: '/badges',
+    gradient: 'from-purple-500 to-purple-600',
+    bgGradient: 'from-purple-50 to-purple-100',
+    iconBg: 'bg-purple-100',
+    iconColor: 'text-purple-600',
+  },
+  {
+    icon: MessageCircle,
+    title: 'Get Help',
+    description: 'Access support',
+    href: '/help',
+    gradient: 'from-orange-500 to-orange-600',
+    bgGradient: 'from-orange-50 to-orange-100',
+    iconBg: 'bg-orange-100',
+    iconColor: 'text-orange-600',
+  },
+]
 
-interface RecentActivityProps {
-  activities: Activity[]
-}
-
-export function RecentActivity({ activities }: RecentActivityProps) {
-  // Get unique recent activities (last 5)
-  const recentActivities = activities.slice(0, 5)
-
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'ASSESSMENT':
-        return <Award className="w-5 h-5 text-purple-500" />
-      case 'INTERACTIVE':
-        return <TrendingUp className="w-5 h-5 text-blue-500" />
-      default:
-        return <CheckCircle2 className="w-5 h-5 text-green-500" />
-    }
-  }
-
+export function QuickActions() {
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
-        
-        {recentActivities.length === 0 ? (
-          <p className="text-gray-500 text-sm py-4">
-            No activities completed yet. Start your first module to get going!
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {recentActivities.map((completion) => (
-              <li key={completion.id} className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0">
-                <div className="flex-shrink-0 mt-0.5">
-                  {getActivityIcon(completion.activity.type)}
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {quickActions.map((action) => {
+          const Icon = action.icon
+          return (
+            <Link key={action.href} href={action.href}>
+              <Card className={`h-full transition-all hover:shadow-xl hover:scale-105 cursor-pointer border-2 border-transparent hover:border-gray-200 bg-gradient-to-br ${action.bgGradient}`}>
+                <div className="p-6 space-y-4">
+                  <div className={`w-14 h-14 ${action.iconBg} rounded-2xl flex items-center justify-center shadow-md`}>
+                    <Icon className={`w-7 h-7 ${action.iconColor}`} />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-gray-900 text-lg">{action.title}</h3>
+                    <p className="text-sm text-gray-600">{action.description}</p>
+                  </div>
+                  <div className={`h-1 w-16 bg-gradient-to-r ${action.gradient} rounded-full`} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">
-                    Completed &quot;{completion.activity.title}&quot;
-                  </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {completion.completedAt
-                      ? formatDistanceToNow(new Date(completion.completedAt), { addSuffix: true })
-                      : 'Recently'}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+              </Card>
+            </Link>
+          )
+        })}
       </div>
-    </Card>
+    </div>
   )
 }
