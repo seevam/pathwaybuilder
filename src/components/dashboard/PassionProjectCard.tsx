@@ -129,7 +129,7 @@ export function PassionProjectCard({
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🚀</div>
           <p className="text-gray-600 mb-6">
-            You haven't started a passion project yet.
+            You haven&apos;t started a passion project yet.
           </p>
           <Link href="/projects/brainstorm">
             <Button size="lg">
