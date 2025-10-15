@@ -1,4 +1,6 @@
 // src/components/dashboard/ProfileSnapshot.tsx
+'use client'
+
 import { AlertCircle, TrendingUp, Award } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 
