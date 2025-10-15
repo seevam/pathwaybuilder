@@ -1,4 +1,6 @@
 // src/components/dashboard/ModuleJourney.tsx
+'use client'
+
 import Link from 'next/link'
 import { LockIcon } from 'lucide-react'
 
