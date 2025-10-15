@@ -1,3 +1,4 @@
+// src/components/dashboard/QuickActions.tsx
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { BarChart3, Rocket, MessageCircle, Award } from 'lucide-react'
@@ -5,56 +6,65 @@ import { BarChart3, Rocket, MessageCircle, Award } from 'lucide-react'
 const quickActions = [
   {
     icon: BarChart3,
-    title: 'View Assessment Results',
-    description: 'See your personalized insights',
+    title: 'View Insights',
+    description: 'See your personalized results',
     href: '/insights',
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
+    gradient: 'from-blue-500 to-blue-600',
+    bgGradient: 'from-blue-50 to-blue-100',
+    iconBg: 'bg-blue-100',
+    iconColor: 'text-blue-600',
   },
   {
     icon: Rocket,
-    title: 'Start Passion Project',
-    description: 'Begin building your portfolio',
+    title: 'Start Project',
+    description: 'Build your portfolio',
     href: '/projects/brainstorm',
-    color: 'text-green-600',
-    bgColor: 'bg-green-50',
+    gradient: 'from-green-500 to-green-600',
+    bgGradient: 'from-green-50 to-green-100',
+    iconBg: 'bg-green-100',
+    iconColor: 'text-green-600',
   },
   {
     icon: Award,
     title: 'View Badges',
-    description: 'See your achievements',
+    description: 'See achievements',
     href: '/badges',
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
+    gradient: 'from-purple-500 to-purple-600',
+    bgGradient: 'from-purple-50 to-purple-100',
+    iconBg: 'bg-purple-100',
+    iconColor: 'text-purple-600',
   },
   {
     icon: MessageCircle,
-    title: 'Get Help & Support',
-    description: 'Access resources and FAQs',
+    title: 'Get Help',
+    description: 'Access support',
     href: '/help',
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-50',
+    gradient: 'from-orange-500 to-orange-600',
+    bgGradient: 'from-orange-50 to-orange-100',
+    iconBg: 'bg-orange-100',
+    iconColor: 'text-orange-600',
   },
 ]
 
 export function QuickActions() {
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {quickActions.map((action) => {
           const Icon = action.icon
           return (
             <Link key={action.href} href={action.href}>
-              <Card className="h-full transition-all hover:shadow-md hover:scale-105 cursor-pointer">
-                <div className="p-6 space-y-3">
-                  <div className={`w-12 h-12 ${action.bgColor} rounded-lg flex items-center justify-center`}>
-                    <Icon className={`w-6 h-6 ${action.color}`} />
+              <Card className={`h-full transition-all hover:shadow-xl hover:scale-105 cursor-pointer border-2 border-transparent hover:border-gray-200 bg-gradient-to-br ${action.bgGradient}`}>
+                <div className="p-6 space-y-4">
+                  <div className={`w-14 h-14 ${action.iconBg} rounded-2xl flex items-center justify-center shadow-md`}>
+                    <Icon className={`w-7 h-7 ${action.iconColor}`} />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="font-semibold text-gray-900">{action.title}</h3>
-                    <p className="text-sm text-gray-500">{action.description}</p>
+                    <h3 className="font-bold text-gray-900 text-lg">{action.title}</h3>
+                    <p className="text-sm text-gray-600">{action.description}</p>
                   </div>
+                  <div className={`h-1 w-16 bg-gradient-to-r ${action.gradient} rounded-full`} />
                 </div>
               </Card>
             </Link>
