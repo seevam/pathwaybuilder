@@ -25,89 +25,176 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
   const analyserRef = useRef<AnalyserNode | null>(null)
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const animationFrameRef = useRef<number | null>(null)
+  const isStoppingRef = useRef(false)
+  const streamRef = useRef<MediaStream | null>(null)
+
+  // Cleanup function
+  const cleanup = useCallback(() => {
+    console.log('[RECORDER] Cleaning up resources')
+    
+    // Clear timers
+    if (silenceTimerRef.current) {
+      clearInterval(silenceTimerRef.current)
+      silenceTimerRef.current = null
+    }
+    
+    // Cancel animation frame
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current)
+      animationFrameRef.current = null
+    }
+    
+    // Close audio context
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      audioContextRef.current.close().catch(err => {
+        console.error('[RECORDER] Error closing audio context:', err)
+      })
+      audioContextRef.current = null
+    }
+    
+    // Stop all tracks
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        track.stop()
+        console.log('[RECORDER] Stopped track:', track.kind)
+      })
+      streamRef.current = null
+    }
+    
+    analyserRef.current = null
+    isStoppingRef.current = false
+    setSilenceCountdown(3)
+  }, [])
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (silenceTimerRef.current) {
-        clearTimeout(silenceTimerRef.current)
-      }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-      if (audioContextRef.current) {
-        audioContextRef.current.close()
-      }
+      console.log('[RECORDER] Component unmounting, cleaning up')
+      cleanup()
     }
-  }, [])
+  }, [cleanup])
 
   const detectSilence = useCallback(() => {
-    if (!analyserRef.current || !isRecording) return
+    if (!analyserRef.current || !isRecording) {
+      console.log('[SILENCE] Stopping detection - no analyser or not recording')
+      return
+    }
 
     const analyser = analyserRef.current
     const bufferLength = analyser.frequencyBinCount
     const dataArray = new Uint8Array(bufferLength)
     
+    let consecutiveSilenceFrames = 0
+    const SILENCE_THRESHOLD = 10
+    const FRAMES_FOR_ONE_SECOND = 60 // Approximate, depends on requestAnimationFrame rate
+    
     const checkAudio = () => {
-      if (!isRecording) return
-
-      analyser.getByteFrequencyData(dataArray)
-      
-      // Calculate average volume
-      const average = dataArray.reduce((a, b) => a + b) / bufferLength
-      
-      // Threshold for silence (adjust as needed, lower = more sensitive)
-      const SILENCE_THRESHOLD = 10
-      
-      if (average < SILENCE_THRESHOLD) {
-        // Sound is below threshold - start/continue countdown
-        if (!silenceTimerRef.current) {
-          // Start countdown
-          let countdown = 3
-          setSilenceCountdown(countdown)
-          
-          console.log('[SILENCE] Starting countdown from 3...')
-          
-          silenceTimerRef.current = setInterval(() => {
-            countdown--
-            console.log('[SILENCE] Countdown:', countdown)
-            setSilenceCountdown(countdown)
-            
-            if (countdown <= 0) {
-              console.log('[SILENCE] Silence detected - auto-stopping recording')
-              if (silenceTimerRef.current) {
-                clearInterval(silenceTimerRef.current)
-                silenceTimerRef.current = null
-              }
-              stopRecording()
-            }
-          }, 1000)
-        }
-      } else {
-        // Sound detected - reset timer
-        if (silenceTimerRef.current) {
-          console.log('[SILENCE] Sound detected - resetting countdown')
-          clearInterval(silenceTimerRef.current)
-          silenceTimerRef.current = null
-          setSilenceCountdown(3)
-        }
+      // Safety check - stop if not recording
+      if (!isRecording || isStoppingRef.current) {
+        console.log('[SILENCE] Stopping audio check - not recording or already stopping')
+        return
       }
-      
-      // Continue checking
-      animationFrameRef.current = requestAnimationFrame(checkAudio)
+
+      try {
+        analyser.getByteFrequencyData(dataArray)
+        
+        // Calculate average volume
+        const average = dataArray.reduce((a, b) => a + b) / bufferLength
+        
+        if (average < SILENCE_THRESHOLD) {
+          consecutiveSilenceFrames++
+          
+          // Calculate seconds of silence
+          const silenceSeconds = Math.floor(consecutiveSilenceFrames / FRAMES_FOR_ONE_SECOND)
+          
+          if (silenceSeconds > 0 && silenceSeconds <= 3) {
+            const countdown = 3 - silenceSeconds
+            if (countdown !== silenceCountdown) {
+              console.log('[SILENCE] Countdown:', countdown)
+              setSilenceCountdown(countdown)
+            }
+            
+            if (silenceSeconds >= 3) {
+              console.log('[SILENCE] 3 seconds of silence detected - stopping')
+              stopRecording()
+              return // Exit the recursion
+            }
+          }
+        } else {
+          // Sound detected - reset
+          if (consecutiveSilenceFrames > 0) {
+            console.log('[SILENCE] Sound detected - resetting')
+            consecutiveSilenceFrames = 0
+            setSilenceCountdown(3)
+          }
+        }
+        
+        // Continue checking
+        animationFrameRef.current = requestAnimationFrame(checkAudio)
+      } catch (err) {
+        console.error('[SILENCE] Error in audio check:', err)
+        stopRecording()
+      }
     }
     
     checkAudio()
-  }, [isRecording])
+  }, [isRecording, silenceCountdown])
+
+  const stopRecording = useCallback(() => {
+    console.log('[RECORDER] stopRecording called')
+    
+    // Prevent multiple calls
+    if (isStoppingRef.current) {
+      console.log('[RECORDER] Already stopping, ignoring')
+      return
+    }
+    
+    isStoppingRef.current = true
+    
+    // Stop animation frame first
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current)
+      animationFrameRef.current = null
+    }
+    
+    // Clear silence timer
+    if (silenceTimerRef.current) {
+      clearInterval(silenceTimerRef.current)
+      silenceTimerRef.current = null
+    }
+    
+    // Stop media recorder
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      console.log('[RECORDER] Stopping MediaRecorder')
+      try {
+        mediaRecorderRef.current.stop()
+      } catch (err) {
+        console.error('[RECORDER] Error stopping media recorder:', err)
+      }
+    }
+    
+    setIsRecording(false)
+  }, [])
 
   const startRecording = useCallback(async () => {
     try {
+      console.log('[RECORDER] Starting recording')
+      
       // Check if getUserMedia is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         setError('Audio recording is not supported in this browser')
         setIsSupported(false)
         return
       }
+
+      // Clean up any existing resources first
+      cleanup()
+      
+      // Reset state
+      isStoppingRef.current = false
+      chunksRef.current = []
+      setAudioBlob(null)
+      setSilenceCountdown(3)
 
       // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -117,97 +204,78 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
           sampleRate: 44100,
         } 
       })
+      
+      streamRef.current = stream
 
       // Create audio context for silence detection
       const audioContext = new AudioContext()
       const source = audioContext.createMediaStreamSource(stream)
       const analyser = audioContext.createAnalyser()
       analyser.fftSize = 2048
+      analyser.smoothingTimeConstant = 0.8
       source.connect(analyser)
       
       audioContextRef.current = audioContext
       analyserRef.current = analyser
 
       // Create MediaRecorder
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-      })
+      let mimeType = 'audio/webm;codecs=opus'
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/webm'
+      }
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/mp4'
+      }
+      
+      console.log('[RECORDER] Using mime type:', mimeType)
 
-      chunksRef.current = []
+      const mediaRecorder = new MediaRecorder(stream, { mimeType })
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           chunksRef.current.push(event.data)
+          console.log('[RECORDER] Data chunk received, size:', event.data.size)
         }
       }
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
+        console.log('[RECORDER] MediaRecorder stopped, creating blob')
+        const blob = new Blob(chunksRef.current, { type: mimeType })
+        console.log('[RECORDER] Blob created, size:', blob.size)
         setAudioBlob(blob)
         
-        // Stop all tracks
-        stream.getTracks().forEach(track => track.stop())
-        
-        // Cleanup
-        if (silenceTimerRef.current) {
-          clearInterval(silenceTimerRef.current)
-          silenceTimerRef.current = null
-        }
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current)
-          animationFrameRef.current = null
-        }
-        if (audioContextRef.current) {
-          audioContextRef.current.close()
-          audioContextRef.current = null
-        }
+        // Cleanup after stopping
+        cleanup()
       }
 
       mediaRecorder.onerror = (event: any) => {
-        console.error('MediaRecorder error:', event)
+        console.error('[RECORDER] MediaRecorder error:', event)
         setError('Recording failed')
         setIsRecording(false)
+        cleanup()
       }
 
       mediaRecorderRef.current = mediaRecorder
       mediaRecorder.start()
       setIsRecording(true)
       setError(null)
-      setSilenceCountdown(3)
 
       // Start silence detection after a short delay
       setTimeout(() => {
+        console.log('[RECORDER] Starting silence detection')
         detectSilence()
-      }, 500)
+      }, 1000)
 
     } catch (err: any) {
-      console.error('Error starting recording:', err)
+      console.error('[RECORDER] Error starting recording:', err)
       setError(err.message || 'Failed to start recording')
       setIsRecording(false)
+      cleanup()
     }
-  }, [detectSilence])
-
-  const stopRecording = useCallback(() => {
-    console.log('[RECORDER] stopRecording called, isRecording:', isRecording)
-    
-    if (mediaRecorderRef.current && isRecording) {
-      // Clear timers first
-      if (silenceTimerRef.current) {
-        clearInterval(silenceTimerRef.current)
-        silenceTimerRef.current = null
-      }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-        animationFrameRef.current = null
-      }
-      
-      console.log('[RECORDER] Stopping MediaRecorder')
-      mediaRecorderRef.current.stop()
-      setIsRecording(false)
-    }
-  }, [isRecording])
+  }, [cleanup, detectSilence])
 
   const clearRecording = useCallback(() => {
+    console.log('[RECORDER] Clearing recording')
     setAudioBlob(null)
     chunksRef.current = []
     setSilenceCountdown(3)
