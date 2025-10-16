@@ -100,6 +100,7 @@ model User {
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   
   // Relations
   profile        Profile?
@@ -107,9 +108,12 @@ model User {
   reflections    Reflection[]
   projects       Project[]
   moduleProgress ModuleProgress[]
+  learningSessions LearningSession[]
   
   @@index([clerkId])
   @@index([email])
+
+
 }
 
 // User profile
