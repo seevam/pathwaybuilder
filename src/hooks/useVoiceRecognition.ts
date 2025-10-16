@@ -1,5 +1,5 @@
 // src/hooks/useVoiceRecognition.ts
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAudioRecorder } from './useAudioRecorder'
 
 interface UseVoiceRecognitionReturn {
@@ -20,6 +20,7 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
   const [interimTranscript, setInterimTranscript] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isTranscribing, setIsTranscribing] = useState(false)
+  const hasTranscribedRef = useRef(false)
   
   const {
     isRecording,
@@ -39,25 +40,13 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
     }
   }, [recordingError])
 
-  // Transcribe when recording stops and we have audio
-  useEffect(() => {
-    console.log('[VOICE-REC] State changed:', {
-      hasAudioBlob: !!audioBlob,
-      isRecording,
-      isTranscribing
-    })
-    
-    if (audioBlob && !isRecording && !isTranscribing) {
-      console.log('[VOICE-REC] Conditions met for transcription, calling transcribeAudio')
-      transcribeAudio(audioBlob)
-    }
-  }, [audioBlob, isRecording, isTranscribing, transcribeAudio])
-
+  // Transcribe function - defined first
   const transcribeAudio = useCallback(async (blob: Blob) => {
     console.log('[TRANSCRIBE] Starting transcription, blob size:', blob.size)
     setIsTranscribing(true)
     setError(null)
     setInterimTranscript('Transcribing...')
+    hasTranscribedRef.current = true
 
     try {
       // Create form data with audio file
@@ -97,9 +86,31 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
     }
   }, [clearRecording])
 
+  // Transcribe when recording stops and we have audio - NOW defined after transcribeAudio
+  useEffect(() => {
+    console.log('[VOICE-REC] State changed:', {
+      hasAudioBlob: !!audioBlob,
+      isRecording,
+      isTranscribing,
+      hasTranscribed: hasTranscribedRef.current
+    })
+    
+    // Only transcribe if we have a blob, not recording, not already transcribing, and haven't transcribed this blob yet
+    if (audioBlob && !isRecording && !isTranscribing && !hasTranscribedRef.current) {
+      console.log('[VOICE-REC] Conditions met for transcription, calling transcribeAudio')
+      transcribeAudio(audioBlob)
+    }
+    
+    // Reset the flag when we start recording again
+    if (isRecording) {
+      hasTranscribedRef.current = false
+    }
+  }, [audioBlob, isRecording, isTranscribing, transcribeAudio])
+
   const startListening = useCallback(async () => {
     setError(null)
     setInterimTranscript('Recording...')
+    hasTranscribedRef.current = false
     await startRecording()
   }, [startRecording])
 
@@ -110,6 +121,7 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
   const resetTranscript = useCallback(() => {
     setTranscript('')
     setInterimTranscript('')
+    hasTranscribedRef.current = false
     clearRecording()
   }, [clearRecording])
 
