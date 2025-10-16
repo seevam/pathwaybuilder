@@ -66,12 +66,19 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
           let countdown = 3
           setSilenceCountdown(countdown)
           
+          console.log('[SILENCE] Starting countdown from 3...')
+          
           silenceTimerRef.current = setInterval(() => {
             countdown--
+            console.log('[SILENCE] Countdown:', countdown)
             setSilenceCountdown(countdown)
             
             if (countdown <= 0) {
-              console.log('Silence detected - auto-stopping')
+              console.log('[SILENCE] Silence detected - auto-stopping recording')
+              if (silenceTimerRef.current) {
+                clearInterval(silenceTimerRef.current)
+                silenceTimerRef.current = null
+              }
               stopRecording()
             }
           }, 1000)
@@ -79,6 +86,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       } else {
         // Sound detected - reset timer
         if (silenceTimerRef.current) {
+          console.log('[SILENCE] Sound detected - resetting countdown')
           clearInterval(silenceTimerRef.current)
           silenceTimerRef.current = null
           setSilenceCountdown(3)
@@ -180,11 +188,10 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
   }, [detectSilence])
 
   const stopRecording = useCallback(() => {
+    console.log('[RECORDER] stopRecording called, isRecording:', isRecording)
+    
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop()
-      setIsRecording(false)
-      
-      // Clear timers
+      // Clear timers first
       if (silenceTimerRef.current) {
         clearInterval(silenceTimerRef.current)
         silenceTimerRef.current = null
@@ -193,6 +200,10 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
         cancelAnimationFrame(animationFrameRef.current)
         animationFrameRef.current = null
       }
+      
+      console.log('[RECORDER] Stopping MediaRecorder')
+      mediaRecorderRef.current.stop()
+      setIsRecording(false)
     }
   }, [isRecording])
 
