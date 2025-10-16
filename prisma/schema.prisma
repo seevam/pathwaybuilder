@@ -59,6 +59,37 @@ enum DocumentType {
   OTHER
 }
 
+enum SessionCategory {
+  ACADEMIC
+  CAREER
+  PERSONAL_DEV
+  COLLEGE_PREP
+  EMOTIONAL
+  TECHNICAL
+}
+
+enum SessionMode {
+  TEXT
+  VOICE
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+
+enum QuestionCategory {
+  HOMEWORK_HELP
+  CONCEPT_CLARIFICATION
+  CAREER_ADVICE
+  STUDY_STRATEGY
+  COLLEGE_APPS
+  EMOTIONAL_SUPPORT
+  PLATFORM_HELP
+  OTHER
+}
+
+
 // User model - synced with Clerk
 model User {
   id        String   @id @default(cuid())
@@ -322,4 +353,53 @@ model ProjectDocument {
   createdAt   DateTime @default(now())
   
   @@index([projectId])
+}
+
+model LearningSession {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title           String?
+  category        SessionCategory?
+  mode            SessionMode @default(TEXT)
+  
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  duration        Int?
+  
+  messages        LearningMessage[]
+  
+  // Analytics
+  messageCount    Int @default(0)
+  rating          Int?
+  feedback        String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([category])
+}
+
+model LearningMessage {
+  id          String   @id @default(cuid())
+  sessionId   String
+  session     LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  role        MessageRole
+  content     String @db.Text
+  category    QuestionCategory?
+  
+  // Voice specific (Phase 2)
+  audioUrl    String?
+  transcript  String? @db.Text
+  
+  // AI metadata
+  modelUsed   String?
+  tokens      Int?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([sessionId])
 }
