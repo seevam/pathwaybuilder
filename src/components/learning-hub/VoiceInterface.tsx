@@ -26,7 +26,6 @@ export function VoiceInterface({
 }: VoiceInterfaceProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentResponse, setCurrentResponse] = useState('')
-  const [silenceCountdown, setSilenceCountdown] = useState(3)
   const { toast } = useToast()
 
   const {
@@ -35,46 +34,27 @@ export function VoiceInterface({
     interimTranscript,
     isSupported: voiceSupported,
     error: voiceError,
+    isTranscribing,
     startListening,
     stopListening,
     resetTranscript,
   } = useVoiceRecognition()
 
-  // Countdown timer for visual feedback
-  useEffect(() => {
-    if (isListening && (transcript || interimTranscript)) {
-      setSilenceCountdown(3)
-      const interval = setInterval(() => {
-        setSilenceCountdown(prev => {
-          if (prev <= 0) {
-            clearInterval(interval)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-      return () => clearInterval(interval)
-    }
-  }, [isListening, transcript, interimTranscript])
-
   const {
     isSpeaking,
     isPaused,
     isSupported: ttsSupported,
+    isLoading: ttsLoading,
     speak,
     pause,
     resume,
     stop: stopSpeaking,
     voices,
+    selectedVoice,
+    speed,
     setVoice,
-    setRate,
-    setPitch,
+    setSpeed,
   } = useTextToSpeech()
-
-  // Get the current voice, rate, and pitch from the hook (you'll need to expose these)
-  const [currentVoice, setCurrentVoice] = useState<SpeechSynthesisVoice | null>(null)
-  const [currentRate, setCurrentRate] = useState(1.0)
-  const [currentPitch, setCurrentPitch] = useState(1.0)
 
   // Show welcome message on first load
   useEffect(() => {
@@ -126,11 +106,10 @@ export function VoiceInterface({
       setCurrentResponse(aiResponse)
       
       // Speak the response with current settings
-      setTimeout(() => {
-        speak(aiResponse, {
-          voice: currentVoice || undefined,
-          rate: currentRate,
-          pitch: currentPitch,
+      setTimeout(async () => {
+        await speak(aiResponse, {
+          voice: selectedVoice,
+          speed: speed,
         })
       }, 300)
 
@@ -150,28 +129,12 @@ export function VoiceInterface({
     }
   }
 
-  const handleVoiceChange = (voice: SpeechSynthesisVoice) => {
-    setCurrentVoice(voice)
-    setVoice(voice)
-  }
-
-  const handleRateChange = (rate: number) => {
-    setCurrentRate(rate)
-    setRate(rate)
-  }
-
-  const handlePitchChange = (pitch: number) => {
-    setCurrentPitch(pitch)
-    setPitch(pitch)
-  }
-
-  const handleTestVoice = () => {
+  const handleTestVoice = async () => {
     stopSpeaking()
     const testMessage = "Hi! This is how I sound with the current settings."
-    speak(testMessage, {
-      voice: currentVoice || undefined,
-      rate: currentRate,
-      pitch: currentPitch,
+    await speak(testMessage, {
+      voice: selectedVoice,
+      speed: speed,
     })
   }
 
@@ -183,18 +146,22 @@ export function VoiceInterface({
           Voice Mode Not Available
         </h2>
         <p className="text-gray-600 mb-4">
-          Your browser doesn&apos;t support voice features. Try using Chrome, Edge, or Safari.
+          Your browser doesn&apos;t support audio recording or playback.
         </p>
         <p className="text-sm text-gray-500">
-          Voice recognition and text-to-speech require modern browser features.
+          Try using a modern browser like Chrome, Edge, or Safari.
         </p>
       </div>
     )
   }
 
-  const displayText = isListening 
-    ? (transcript + interimTranscript) || 'Listening...'
+  const displayText = isTranscribing
+    ? 'Transcribing...'
+    : isListening 
+    ? (transcript + ' ' + interimTranscript) || 'Listening...'
     : transcript || 'Tap "Start Speaking" to begin'
+
+  const isLoading = isProcessing || isTranscribing || ttsLoading
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6">
@@ -202,12 +169,10 @@ export function VoiceInterface({
       <div className="w-full max-w-2xl flex justify-end">
         <VoiceSettings
           voices={voices}
-          selectedVoice={currentVoice}
-          rate={currentRate}
-          pitch={currentPitch}
-          onVoiceChange={handleVoiceChange}
-          onRateChange={handleRateChange}
-          onPitchChange={handlePitchChange}
+          selectedVoice={selectedVoice}
+          speed={speed}
+          onVoiceChange={setVoice}
+          onSpeedChange={setSpeed}
           onTest={handleTestVoice}
         />
       </div>
@@ -215,28 +180,32 @@ export function VoiceInterface({
       {/* AI Avatar */}
       <AIAvatar 
         isListening={isListening}
-        isSpeaking={isSpeaking}
+        isSpeaking={isSpeaking || ttsLoading}
         size="lg"
       />
 
       {/* Waveform Visualizer */}
       <WaveformVisualizer 
-        isActive={isListening}
-        color="bg-green-500"
+        isActive={isListening || isSpeaking}
+        color={isListening ? "bg-green-500" : "bg-purple-500"}
       />
 
       {/* Current Transcript or Response */}
       <Card className="w-full max-w-2xl p-6 min-h-[120px]">
-        {isProcessing ? (
+        {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-            <span className="ml-3 text-gray-600">Processing your question...</span>
+            <span className="ml-3 text-gray-600">
+              {isTranscribing ? 'Transcribing your voice...' : 
+               isProcessing ? 'Processing your question...' :
+               'Generating speech...'}
+            </span>
           </div>
         ) : isSpeaking ? (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-purple-700">Yoda is speaking:</span>
+              <span className="text-sm font-semibold text-purple-700">Sage is speaking:</span>
             </div>
             <p className="text-gray-800 leading-relaxed">{currentResponse}</p>
           </div>
@@ -248,9 +217,6 @@ export function VoiceInterface({
             </div>
             <p className="text-gray-800 leading-relaxed">
               {displayText}
-              {interimTranscript && (
-                <span className="text-gray-400 italic">{interimTranscript}</span>
-              )}
             </p>
           </div>
         ) : (
@@ -275,17 +241,17 @@ export function VoiceInterface({
         isSpeaking={isSpeaking}
         isPaused={isPaused}
         onStartListening={startListening}
-        onStopListening={() => {
-          stopListening()
-          // Auto-send after stopping
+        onStopListening={async () => {
+          await stopListening()
+          // Auto-send after transcription completes
           if (transcript.trim()) {
-            setTimeout(() => handleSendMessage(), 500)
+            setTimeout(() => handleSendMessage(), 1000)
           }
         }}
         onPauseSpeaking={pause}
         onResumeSpeaking={resume}
         onStopSpeaking={stopSpeaking}
-        disabled={isProcessing}
+        disabled={isLoading}
       />
 
       {/* Tips */}
@@ -295,10 +261,10 @@ export function VoiceInterface({
           <div>
             <p className="font-semibold mb-1">Voice Mode Tips:</p>
             <ul className="list-disc list-inside space-y-1 text-blue-800">
-              <li>Speak clearly and pause when finished</li>
-              <li>The system auto-stops after 3 seconds of silence</li>
+              <li>Speak clearly - using OpenAI Whisper for transcription</li>
+              <li>Click stop when you&apos;re done speaking</li>
               <li>You can pause/resume my responses anytime</li>
-              <li>Click the settings icon to customize my voice!</li>
+              <li>Customize my voice in settings!</li>
             </ul>
           </div>
         </div>
