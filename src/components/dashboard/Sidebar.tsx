@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { useSidebar } from '@/contexts/SidebarContext'
 
 interface SidebarProps {
   userName: string
@@ -16,21 +17,11 @@ interface SidebarProps {
 
 export function Sidebar({ userName, completedModules, currentStreak, totalAchievements }: SidebarProps) {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const { isCollapsed, setIsCollapsed } = useSidebar()
 
-  // Load collapsed state from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('sidebarCollapsed')
-    if (saved !== null) {
-      setIsCollapsed(saved === 'true')
-    }
-  }, [])
-
-  // Save collapsed state to localStorage
+  // Toggle collapse - this will update the context which triggers layout re-render
   const toggleCollapse = () => {
-    const newState = !isCollapsed
-    setIsCollapsed(newState)
-    localStorage.setItem('sidebarCollapsed', String(newState))
+    setIsCollapsed(!isCollapsed)
   }
 
   const navItems = [
