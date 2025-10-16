@@ -6,34 +6,35 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
-import { Settings, X } from 'lucide-react'
+import { Settings, X, Volume2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+type OpenAIVoice = 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer'
+
+interface VoiceOption {
+  id: OpenAIVoice
+  name: string
+  description: string
+}
+
 interface VoiceSettingsProps {
-  voices: SpeechSynthesisVoice[]
-  selectedVoice: SpeechSynthesisVoice | null
-  rate: number
-  pitch: number
-  onVoiceChange: (voice: SpeechSynthesisVoice) => void
-  onRateChange: (rate: number) => void
-  onPitchChange: (pitch: number) => void
+  voices: VoiceOption[]
+  selectedVoice: OpenAIVoice
+  speed: number
+  onVoiceChange: (voice: OpenAIVoice) => void
+  onSpeedChange: (speed: number) => void
   onTest: () => void
 }
 
 export function VoiceSettings({
   voices,
   selectedVoice,
-  rate,
-  pitch,
+  speed,
   onVoiceChange,
-  onRateChange,
-  onPitchChange,
+  onSpeedChange,
   onTest,
 }: VoiceSettingsProps) {
   const [isOpen, setIsOpen] = useState(false)
-
-  // Filter to English voices only
-  const englishVoices = voices.filter(v => v.lang.startsWith('en-'))
 
   return (
     <>
@@ -72,7 +73,7 @@ export function VoiceSettings({
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
+                    <Volume2 className="w-5 h-5" />
                     Voice Settings
                   </h3>
                   <Button
@@ -87,54 +88,46 @@ export function VoiceSettings({
                 {/* Voice Selection */}
                 <div className="space-y-4">
                   <div>
-                    <Label>Voice</Label>
-                    <select
-                      value={selectedVoice?.name || ''}
-                      onChange={(e) => {
-                        const voice = voices.find(v => v.name === e.target.value)
-                        if (voice) onVoiceChange(voice)
-                      }}
-                      className="w-full mt-1 px-3 py-2 border-2 border-purple-200 rounded-lg focus:border-purple-400 focus:outline-none"
-                    >
-                      {englishVoices.map((voice) => (
-                        <option key={voice.name} value={voice.name}>
-                          {voice.name} ({voice.lang})
-                        </option>
+                    <Label className="text-sm font-semibold mb-3 block">
+                      Choose Voice Personality
+                    </Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {voices.map((voice) => (
+                        <button
+                          key={voice.id}
+                          onClick={() => onVoiceChange(voice.id)}
+                          className={`p-3 rounded-lg border-2 transition-all text-left ${
+                            selectedVoice === voice.id
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 hover:border-purple-300 bg-white'
+                          }`}
+                        >
+                          <div className="font-semibold text-sm">{voice.name}</div>
+                          <div className="text-xs text-gray-600 mt-1">
+                            {voice.description}
+                          </div>
+                        </button>
                       ))}
-                    </select>
+                    </div>
                   </div>
 
                   {/* Speed Control */}
                   <div>
-                    <Label>Speed: {rate.toFixed(1)}x</Label>
+                    <Label className="text-sm font-semibold">
+                      Speed: {speed.toFixed(2)}x
+                    </Label>
                     <Slider
-                      value={[rate]}
-                      onValueChange={([value]) => onRateChange(value)}
-                      min={0.5}
-                      max={2}
-                      step={0.1}
+                      value={[speed]}
+                      onValueChange={([value]) => onSpeedChange(value)}
+                      min={0.25}
+                      max={4.0}
+                      step={0.25}
                       className="mt-2"
                     />
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>Slower</span>
-                      <span>Faster</span>
-                    </div>
-                  </div>
-
-                  {/* Pitch Control */}
-                  <div>
-                    <Label>Pitch: {pitch.toFixed(1)}</Label>
-                    <Slider
-                      value={[pitch]}
-                      onValueChange={([value]) => onPitchChange(value)}
-                      min={0.5}
-                      max={2}
-                      step={0.1}
-                      className="mt-2"
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>Lower</span>
-                      <span>Higher</span>
+                      <span>0.25x (Slower)</span>
+                      <span>1.0x (Normal)</span>
+                      <span>4.0x (Faster)</span>
                     </div>
                   </div>
 
@@ -146,12 +139,20 @@ export function VoiceSettings({
                     }}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600"
                   >
+                    <Volume2 className="w-4 h-4 mr-2" />
                     Test Voice Settings
                   </Button>
 
                   {/* Info */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-xs text-blue-900">
+                      <strong>💡 Tip:</strong> These voices are powered by OpenAI's advanced TTS technology for natural, high-quality speech.
+                    </p>
+                  </div>
+
+                  {/* Cost Info */}
                   <p className="text-xs text-gray-500 text-center">
-                    Settings are saved automatically
+                    Using OpenAI TTS (~$0.015 per 1K characters)
                   </p>
                 </div>
               </Card>
