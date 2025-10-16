@@ -129,7 +129,7 @@ export async function POST(req: Request) {
       where: { id: session.id },
       data: {
         messageCount: { increment: 2 },
-        category: detectedCategory,
+        category: mapQuestionToSessionCategory(detectedCategory),
         title: session.title || message.slice(0, 50), // Use first message as title
         updatedAt: new Date(),
       }
