@@ -17,12 +17,7 @@ interface SidebarProps {
 
 export function Sidebar({ userName, completedModules, currentStreak, totalAchievements }: SidebarProps) {
   const pathname = usePathname()
-  const { isCollapsed, setIsCollapsed } = useSidebar()
-
-  // Toggle collapse - this will update the context which triggers layout re-render
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed)
-  }
+  const { isCollapsed, toggleSidebar } = useSidebar()
 
   const navItems = [
     { href: '/dashboard', label: 'My Journey', icon: Map },
