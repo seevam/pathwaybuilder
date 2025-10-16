@@ -1,7 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
-import { Sidebar } from '@/components/dashboard/Sidebar'
 import { ModuleTracker } from '@/components/dashboard/ModuleTracker'
 import { StrengthsCard } from '@/components/dashboard/StrengthsCard'
 import { PassionProjectCard } from '@/components/dashboard/PassionProjectCard'
@@ -54,7 +53,7 @@ export default async function DashboardPage() {
   const totalActivities = await db.activity.count()
   const completedActivities = user.activities.filter(a => a.completed).length
   
-  const currentStreak = 0 // TODO: Calculate based on actual activity dates
+  const currentStreak = 0
   
   const totalTimeSeconds = user.activities.reduce((acc, a) => acc + (a.timeSpent || 0), 0)
   const hoursInvested = Math.round(totalTimeSeconds / 3600)
@@ -112,14 +111,13 @@ export default async function DashboardPage() {
   const completedModules = modulesWithProgress.filter(m => m.status === 'completed').length
   const totalAchievements = completedModules + (completedActivities >= 10 ? 1 : 0)
 
-  // Get active project data
   const activeProject = user.projects[0]
   const projectData = activeProject ? {
     projectTitle: activeProject.title,
     progress: activeProject.healthScore,
     milestonesCompleted: activeProject.milestones.filter(m => m.status === 'COMPLETED').length,
     totalMilestones: activeProject.milestones.length,
-    streak: 5, // Calculate based on check-ins
+    streak: 5,
     nextActions: activeProject.tasks.slice(0, 3).map(task => ({
       id: task.id,
       title: task.title,
@@ -127,7 +125,6 @@ export default async function DashboardPage() {
     }))
   } : {}
 
-  // Get strengths data from activities
   const strengthsActivity = await db.activityCompletion.findFirst({
     where: {
       userId: user.id,
@@ -144,108 +141,95 @@ export default async function DashboardPage() {
   })) : undefined
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Fixed Sidebar */}
-      <Sidebar
-        userName={user.name}
-        completedModules={completedModules}
-        currentStreak={currentStreak}
-        totalAchievements={totalAchievements}
-      />
+    <div className="max-w-7xl mx-auto space-y-6">
+      {/* Welcome Section */}
+      <div className="space-y-2">
+        <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 bg-clip-text text-transparent">
+          Welcome back, {user.name}! 👋
+        </h1>
+        <p className="text-base md:text-lg text-gray-600">
+          Let&apos;s continue building your pathway to success.
+        </p>
+      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 ml-56 p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Welcome Section */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 bg-clip-text text-transparent">
-              Welcome back, {user.name}! 👋
-            </h1>
-            <p className="text-lg text-gray-600">
-              Let&apos;s continue building your pathway to success.
-            </p>
-          </div>
+      {/* Stats Overview - 4 Cards */}
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          icon={<Target className="w-6 h-6 text-blue-600" />}
+          title="Overall Progress"
+          value={`${user.profile?.overallProgress || 0}%`}
+          description="Across all modules"
+          circularProgress={user.profile?.overallProgress || 0}
+        />
+        <StatsCard
+          icon={<Flame className="w-6 h-6 text-orange-500" />}
+          title="Current Streak"
+          value={`${currentStreak}`}
+          description="Keep it going!"
+          highlighted={currentStreak >= 7}
+          unit="days"
+        />
+        <StatsCard
+          icon={<Award className="w-6 h-6 text-green-600" />}
+          title="Activities"
+          value={`${completedActivities}`}
+          description={`of ${totalActivities} total`}
+          progress={(completedActivities / totalActivities) * 100}
+        />
+        <StatsCard
+          icon={<Clock className="w-6 h-6 text-purple-600" />}
+          title="Time Invested"
+          value={`${hoursInvested}`}
+          description="Hours learning"
+          unit="hours"
+        />
+      </div>
 
-          {/* Stats Overview - 4 Cards */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <StatsCard
-              icon={<Target className="w-6 h-6 text-blue-600" />}
-              title="Overall Progress"
-              value={`${user.profile?.overallProgress || 0}%`}
-              description="Across all modules"
-              circularProgress={user.profile?.overallProgress || 0}
-            />
-            <StatsCard
-              icon={<Flame className="w-6 h-6 text-orange-500" />}
-              title="Current Streak"
-              value={`${currentStreak}`}
-              description="Keep it going!"
-              highlighted={currentStreak >= 7}
-              unit="days"
-            />
-            <StatsCard
-              icon={<Award className="w-6 h-6 text-green-600" />}
-              title="Activities"
-              value={`${completedActivities}`}
-              description={`of ${totalActivities} total`}
-              progress={(completedActivities / totalActivities) * 100}
-            />
-            <StatsCard
-              icon={<Clock className="w-6 h-6 text-purple-600" />}
-              title="Time Invested"
-              value={`${hoursInvested}`}
-              description="Hours learning"
-              unit="hours"
-            />
-          </div>
+      {/* Module Tracker - Full Width */}
+      <ModuleTracker modules={modulesWithProgress} />
 
-          {/* Module Tracker - Full Width */}
-          <ModuleTracker modules={modulesWithProgress} />
-
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Passion Project Card - 2 columns */}
-            <div className="lg:col-span-2">
-              <PassionProjectCard {...projectData} />
-            </div>
-
-            {/* Strengths Card - 1 column */}
-            <div className="lg:col-span-1">
-              <StrengthsCard traits={traits} />
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <QuickActions />
-
-          {/* Recent Activity */}
-          {user.activities.length > 0 && (
-            <RecentActivity activities={user.activities} />
-          )}
-
-          {/* Achievements Preview */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Award className="w-6 h-6 text-yellow-500" />
-                Your Achievements
-              </h2>
-            </div>
-            <div className="flex gap-4 items-center">
-              <div className="flex gap-3">
-                <span className="text-4xl opacity-100" title="First Steps">🏅</span>
-                <span className="text-4xl opacity-100" title="Module Complete">🎯</span>
-                <span className="text-4xl opacity-40" title="Locked">🔒</span>
-                <span className="text-4xl opacity-40" title="Locked">🔒</span>
-                <span className="text-4xl opacity-40" title="Locked">🔒</span>
-              </div>
-              <p className="text-sm text-gray-500 ml-4">
-                Unlock more achievements as you progress through your journey!
-              </p>
-            </div>
-          </div>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Passion Project Card - 2 columns */}
+        <div className="lg:col-span-2">
+          <PassionProjectCard {...projectData} />
         </div>
-      </main>
+
+        {/* Strengths Card - 1 column */}
+        <div className="lg:col-span-1">
+          <StrengthsCard traits={traits} />
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <QuickActions />
+
+      {/* Recent Activity */}
+      {user.activities.length > 0 && (
+        <RecentActivity activities={user.activities} />
+      )}
+
+      {/* Achievements Preview */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Award className="w-6 h-6 text-yellow-500" />
+            Your Achievements
+          </h2>
+        </div>
+        <div className="flex gap-4 items-center flex-wrap">
+          <div className="flex gap-3">
+            <span className="text-4xl opacity-100" title="First Steps">🏅</span>
+            <span className="text-4xl opacity-100" title="Module Complete">🎯</span>
+            <span className="text-4xl opacity-40" title="Locked">🔒</span>
+            <span className="text-4xl opacity-40" title="Locked">🔒</span>
+            <span className="text-4xl opacity-40" title="Locked">🔒</span>
+          </div>
+          <p className="text-sm text-gray-500 ml-4">
+            Unlock more achievements as you progress through your journey!
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
