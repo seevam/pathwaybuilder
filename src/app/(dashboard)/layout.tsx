@@ -24,14 +24,14 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Desktop Sidebar - Hidden on mobile */}
-      <div className="hidden md:block">
+      <aside className="hidden md:block">
         <Sidebar
           userName={userName}
           completedModules={0}
           currentStreak={0}
           totalAchievements={0}
         />
-      </div>
+      </aside>
 
       {/* Mobile Navigation - Visible only on mobile */}
       <div className="md:hidden">
@@ -41,13 +41,15 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
       {/* Main Content - Responsive to sidebar state */}
       <main
         className={`
+          min-h-screen
           transition-all duration-300
-          md:pt-0 pt-16
+          pt-16 md:pt-0 pb-20 md:pb-0
           ${isCollapsed ? 'md:ml-20' : 'md:ml-56'}
-          px-4 md:px-8 py-8
         `}
       >
-        {children}
+        <div className="px-4 md:px-8 py-8">
+          {children}
+        </div>
       </main>
     </div>
   )
