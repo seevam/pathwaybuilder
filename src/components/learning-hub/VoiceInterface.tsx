@@ -7,6 +7,7 @@ import { useTextToSpeech } from '@/hooks/useTextToSpeech'
 import { AIAvatar } from './AIAvatar'
 import { WaveformVisualizer } from './WaveformVisualizer'
 import { VoiceControls } from './VoiceControls'
+import { VoiceSettings } from './VoiceSettings'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
@@ -64,7 +65,16 @@ export function VoiceInterface({
     pause,
     resume,
     stop: stopSpeaking,
+    voices,
+    setVoice,
+    setRate,
+    setPitch,
   } = useTextToSpeech()
+
+  // Get the current voice, rate, and pitch from the hook (you'll need to expose these)
+  const [currentVoice, setCurrentVoice] = useState<SpeechSynthesisVoice | null>(null)
+  const [currentRate, setCurrentRate] = useState(1.0)
+  const [currentPitch, setCurrentPitch] = useState(1.0)
 
   // Show welcome message on first load
   useEffect(() => {
@@ -115,9 +125,13 @@ export function VoiceInterface({
 
       setCurrentResponse(aiResponse)
       
-      // Speak the response
+      // Speak the response with current settings
       setTimeout(() => {
-        speak(aiResponse)
+        speak(aiResponse, {
+          voice: currentVoice || undefined,
+          rate: currentRate,
+          pitch: currentPitch,
+        })
       }, 300)
 
       // Notify parent
@@ -134,6 +148,31 @@ export function VoiceInterface({
     } finally {
       setIsProcessing(false)
     }
+  }
+
+  const handleVoiceChange = (voice: SpeechSynthesisVoice) => {
+    setCurrentVoice(voice)
+    setVoice(voice)
+  }
+
+  const handleRateChange = (rate: number) => {
+    setCurrentRate(rate)
+    setRate(rate)
+  }
+
+  const handlePitchChange = (pitch: number) => {
+    setCurrentPitch(pitch)
+    setPitch(pitch)
+  }
+
+  const handleTestVoice = () => {
+    stopSpeaking()
+    const testMessage = "Hi! This is how I sound with the current settings."
+    speak(testMessage, {
+      voice: currentVoice || undefined,
+      rate: currentRate,
+      pitch: currentPitch,
+    })
   }
 
   if (!voiceSupported || !ttsSupported) {
@@ -159,6 +198,20 @@ export function VoiceInterface({
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6">
+      {/* Voice Settings Button */}
+      <div className="w-full max-w-2xl flex justify-end">
+        <VoiceSettings
+          voices={voices}
+          selectedVoice={currentVoice}
+          rate={currentRate}
+          pitch={currentPitch}
+          onVoiceChange={handleVoiceChange}
+          onRateChange={handleRateChange}
+          onPitchChange={handlePitchChange}
+          onTest={handleTestVoice}
+        />
+      </div>
+
       {/* AI Avatar */}
       <AIAvatar 
         isListening={isListening}
@@ -183,7 +236,7 @@ export function VoiceInterface({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-purple-700">Sage is speaking:</span>
+              <span className="text-sm font-semibold text-purple-700">Yoda is speaking:</span>
             </div>
             <p className="text-gray-800 leading-relaxed">{currentResponse}</p>
           </div>
@@ -245,7 +298,7 @@ export function VoiceInterface({
               <li>Speak clearly and pause when finished</li>
               <li>The system auto-stops after 3 seconds of silence</li>
               <li>You can pause/resume my responses anytime</li>
-              <li>Switch to text mode if voice isn&apos;t working well</li>
+              <li>Click the settings icon to customize my voice!</li>
             </ul>
           </div>
         </div>
