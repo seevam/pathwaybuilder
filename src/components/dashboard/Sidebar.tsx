@@ -43,7 +43,7 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
   return (
     <aside
       className={cn(
-        'bg-white border-r border-gray-200 fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-50',
+        'bg-white border-r border-gray-200 fixed left-0 top-0 h-screen flex flex-col transition-all duration-300 z-40',
         isCollapsed ? 'w-20' : 'w-56'
       )}
     >
@@ -92,7 +92,7 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
               
               {/* Tooltip when collapsed */}
               {isCollapsed && (
-                <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                   {item.label}
                 </span>
               )}
@@ -146,7 +146,7 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
                 <Star className="w-5 h-5 text-yellow-600 fill-yellow-600" />
               </div>
               <div className="text-xs font-semibold text-gray-600 mt-1">{completedModules}</div>
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                 Modules Completed
               </span>
             </div>
@@ -156,7 +156,7 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
                 <Flame className="w-5 h-5 text-orange-600 fill-orange-600" />
               </div>
               <div className="text-xs font-semibold text-gray-600 mt-1">{currentStreak}</div>
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                 Day Streak
               </span>
             </div>
@@ -166,7 +166,7 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
                 <Trophy className="w-5 h-5 text-purple-600 fill-purple-600" />
               </div>
               <div className="text-xs font-semibold text-gray-600 mt-1">{totalAchievements}</div>
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                 Achievements
               </span>
             </div>
