@@ -27,6 +27,9 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
   const animationFrameRef = useRef<number | null>(null)
   const isStoppingRef = useRef(false)
   const streamRef = useRef<MediaStream | null>(null)
+  
+  // ✅ ADD THIS: Use a ref to track recording state for the callback
+  const isRecordingRef = useRef(false)
 
   // Cleanup function
   const cleanup = useCallback(() => {
@@ -63,6 +66,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
     
     analyserRef.current = null
     isStoppingRef.current = false
+    isRecordingRef.current = false // ✅ Reset ref
     setSilenceCountdown(3)
   }, [])
 
@@ -75,10 +79,16 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
   }, [cleanup])
 
   const detectSilence = useCallback(() => {
-    if (!analyserRef.current || !isRecording) {
-      console.log('[SILENCE] Stopping detection - no analyser or not recording')
+    // ✅ CHANGE: Use ref instead of state
+    if (!analyserRef.current || !isRecordingRef.current) {
+      console.log('[SILENCE] Stopping detection - no analyser or not recording', {
+        hasAnalyser: !!analyserRef.current,
+        isRecording: isRecordingRef.current
+      })
       return
     }
+
+    console.log('[SILENCE] Starting detection loop')
 
     const analyser = analyserRef.current
     const bufferLength = analyser.frequencyBinCount
@@ -86,11 +96,11 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
     
     let consecutiveSilenceFrames = 0
     const SILENCE_THRESHOLD = 10
-    const FRAMES_FOR_ONE_SECOND = 60 // Approximate, depends on requestAnimationFrame rate
+    const FRAMES_FOR_ONE_SECOND = 60
     
     const checkAudio = () => {
-      // Safety check - stop if not recording
-      if (!isRecording || isStoppingRef.current) {
+      // ✅ CHANGE: Use ref instead of state
+      if (!isRecordingRef.current || isStoppingRef.current) {
         console.log('[SILENCE] Stopping audio check - not recording or already stopping')
         return
       }
@@ -117,13 +127,13 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
             if (silenceSeconds >= 3) {
               console.log('[SILENCE] 3 seconds of silence detected - stopping')
               stopRecording()
-              return // Exit the recursion
+              return
             }
           }
         } else {
           // Sound detected - reset
           if (consecutiveSilenceFrames > 0) {
-            console.log('[SILENCE] Sound detected - resetting')
+            console.log('[SILENCE] Sound detected - resetting, avg volume:', average)
             consecutiveSilenceFrames = 0
             setSilenceCountdown(3)
           }
@@ -138,7 +148,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
     }
     
     checkAudio()
-  }, [isRecording, silenceCountdown])
+  }, [silenceCountdown]) // ✅ REMOVE isRecording from dependencies
 
   const stopRecording = useCallback(() => {
     console.log('[RECORDER] stopRecording called')
@@ -150,6 +160,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
     }
     
     isStoppingRef.current = true
+    isRecordingRef.current = false // ✅ Update ref
     
     // Stop animation frame first
     if (animationFrameRef.current) {
@@ -252,24 +263,29 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
         console.error('[RECORDER] MediaRecorder error:', event)
         setError('Recording failed')
         setIsRecording(false)
+        isRecordingRef.current = false // ✅ Update ref
         cleanup()
       }
 
       mediaRecorderRef.current = mediaRecorder
       mediaRecorder.start()
+      
+      // ✅ UPDATE: Set both state and ref
       setIsRecording(true)
+      isRecordingRef.current = true
       setError(null)
 
-      // Start silence detection after a short delay
+      // ✅ CHANGE: Start detection after ensuring state is set
       setTimeout(() => {
-        console.log('[RECORDER] Starting silence detection')
+        console.log('[RECORDER] Starting silence detection, isRecording:', isRecordingRef.current)
         detectSilence()
-      }, 1000)
+      }, 1500) // Increased delay to 1.5 seconds
 
     } catch (err: any) {
       console.error('[RECORDER] Error starting recording:', err)
       setError(err.message || 'Failed to start recording')
       setIsRecording(false)
+      isRecordingRef.current = false // ✅ Update ref
       cleanup()
     }
   }, [cleanup, detectSilence])
