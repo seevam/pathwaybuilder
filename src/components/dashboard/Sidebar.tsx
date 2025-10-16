@@ -23,6 +23,8 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
     { href: '/profile', label: 'Profile', icon: User },
     { href: '/projects', label: 'Projects', icon: Rocket },
     { href: '/insights', label: 'Insights', icon: Award },
+    { href: '/learning-hub', label: 'Yoda AI', icon: Robot },
+
   ]
 
   return (
