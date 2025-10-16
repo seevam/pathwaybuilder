@@ -146,7 +146,7 @@ export function VoiceSettings({
                   {/* Info */}
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <p className="text-xs text-blue-900">
-                      <strong>💡 Tip:</strong> These voices are powered by OpenAI's advanced TTS technology for natural, high-quality speech.
+                      <strong>💡 Tip:</strong> These voices are powered by OpenAI&apos;s advanced TTS technology for natural, high-quality speech.
                     </p>
                   </div>
 
