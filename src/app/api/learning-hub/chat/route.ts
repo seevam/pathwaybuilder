@@ -5,22 +5,24 @@ import { db } from '@/lib/db'
 import { LearningHubService } from '@/lib/services/learning-hub-service'
 import { z } from 'zod'
 import { Prisma, SessionCategory } from '@prisma/client'
+import { SessionCategory } from '@prisma/client'
 
 
-function mapQuestionToSessionCategory(qc: string): string | null {
+
+function mapQuestionToSessionCategory(qc: string): SessionCategory | null {
   switch (qc) {
     case 'HOMEWORK_HELP':
     case 'CONCEPT_CLARIFICATION':
     case 'STUDY_STRATEGY':
-      return 'ACADEMIC'
+      return SessionCategory.ACADEMIC
     case 'CAREER_ADVICE':
-      return 'CAREER'
+      return SessionCategory.CAREER
     case 'COLLEGE_APPS':
-      return 'COLLEGE_PREP'
+      return SessionCategory.COLLEGE_PREP
     case 'EMOTIONAL_SUPPORT':
-      return 'EMOTIONAL'
+      return SessionCategory.EMOTIONAL
     case 'PLATFORM_HELP':
-      return 'TECHNICAL'
+      return SessionCategory.TECHNICAL
     default:
       return null
   }
@@ -127,6 +129,7 @@ export async function POST(req: Request) {
     })
 
     // Update session
+    const mappedCategory = mapQuestionToSessionCategory(detectedCategory)
     const updatedSession = await db.learningSession.update({
       where: { id: session.id },
       data: {
