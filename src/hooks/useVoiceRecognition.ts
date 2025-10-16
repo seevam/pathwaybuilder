@@ -9,6 +9,7 @@ interface UseVoiceRecognitionReturn {
   isSupported: boolean
   error: string | null
   isTranscribing: boolean
+  silenceCountdown: number
   startListening: () => Promise<void>
   stopListening: () => Promise<void>
   resetTranscript: () => void
@@ -28,6 +29,7 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
     clearRecording,
     error: recordingError,
     isSupported,
+    silenceCountdown,
   } = useAudioRecorder()
 
   // Handle recording errors
@@ -37,9 +39,9 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
     }
   }, [recordingError])
 
-  // Transcribe when recording stops
+  // Transcribe when recording stops and we have audio
   useEffect(() => {
-    if (audioBlob && !isRecording) {
+    if (audioBlob && !isRecording && !isTranscribing) {
       transcribeAudio(audioBlob)
     }
   }, [audioBlob, isRecording])
@@ -47,11 +49,14 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
   const transcribeAudio = async (blob: Blob) => {
     setIsTranscribing(true)
     setError(null)
+    setInterimTranscript('Transcribing...')
 
     try {
       // Create form data with audio file
       const formData = new FormData()
       formData.append('audio', blob, 'recording.webm')
+
+      console.log('Sending audio to Whisper API...')
 
       // Send to Whisper API endpoint
       const response = await fetch('/api/learning-hub/transcribe', {
@@ -66,14 +71,18 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
 
       const data = await response.json()
       
-      // Append new transcript
-      setTranscript(prev => prev + ' ' + data.transcript.trim())
+      console.log('Transcription result:', data.transcript)
+
+      // Set the transcript
+      const newTranscript = data.transcript.trim()
+      setTranscript(newTranscript)
       setInterimTranscript('')
       clearRecording()
 
     } catch (err: any) {
       console.error('Transcription error:', err)
       setError(err.message || 'Failed to transcribe audio')
+      setInterimTranscript('')
     } finally {
       setIsTranscribing(false)
     }
@@ -87,7 +96,6 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
 
   const stopListening = useCallback(async () => {
     stopAudioRecording()
-    setInterimTranscript('Transcribing...')
   }, [stopAudioRecording])
 
   const resetTranscript = useCallback(() => {
@@ -103,6 +111,7 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
     isSupported,
     error,
     isTranscribing,
+    silenceCountdown,
     startListening,
     stopListening,
     resetTranscript,
