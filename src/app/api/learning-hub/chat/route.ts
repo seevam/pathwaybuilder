@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { LearningHubService } from '@/lib/services/learning-hub-service'
 import { z } from 'zod'
-import { Prisma, SessionCategory } from '@prisma/client'
+
 import { SessionCategory } from '@prisma/client'
 
 
