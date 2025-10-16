@@ -5,6 +5,25 @@ import { db } from '@/lib/db'
 import { LearningHubService } from '@/lib/services/learning-hub-service'
 import { z } from 'zod'
 
+function mapQuestionToSessionCategory(qc: string): string | null {
+  switch (qc) {
+    case 'HOMEWORK_HELP':
+    case 'CONCEPT_CLARIFICATION':
+    case 'STUDY_STRATEGY':
+      return 'ACADEMIC'
+    case 'CAREER_ADVICE':
+      return 'CAREER'
+    case 'COLLEGE_APPS':
+      return 'COLLEGE_PREP'
+    case 'EMOTIONAL_SUPPORT':
+      return 'EMOTIONAL'
+    case 'PLATFORM_HELP':
+      return 'TECHNICAL'
+    default:
+      return null
+  }
+}
+
 const chatSchema = z.object({
   message: z.string().min(1, 'Message cannot be empty'),
   sessionId: z.string().optional(),
