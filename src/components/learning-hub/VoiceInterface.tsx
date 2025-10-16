@@ -29,6 +29,7 @@ export function VoiceInterface({
   const [hasShownWelcome, setHasShownWelcome] = useState(false)
   const { toast } = useToast()
   const lastTranscriptRef = useRef('')
+  const isSendingRef = useRef(false) // ✅ ADD: Track if we're currently sending
 
   const {
     isListening,
@@ -61,13 +62,19 @@ export function VoiceInterface({
 
   // Stable callback for sending messages
   const handleSendMessage = useCallback(async (messageText: string) => {
-    if (!messageText.trim() || isProcessing) {
-      console.log('Cannot send - no message or already processing')
+    // ✅ ADD: Prevent duplicate sends
+    if (!messageText.trim() || isProcessing || isSendingRef.current) {
+      console.log('[AUTO-SEND] Cannot send - already processing or no message', {
+        hasMessage: !!messageText.trim(),
+        isProcessing,
+        isSending: isSendingRef.current
+      })
       return
     }
 
     console.log('[AUTO-SEND] Sending message:', messageText)
     
+    isSendingRef.current = true // ✅ Set flag immediately
     setIsProcessing(true)
     stopSpeaking()
 
@@ -94,7 +101,7 @@ export function VoiceInterface({
       setCurrentResponse(aiResponse)
       lastTranscriptRef.current = '' // Clear after successful send
       
-      // Speak the response immediately
+      // Speak the response
       await speak(aiResponse, {
         voice: selectedVoice,
         speed: speed,
@@ -113,14 +120,18 @@ export function VoiceInterface({
         variant: 'destructive'
       })
       
-      // Restart listening after error
+      // ✅ IMPORTANT: Restart listening after error
       if (conversationActive) {
-        setTimeout(() => startListening(), 1000)
+        setTimeout(() => {
+          console.log('[AUTO-SEND] Restarting after error')
+          startListening()
+        }, 1000)
       }
     } finally {
       setIsProcessing(false)
+      isSendingRef.current = false // ✅ Clear flag
     }
-  }, [isProcessing, sessionId, speak, selectedVoice, speed, onNewMessage, stopSpeaking, toast, conversationActive, startListening])
+  }, [sessionId, speak, selectedVoice, speed, onNewMessage, stopSpeaking, toast, conversationActive, startListening, isProcessing])
 
   // Show welcome message and start listening on first load
   useEffect(() => {
@@ -131,7 +142,6 @@ export function VoiceInterface({
       
       // Speak welcome, then start listening
       speak(welcome).then(() => {
-        // Start listening after welcome finishes
         setTimeout(() => {
           if (conversationActive) {
             console.log('[INIT] Starting initial listening')
@@ -142,7 +152,7 @@ export function VoiceInterface({
     }
   }, [hasShownWelcome, voiceSupported, ttsSupported, userName, speak, conversationActive, startListening])
 
-  // Auto-send when transcription completes
+  // ✅ UPDATED: Auto-send when transcription completes
   useEffect(() => {
     console.log('[AUTO-SEND CHECK]', {
       isTranscribing,
@@ -150,41 +160,61 @@ export function VoiceInterface({
       hasTranscript: !!transcript,
       transcript: transcript.substring(0, 50),
       isProcessing,
+      isSending: isSendingRef.current,
       conversationActive,
       lastTranscript: lastTranscriptRef.current.substring(0, 50)
     })
 
-    // Check if we have a new transcript and we're ready to send
+    // ✅ CHANGE: Also check isSendingRef
     if (!isTranscribing && 
         !isListening && 
         transcript && 
         transcript.trim() !== '' &&
         transcript !== lastTranscriptRef.current &&
         !isProcessing && 
+        !isSendingRef.current && // ✅ ADD: Check sending flag
         conversationActive) {
       
-      console.log('[AUTO-SEND] Conditions met! Sending in 500ms...')
+      console.log('[AUTO-SEND] Conditions met! Preparing to send...')
       lastTranscriptRef.current = transcript
+      
+      // ✅ CHANGE: Don't reset transcript before sending, save it first
+      const messageToSend = transcript
       
       // Small delay to ensure everything is settled
       const timer = setTimeout(() => {
         console.log('[AUTO-SEND] Triggering send now')
-        resetTranscript() // Clear transcript before sending
-        handleSendMessage(transcript)
+        resetTranscript() // Clear transcript AFTER saving it
+        handleSendMessage(messageToSend)
       }, 500)
       
       return () => clearTimeout(timer)
     }
   }, [isTranscribing, isListening, transcript, isProcessing, conversationActive, handleSendMessage, resetTranscript])
 
-  // Auto-restart listening after AI finishes speaking
+  // ✅ UPDATED: Auto-restart listening after AI finishes speaking
   useEffect(() => {
-    if (!isSpeaking && !ttsLoading && !isListening && !isProcessing && conversationActive && hasShownWelcome) {
+    // ✅ CHANGE: Also check isSendingRef
+    if (!isSpeaking && 
+        !ttsLoading && 
+        !isListening && 
+        !isProcessing && 
+        !isSendingRef.current && // ✅ ADD: Check sending flag
+        conversationActive && 
+        hasShownWelcome) {
+      
       console.log('[AUTO-RESTART] AI finished, restarting listening in 1s...')
       const timer = setTimeout(() => {
-        if (!isListening && conversationActive) {
+        // ✅ CHANGE: Double-check before starting
+        if (!isListening && !isSendingRef.current && conversationActive) {
           console.log('[AUTO-RESTART] Starting listening now')
           startListening()
+        } else {
+          console.log('[AUTO-RESTART] Skipping - conditions changed', {
+            isListening,
+            isSending: isSendingRef.current,
+            conversationActive
+          })
         }
       }, 1000)
       
@@ -226,13 +256,11 @@ export function VoiceInterface({
 
   const toggleConversation = () => {
     if (conversationActive) {
-      // Pause conversation
       console.log('[CONTROL] Pausing conversation')
       setConversationActive(false)
       stopListening()
       stopSpeaking()
     } else {
-      // Resume conversation
       console.log('[CONTROL] Resuming conversation')
       setConversationActive(true)
       startListening()
@@ -246,6 +274,8 @@ export function VoiceInterface({
     resetTranscript()
     setCurrentResponse('')
     lastTranscriptRef.current = ''
+    isSendingRef.current = false // ✅ Reset flag
+    setIsProcessing(false) // ✅ Reset processing
     setConversationActive(true)
     
     // Restart listening after reset
@@ -402,12 +432,14 @@ export function VoiceInterface({
         )}
       </Card>
 
-      {/* Debug Info (temporary - remove after testing) */}
+      {/* Debug Info */}
       <Card className="w-full max-w-2xl p-3 bg-gray-50 border-gray-200 text-xs">
         <div className="font-mono">
           <div>Listening: {isListening ? '✅' : '❌'}</div>
           <div>Transcribing: {isTranscribing ? '✅' : '❌'}</div>
           <div>Processing: {isProcessing ? '✅' : '❌'}</div>
+          <div>Sending: {isSendingRef.current ? '✅' : '❌'}</div>
+          <div>Speaking: {isSpeaking ? '✅' : '❌'}</div>
           <div>Transcript: {transcript ? `"${transcript.substring(0, 50)}..."` : 'none'}</div>
           <div>Countdown: {silenceCountdown}s</div>
         </div>
