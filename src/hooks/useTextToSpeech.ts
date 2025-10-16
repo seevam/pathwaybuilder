@@ -11,6 +11,9 @@ interface UseTextToSpeechReturn {
   resume: () => void
   stop: () => void
   voices: SpeechSynthesisVoice[]
+  selectedVoice: SpeechSynthesisVoice | null
+  rate: number
+  pitch: number
   setVoice: (voice: SpeechSynthesisVoice) => void
   setRate: (rate: number) => void
   setPitch: (pitch: number) => void
@@ -41,10 +44,24 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
         const availableVoices = window.speechSynthesis.getVoices()
         setVoices(availableVoices)
         
-        // Try to find a good English voice
-        const englishVoice = availableVoices.find(v => v.lang.startsWith('en-'))
-        if (englishVoice) {
-          setSelectedVoice(englishVoice)
+        // Try to find a good English voice with preference order
+        const preferredVoices = [
+          // Google voices (high quality)
+          availableVoices.find(v => v.name.includes('Google US English')),
+          availableVoices.find(v => v.name.includes('Google UK English')),
+          // Microsoft voices
+          availableVoices.find(v => v.name.includes('Microsoft Zira')),
+          availableVoices.find(v => v.name.includes('Microsoft David')),
+          // Apple voices
+          availableVoices.find(v => v.name.includes('Samantha')),
+          availableVoices.find(v => v.name.includes('Alex')),
+          // Any English voice
+          availableVoices.find(v => v.lang.startsWith('en-')),
+        ]
+
+        const bestVoice = preferredVoices.find(v => v !== undefined)
+        if (bestVoice) {
+          setSelectedVoice(bestVoice)
         }
       }
 
@@ -144,6 +161,9 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
     resume,
     stop,
     voices,
+    selectedVoice,
+    rate,
+    pitch,
     setVoice,
     setRate,
     setPitch,
