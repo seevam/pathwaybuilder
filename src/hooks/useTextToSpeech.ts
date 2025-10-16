@@ -49,24 +49,21 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
   const [speed, setSpeedState] = useState(1.0)
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const audioContextRef = useRef<AudioContext | null>(null)
+  const currentBlobUrlRef = useRef<string | null>(null)
 
   // Check if audio is supported
   const isSupported = typeof Audio !== 'undefined'
 
   useEffect(() => {
-    // Create audio context for better control
-    if (typeof window !== 'undefined' && window.AudioContext) {
-      audioContextRef.current = new AudioContext()
-    }
-
     return () => {
+      // Cleanup on unmount
       if (audioRef.current) {
         audioRef.current.pause()
         audioRef.current = null
       }
-      if (audioContextRef.current) {
-        audioContextRef.current.close()
+      if (currentBlobUrlRef.current) {
+        URL.revokeObjectURL(currentBlobUrlRef.current)
+        currentBlobUrlRef.current = null
       }
     }
   }, [])
@@ -77,10 +74,16 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
       return
     }
 
-    // Stop any current playback
+    console.log('TTS: Starting speech generation...')
+
+    // Stop and cleanup any current playback
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current = null
+    }
+    if (currentBlobUrlRef.current) {
+      URL.revokeObjectURL(currentBlobUrlRef.current)
+      currentBlobUrlRef.current = null
     }
 
     setIsLoading(true)
@@ -89,6 +92,8 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
     try {
       const voice = options?.voice || selectedVoice
       const speechSpeed = options?.speed || speed
+
+      console.log('TTS: Calling API with voice:', voice, 'speed:', speechSpeed)
 
       // Call TTS API
       const response = await fetch('/api/learning-hub/speak', {
@@ -102,44 +107,124 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
       })
 
       if (!response.ok) {
-        const error = await response.json()
+        const error = await response.json().catch(() => ({ error: 'Unknown error' }))
         throw new Error(error.error || 'Failed to generate speech')
       }
 
+      console.log('TTS: Received audio response, creating blob...')
+
       // Get audio blob
       const audioBlob = await response.blob()
-      const audioUrl = URL.createObjectURL(audioBlob)
+      console.log('TTS: Audio blob created:', audioBlob.type, audioBlob.size, 'bytes')
 
-      // Create and play audio
-      const audio = new Audio(audioUrl)
+      // Create blob URL with explicit type
+      const audioUrl = URL.createObjectURL(
+        new Blob([audioBlob], { type: 'audio/mpeg' })
+      )
+      currentBlobUrlRef.current = audioUrl
+
+      console.log('TTS: Creating audio element...')
+
+      // Create and configure audio element
+      const audio = new Audio()
+      audio.preload = 'auto'
       audioRef.current = audio
 
+      // Set up event handlers BEFORE setting src
+      audio.onloadeddata = () => {
+        console.log('TTS: Audio loaded successfully, duration:', audio.duration)
+      }
+
+      audio.oncanplay = () => {
+        console.log('TTS: Audio can play, starting playback...')
+      }
+
       audio.onplay = () => {
+        console.log('TTS: Audio playing')
         setIsSpeaking(true)
         setIsPaused(false)
         setIsLoading(false)
       }
 
       audio.onended = () => {
+        console.log('TTS: Audio ended')
         setIsSpeaking(false)
         setIsPaused(false)
-        URL.revokeObjectURL(audioUrl)
+        if (currentBlobUrlRef.current) {
+          URL.revokeObjectURL(currentBlobUrlRef.current)
+          currentBlobUrlRef.current = null
+        }
       }
 
-      audio.onerror = () => {
-        setError('Failed to play audio')
+      audio.onerror = (e) => {
+        console.error('TTS: Audio error:', e)
+        console.error('Audio error details:', {
+          error: audio.error,
+          code: audio.error?.code,
+          message: audio.error?.message,
+          networkState: audio.networkState,
+          readyState: audio.readyState
+        })
+        
+        let errorMessage = 'Failed to play audio'
+        if (audio.error) {
+          switch (audio.error.code) {
+            case MediaError.MEDIA_ERR_ABORTED:
+              errorMessage = 'Audio playback was aborted'
+              break
+            case MediaError.MEDIA_ERR_NETWORK:
+              errorMessage = 'Network error while loading audio'
+              break
+            case MediaError.MEDIA_ERR_DECODE:
+              errorMessage = 'Audio decoding failed - format may not be supported'
+              break
+            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+              errorMessage = 'Audio format not supported by your browser'
+              break
+          }
+        }
+        
+        setError(errorMessage)
         setIsSpeaking(false)
         setIsLoading(false)
-        URL.revokeObjectURL(audioUrl)
+        
+        if (currentBlobUrlRef.current) {
+          URL.revokeObjectURL(currentBlobUrlRef.current)
+          currentBlobUrlRef.current = null
+        }
       }
 
       audio.onpause = () => {
         if (!audio.ended) {
+          console.log('TTS: Audio paused')
           setIsPaused(true)
         }
       }
 
-      await audio.play()
+      audio.onresume = () => {
+        console.log('TTS: Audio resumed')
+        setIsPaused(false)
+      }
+
+      // Set the source and load
+      audio.src = audioUrl
+      console.log('TTS: Audio src set, loading...')
+      
+      // Explicitly load the audio
+      audio.load()
+
+      // Wait a bit for loading, then try to play
+      setTimeout(async () => {
+        try {
+          console.log('TTS: Attempting to play...')
+          await audio.play()
+        } catch (playError) {
+          console.error('TTS: Play error:', playError)
+          setError('Failed to start audio playback: ' + (playError as Error).message)
+          setIsSpeaking(false)
+          setIsLoading(false)
+        }
+      }, 100)
 
     } catch (err: any) {
       console.error('TTS error:', err)
@@ -151,6 +236,7 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
 
   const pause = useCallback(() => {
     if (audioRef.current && isSpeaking && !isPaused) {
+      console.log('TTS: Pausing audio')
       audioRef.current.pause()
       setIsPaused(true)
     }
@@ -158,16 +244,22 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
 
   const resume = useCallback(() => {
     if (audioRef.current && isSpeaking && isPaused) {
+      console.log('TTS: Resuming audio')
       audioRef.current.play()
       setIsPaused(false)
     }
   }, [isSpeaking, isPaused])
 
   const stop = useCallback(() => {
+    console.log('TTS: Stopping audio')
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current.currentTime = 0
       audioRef.current = null
+    }
+    if (currentBlobUrlRef.current) {
+      URL.revokeObjectURL(currentBlobUrlRef.current)
+      currentBlobUrlRef.current = null
     }
     setIsSpeaking(false)
     setIsPaused(false)
