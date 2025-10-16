@@ -6,12 +6,11 @@ import { useVoiceRecognition } from '@/hooks/useVoiceRecognition'
 import { useTextToSpeech } from '@/hooks/useTextToSpeech'
 import { AIAvatar } from './AIAvatar'
 import { WaveformVisualizer } from './WaveformVisualizer'
-import { VoiceControls } from './VoiceControls'
 import { VoiceSettings } from './VoiceSettings'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
-import { Send, Loader2 } from 'lucide-react'
+import { Loader2, Pause, Play, RotateCcw } from 'lucide-react'
 
 interface VoiceInterfaceProps {
   sessionId?: string
@@ -26,9 +25,10 @@ export function VoiceInterface({
 }: VoiceInterfaceProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentResponse, setCurrentResponse] = useState('')
-  const [shouldAutoSend, setShouldAutoSend] = useState(false)
+  const [conversationActive, setConversationActive] = useState(true)
+  const [hasShownWelcome, setHasShownWelcome] = useState(false)
   const { toast } = useToast()
-  const hasShownWelcome = useRef(false)
+  const processingRef = useRef(false)
 
   const {
     isListening,
@@ -59,26 +59,45 @@ export function VoiceInterface({
     setSpeed,
   } = useTextToSpeech()
 
-  // Show welcome message on first load (only once)
+  // Show welcome message and start listening on first load
   useEffect(() => {
-    if (!hasShownWelcome.current && !currentResponse) {
-      hasShownWelcome.current = true
-      const welcome = `Hi ${userName}! I'm in voice mode now. Just tap the button and start speaking to me!`
+    if (!hasShownWelcome && voiceSupported && ttsSupported) {
+      setHasShownWelcome(true)
+      const welcome = `Hi ${userName}! I'm ready to chat. Just start speaking, and I'll listen automatically.`
       setCurrentResponse(welcome)
-      setTimeout(() => {
-        speak(welcome)
-      }, 500)
+      
+      // Speak welcome, then start listening
+      speak(welcome).then(() => {
+        // Start listening after welcome finishes
+        setTimeout(() => {
+          if (conversationActive) {
+            startListening()
+          }
+        }, 500)
+      })
     }
-  }, [userName, speak])
+  }, [hasShownWelcome, voiceSupported, ttsSupported, userName])
 
   // Auto-send message after transcription completes
   useEffect(() => {
-    if (!isTranscribing && transcript && shouldAutoSend && !isProcessing) {
+    if (!isTranscribing && !isListening && transcript && !processingRef.current && conversationActive) {
       console.log('Auto-sending message:', transcript)
-      setShouldAutoSend(false)
+      processingRef.current = true
       handleSendMessage()
     }
-  }, [isTranscribing, transcript, shouldAutoSend, isProcessing])
+  }, [isTranscribing, isListening, transcript, conversationActive])
+
+  // Auto-restart listening after AI finishes speaking
+  useEffect(() => {
+    if (!isSpeaking && !isListening && !isProcessing && conversationActive && hasShownWelcome) {
+      console.log('AI finished speaking, restarting listening...')
+      setTimeout(() => {
+        if (!isListening && conversationActive) {
+          startListening()
+        }
+      }, 1000)
+    }
+  }, [isSpeaking, isListening, isProcessing, conversationActive, hasShownWelcome])
 
   // Show errors
   useEffect(() => {
@@ -127,19 +146,21 @@ export function VoiceInterface({
       
       // Clear transcript after successful send
       resetTranscript()
+      processingRef.current = false
       
-      // Speak the response with current settings
-      setTimeout(async () => {
-        await speak(aiResponse, {
-          voice: selectedVoice,
-          speed: speed,
-        })
-      }, 300)
+      // Speak the response immediately
+      await speak(aiResponse, {
+        voice: selectedVoice,
+        speed: speed,
+      })
 
       // Notify parent
       if (onNewMessage) {
         onNewMessage(userMessage, aiResponse)
       }
+
+      // Listening will auto-restart after speaking finishes (via useEffect)
+
     } catch (error: any) {
       console.error('Error processing voice message:', error)
       toast({
@@ -147,27 +168,63 @@ export function VoiceInterface({
         description: error.message || 'Failed to process your message. Please try again.',
         variant: 'destructive'
       })
+      processingRef.current = false
+      
+      // Restart listening after error
+      if (conversationActive) {
+        setTimeout(() => startListening(), 1000)
+      }
     } finally {
       setIsProcessing(false)
     }
   }
 
-  const handleStopListening = async () => {
-    console.log('Stop listening clicked')
-    await stopListening()
-    // Set flag to auto-send after transcription
-    if (transcript || isTranscribing) {
-      setShouldAutoSend(true)
-    }
-  }
-
   const handleTestVoice = async () => {
+    const wasActive = conversationActive
+    setConversationActive(false)
+    stopListening()
     stopSpeaking()
+    
     const testMessage = "Hi! This is how I sound with the current settings."
     await speak(testMessage, {
       voice: selectedVoice,
       speed: speed,
     })
+    
+    // Wait a bit, then resume if it was active
+    setTimeout(() => {
+      setConversationActive(wasActive)
+      if (wasActive) {
+        startListening()
+      }
+    }, 1000)
+  }
+
+  const toggleConversation = () => {
+    if (conversationActive) {
+      // Pause conversation
+      setConversationActive(false)
+      stopListening()
+      stopSpeaking()
+    } else {
+      // Resume conversation
+      setConversationActive(true)
+      startListening()
+    }
+  }
+
+  const resetConversation = () => {
+    stopListening()
+    stopSpeaking()
+    resetTranscript()
+    setCurrentResponse('')
+    processingRef.current = false
+    setConversationActive(true)
+    
+    // Restart listening after reset
+    setTimeout(() => {
+      startListening()
+    }, 500)
   }
 
   if (!voiceSupported || !ttsSupported) {
@@ -190,15 +247,46 @@ export function VoiceInterface({
   const displayText = isTranscribing
     ? 'Transcribing your voice...'
     : isListening 
-    ? (transcript + (interimTranscript ? ' ' + interimTranscript : '')) || 'Listening...'
-    : transcript || 'Tap "Start Speaking" to begin'
+    ? (transcript + (interimTranscript ? ' ' + interimTranscript : '')) || 'Listening... start speaking'
+    : transcript || 'Processing...'
 
   const isLoading = isProcessing || isTranscribing || ttsLoading
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6">
-      {/* Voice Settings Button */}
-      <div className="w-full max-w-2xl flex justify-end">
+      {/* Controls Header */}
+      <div className="w-full max-w-2xl flex justify-between items-center">
+        <div className="flex gap-2">
+          <Button
+            onClick={toggleConversation}
+            variant={conversationActive ? "default" : "outline"}
+            size="sm"
+            className="gap-2"
+          >
+            {conversationActive ? (
+              <>
+                <Pause className="w-4 h-4" />
+                Pause Chat
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4" />
+                Resume Chat
+              </>
+            )}
+          </Button>
+          
+          <Button
+            onClick={resetConversation}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Reset
+          </Button>
+        </div>
+
         <VoiceSettings
           voices={voices}
           selectedVoice={selectedVoice}
@@ -211,22 +299,40 @@ export function VoiceInterface({
 
       {/* AI Avatar */}
       <AIAvatar 
-        isListening={isListening}
+        isListening={isListening && conversationActive}
         isSpeaking={isSpeaking || ttsLoading}
         size="lg"
       />
 
       {/* Waveform Visualizer */}
       <WaveformVisualizer 
-        isActive={isListening || isSpeaking}
+        isActive={(isListening || isSpeaking) && conversationActive}
         color={isListening ? "bg-green-500" : "bg-purple-500"}
       />
 
+      {/* Status Badge */}
+      <div className="flex items-center gap-2">
+        <div className={`w-3 h-3 rounded-full ${
+          !conversationActive ? 'bg-gray-400' :
+          isListening ? 'bg-green-500 animate-pulse' :
+          isSpeaking ? 'bg-purple-500 animate-pulse' :
+          isProcessing ? 'bg-blue-500 animate-pulse' :
+          'bg-yellow-500'
+        }`} />
+        <span className="text-sm font-semibold text-gray-700">
+          {!conversationActive ? 'Paused' :
+           isListening ? 'Listening' :
+           isSpeaking ? 'Speaking' :
+           isProcessing ? 'Thinking' :
+           'Ready'}
+        </span>
+      </div>
+
       {/* Silence Countdown Indicator */}
-      {isListening && transcript && silenceCountdown < 3 && (
-        <Card className="px-4 py-2 bg-yellow-50 border-yellow-300">
+      {isListening && transcript && silenceCountdown < 3 && conversationActive && (
+        <Card className="px-4 py-2 bg-yellow-50 border-yellow-300 animate-pulse">
           <p className="text-sm font-semibold text-yellow-800">
-            ⏱️ Auto-stopping in {silenceCountdown} second{silenceCountdown !== 1 ? 's' : ''}...
+            ⏱️ Sending in {silenceCountdown} second{silenceCountdown !== 1 ? 's' : ''}...
           </p>
         </Card>
       )}
@@ -237,8 +343,8 @@ export function VoiceInterface({
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
             <span className="ml-3 text-gray-600">
-              {isTranscribing ? 'Transcribing your voice...' : 
-               isProcessing ? 'Processing your question...' :
+              {isTranscribing ? 'Transcribing...' : 
+               isProcessing ? 'Thinking...' :
                'Generating speech...'}
             </span>
           </div>
@@ -246,16 +352,16 @@ export function VoiceInterface({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-purple-700">Sage is speaking:</span>
+              <span className="text-sm font-semibold text-purple-700">Sage:</span>
             </div>
             <p className="text-gray-800 leading-relaxed">{currentResponse}</p>
           </div>
-        ) : isListening ? (
+        ) : isListening && conversationActive ? (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-sm font-semibold text-green-700">
-                You&apos;re saying:
+                You:
               </span>
             </div>
             <p className="text-gray-800 leading-relaxed">
@@ -264,45 +370,23 @@ export function VoiceInterface({
           </div>
         ) : (
           <div className="text-center text-gray-500">
-            <p className="mb-2">{displayText}</p>
-            {transcript && !shouldAutoSend && (
-              <Button
-                onClick={handleSendMessage}
-                className="bg-gradient-to-r from-purple-600 to-blue-600"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                Send Message
-              </Button>
-            )}
+            <p>{conversationActive ? 'Ready to listen...' : 'Conversation paused'}</p>
           </div>
         )}
       </Card>
-
-      {/* Voice Controls */}
-      <VoiceControls
-        isListening={isListening}
-        isSpeaking={isSpeaking}
-        isPaused={isPaused}
-        onStartListening={startListening}
-        onStopListening={handleStopListening}
-        onPauseSpeaking={pause}
-        onResumeSpeaking={resume}
-        onStopSpeaking={stopSpeaking}
-        disabled={isLoading}
-      />
 
       {/* Tips */}
       <Card className="w-full max-w-2xl p-4 bg-blue-50 border-blue-200">
         <div className="flex items-start gap-3 text-sm text-blue-900">
           <span className="text-2xl">💡</span>
           <div>
-            <p className="font-semibold mb-1">Voice Mode Tips:</p>
+            <p className="font-semibold mb-1">Automatic Voice Chat:</p>
             <ul className="list-disc list-inside space-y-1 text-blue-800">
-              <li>Speak clearly - using OpenAI Whisper for transcription</li>
-              <li>Recording auto-stops after 3 seconds of silence</li>
-              <li>Or click &quot;Stop Listening&quot; when done</li>
-              <li>You can pause/resume my responses anytime</li>
-              <li>Customize my voice in settings!</li>
+              <li>Just start speaking - no button needed!</li>
+              <li>Automatically sends after 3 seconds of silence</li>
+              <li>AI responds instantly with voice</li>
+              <li>Continues listening after each response</li>
+              <li>Click &quot;Pause Chat&quot; to stop the conversation</li>
             </ul>
           </div>
         </div>
