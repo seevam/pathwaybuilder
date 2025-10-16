@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { LearningHubService } from '@/lib/services/learning-hub-service'
 import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 
 function mapQuestionToSessionCategory(qc: string): string | null {
   switch (qc) {
