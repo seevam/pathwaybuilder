@@ -142,7 +142,7 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
       audio.onplay = () => {
         console.log('TTS: Audio playing')
         setIsSpeaking(true)
-        setIsPaused(false)
+        setIsPaused(false) // Always unpause when playing
         setIsLoading(false)
       }
 
@@ -201,11 +201,6 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
         }
       }
 
-      audio.onresume = () => {
-        console.log('TTS: Audio resumed')
-        setIsPaused(false)
-      }
-
       // Set the source and load
       audio.src = audioUrl
       console.log('TTS: Audio src set, loading...')
@@ -245,8 +240,11 @@ export function useTextToSpeech(): UseTextToSpeechReturn {
   const resume = useCallback(() => {
     if (audioRef.current && isSpeaking && isPaused) {
       console.log('TTS: Resuming audio')
-      audioRef.current.play()
-      setIsPaused(false)
+      audioRef.current.play().then(() => {
+        setIsPaused(false)
+      }).catch(err => {
+        console.error('TTS: Resume error:', err)
+      })
     }
   }, [isSpeaking, isPaused])
 
