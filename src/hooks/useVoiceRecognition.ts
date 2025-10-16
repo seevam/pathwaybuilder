@@ -84,23 +84,32 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
     }
   }, [])
 
+  const clearSilenceTimer = useCallback(() => {
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current)
+      silenceTimerRef.current = null
+    }
+  }, [])
+
+  const stopListening = useCallback(() => {
+    try {
+      clearSilenceTimer()
+      recognitionRef.current?.stop()
+      setIsListening(false)
+    } catch (err) {
+      console.error('Error stopping recognition:', err)
+    }
+  }, [clearSilenceTimer])
+
   const resetSilenceTimer = useCallback(() => {
     clearSilenceTimer()
     
     // Auto-stop after 3 seconds of silence
     silenceTimerRef.current = setTimeout(() => {
-      if (recognitionRef.current && isListening) {
-        stopListening()
-      }
+      console.log('Silence detected - auto-stopping...')
+      stopListening()
     }, 3000)
-  }, [isListening])
-
-  const clearSilenceTimer = () => {
-    if (silenceTimerRef.current) {
-      clearTimeout(silenceTimerRef.current)
-      silenceTimerRef.current = null
-    }
-  }
+  }, [clearSilenceTimer, stopListening])
 
   const startListening = useCallback(() => {
     if (!isSupported) {
@@ -110,24 +119,14 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
 
     try {
       setError(null)
-      recognitionRef.current?.start()
       setIsListening(true)
+      recognitionRef.current?.start()
       resetSilenceTimer()
     } catch (err) {
       console.error('Error starting recognition:', err)
       setError('Failed to start speech recognition')
     }
   }, [isSupported, resetSilenceTimer])
-
-  const stopListening = useCallback(() => {
-    try {
-      recognitionRef.current?.stop()
-      setIsListening(false)
-      clearSilenceTimer()
-    } catch (err) {
-      console.error('Error stopping recognition:', err)
-    }
-  }, [])
 
   const resetTranscript = useCallback(() => {
     setTranscript('')
