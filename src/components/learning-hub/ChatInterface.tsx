@@ -9,6 +9,8 @@ import { MessageBubble } from './MessageBubble'
 import { TypingIndicator } from './TypingIndicator'
 import { QuickActions } from './QuickActions'
 import { SuggestedQuestions } from './SuggestedQuestions'
+import { ModeSelector } from './ModeSelector'
+import { VoiceInterface } from './VoiceInterface'
 import { useToast } from '@/components/ui/use-toast'
 
 interface Message {
@@ -30,6 +32,7 @@ export function ChatInterface({
   initialMessages = [],
   userName = 'there'
 }: ChatInterfaceProps) {
+  const [mode, setMode] = useState<'text' | 'voice'>('text')
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -38,6 +41,16 @@ export function ChatInterface({
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { toast } = useToast()
+
+  // Check voice support
+  const [voiceSupported, setVoiceSupported] = useState(false)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hasVoice = !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition
+      const hasTTS = !!window.speechSynthesis
+      setVoiceSupported(hasVoice && hasTTS)
+    }
+  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -153,10 +166,56 @@ What would you like to work on today?`,
     }
   }
 
+  const handleVoiceMessage = (userMessage: string, aiResponse: string) => {
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: 'USER',
+      content: userMessage,
+      createdAt: new Date(),
+    }
+    const aiMsg: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'ASSISTANT',
+      content: aiResponse,
+      createdAt: new Date(),
+    }
+    setMessages(prev => [...prev, userMsg, aiMsg])
+  }
+
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-8rem)]">
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Mode Selector Header */}
+      <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="flex items-center gap-3">
+          <div className="text-2xl">🎓</div>
+          <div>
+            <h2 className="font-bold text-gray-900">Sage - Your AI Mentor</h2>
+            <p className="text-xs text-gray-600">
+              {mode === 'text' ? 'Type your questions below' : 'Speak naturally to get help'}
+            </p>
+          </div>
+        </div>
+        <ModeSelector
+          mode={mode}
+          onModeChange={setMode}
+          voiceSupported={voiceSupported}
+          disabled={isLoading}
+        />
+      </div>
+
+      {/* Content Area - Changes based on mode */}
+      {mode === 'voice' ? (
+        <div className="flex-1 overflow-y-auto">
+          <VoiceInterface
+            sessionId={sessionId}
+            userName={userName}
+            onNewMessage={handleVoiceMessage}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">{/* ... rest of existing text mode JSX ... */}
         {messages.map((message) => (
           <MessageBubble
             key={message.id}
@@ -214,9 +273,11 @@ What would you like to work on today?`,
           </Button>
         </div>
         <p className="text-xs text-gray-500 mt-2 text-center">
-          💡 I&apos;m here to help you learn, not do your homework for you!
+          💡 I'm here to help you learn, not do your homework for you!
         </p>
       </div>
+      </>
+      )}
     </div>
   )
 }
