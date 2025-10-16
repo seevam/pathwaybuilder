@@ -1,7 +1,7 @@
 // src/components/learning-hub/VoiceInterface.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition'
 import { useTextToSpeech } from '@/hooks/useTextToSpeech'
 import { AIAvatar } from './AIAvatar'
@@ -26,7 +26,9 @@ export function VoiceInterface({
 }: VoiceInterfaceProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentResponse, setCurrentResponse] = useState('')
+  const [shouldAutoSend, setShouldAutoSend] = useState(false)
   const { toast } = useToast()
+  const hasShownWelcome = useRef(false)
 
   const {
     isListening,
@@ -35,6 +37,7 @@ export function VoiceInterface({
     isSupported: voiceSupported,
     error: voiceError,
     isTranscribing,
+    silenceCountdown,
     startListening,
     stopListening,
     resetTranscript,
@@ -56,16 +59,26 @@ export function VoiceInterface({
     setSpeed,
   } = useTextToSpeech()
 
-  // Show welcome message on first load
+  // Show welcome message on first load (only once)
   useEffect(() => {
-    if (!currentResponse) {
+    if (!hasShownWelcome.current && !currentResponse) {
+      hasShownWelcome.current = true
       const welcome = `Hi ${userName}! I'm in voice mode now. Just tap the button and start speaking to me!`
       setCurrentResponse(welcome)
       setTimeout(() => {
         speak(welcome)
       }, 500)
     }
-  }, [userName])
+  }, [userName, speak])
+
+  // Auto-send message after transcription completes
+  useEffect(() => {
+    if (!isTranscribing && transcript && shouldAutoSend && !isProcessing) {
+      console.log('Auto-sending message:', transcript)
+      setShouldAutoSend(false)
+      handleSendMessage()
+    }
+  }, [isTranscribing, transcript, shouldAutoSend, isProcessing])
 
   // Show errors
   useEffect(() => {
@@ -79,11 +92,15 @@ export function VoiceInterface({
   }, [voiceError, toast])
 
   const handleSendMessage = async () => {
-    if (!transcript.trim() || isProcessing) return
+    if (!transcript.trim() || isProcessing) {
+      console.log('Cannot send - no transcript or already processing')
+      return
+    }
 
     const userMessage = transcript.trim()
+    console.log('Sending message to AI:', userMessage)
+    
     setIsProcessing(true)
-    resetTranscript()
     stopSpeaking()
 
     try {
@@ -97,13 +114,19 @@ export function VoiceInterface({
       })
 
       if (!response.ok) {
-        throw new Error('Failed to send message')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to send message')
       }
 
       const data = await response.json()
       const aiResponse = data.response
 
+      console.log('AI response received:', aiResponse.substring(0, 100) + '...')
+
       setCurrentResponse(aiResponse)
+      
+      // Clear transcript after successful send
+      resetTranscript()
       
       // Speak the response with current settings
       setTimeout(async () => {
@@ -121,11 +144,20 @@ export function VoiceInterface({
       console.error('Error processing voice message:', error)
       toast({
         title: 'Error',
-        description: 'Failed to process your message. Please try again.',
+        description: error.message || 'Failed to process your message. Please try again.',
         variant: 'destructive'
       })
     } finally {
       setIsProcessing(false)
+    }
+  }
+
+  const handleStopListening = async () => {
+    console.log('Stop listening clicked')
+    await stopListening()
+    // Set flag to auto-send after transcription
+    if (transcript || isTranscribing) {
+      setShouldAutoSend(true)
     }
   }
 
@@ -156,9 +188,9 @@ export function VoiceInterface({
   }
 
   const displayText = isTranscribing
-    ? 'Transcribing...'
+    ? 'Transcribing your voice...'
     : isListening 
-    ? (transcript + ' ' + interimTranscript) || 'Listening...'
+    ? (transcript + (interimTranscript ? ' ' + interimTranscript : '')) || 'Listening...'
     : transcript || 'Tap "Start Speaking" to begin'
 
   const isLoading = isProcessing || isTranscribing || ttsLoading
@@ -190,6 +222,15 @@ export function VoiceInterface({
         color={isListening ? "bg-green-500" : "bg-purple-500"}
       />
 
+      {/* Silence Countdown Indicator */}
+      {isListening && transcript && silenceCountdown < 3 && (
+        <Card className="px-4 py-2 bg-yellow-50 border-yellow-300">
+          <p className="text-sm font-semibold text-yellow-800">
+            ⏱️ Auto-stopping in {silenceCountdown} second{silenceCountdown !== 1 ? 's' : ''}...
+          </p>
+        </Card>
+      )}
+
       {/* Current Transcript or Response */}
       <Card className="w-full max-w-2xl p-6 min-h-[120px]">
         {isLoading ? (
@@ -213,7 +254,9 @@ export function VoiceInterface({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-green-700">You&apos;re saying:</span>
+              <span className="text-sm font-semibold text-green-700">
+                You&apos;re saying:
+              </span>
             </div>
             <p className="text-gray-800 leading-relaxed">
               {displayText}
@@ -222,7 +265,7 @@ export function VoiceInterface({
         ) : (
           <div className="text-center text-gray-500">
             <p className="mb-2">{displayText}</p>
-            {transcript && (
+            {transcript && !shouldAutoSend && (
               <Button
                 onClick={handleSendMessage}
                 className="bg-gradient-to-r from-purple-600 to-blue-600"
@@ -241,13 +284,7 @@ export function VoiceInterface({
         isSpeaking={isSpeaking}
         isPaused={isPaused}
         onStartListening={startListening}
-        onStopListening={async () => {
-          await stopListening()
-          // Auto-send after transcription completes
-          if (transcript.trim()) {
-            setTimeout(() => handleSendMessage(), 1000)
-          }
-        }}
+        onStopListening={handleStopListening}
         onPauseSpeaking={pause}
         onResumeSpeaking={resume}
         onStopSpeaking={stopSpeaking}
@@ -262,7 +299,8 @@ export function VoiceInterface({
             <p className="font-semibold mb-1">Voice Mode Tips:</p>
             <ul className="list-disc list-inside space-y-1 text-blue-800">
               <li>Speak clearly - using OpenAI Whisper for transcription</li>
-              <li>Click stop when you&apos;re done speaking</li>
+              <li>Recording auto-stops after 3 seconds of silence</li>
+              <li>Or click &quot;Stop Listening&quot; when done</li>
               <li>You can pause/resume my responses anytime</li>
               <li>Customize my voice in settings!</li>
             </ul>
