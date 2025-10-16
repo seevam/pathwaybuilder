@@ -10,13 +10,25 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   const { isCollapsed } = useSidebar()
   const { userId } = useAuth()
   const [userName, setUserName] = useState('User')
+  const [stats, setStats] = useState({
+    completedModules: 0,
+    currentStreak: 0,
+    totalAchievements: 0
+  })
 
   useEffect(() => {
     // Fetch user data for sidebar
     if (userId) {
       fetch('/api/dashboard')
         .then(res => res.json())
-        .then(data => setUserName(data.userName))
+        .then(data => {
+          setUserName(data.userName || 'User')
+          setStats({
+            completedModules: data.completedModules || 0,
+            currentStreak: data.currentStreak || 0,
+            totalAchievements: data.totalAchievements || 0
+          })
+        })
         .catch(() => {})
     }
   }, [userId])
@@ -27,9 +39,9 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
       <aside className="hidden md:block">
         <Sidebar
           userName={userName}
-          completedModules={0}
-          currentStreak={0}
-          totalAchievements={0}
+          completedModules={stats.completedModules}
+          currentStreak={stats.currentStreak}
+          totalAchievements={stats.totalAchievements}
         />
       </aside>
 
@@ -38,14 +50,13 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         <MobileNav userName={userName} />
       </div>
 
-      {/* Main Content - Responsive to sidebar state */}
+      {/* Main Content - Responsive to sidebar state with smooth transition */}
       <main
-        className={`
-          min-h-screen
-          transition-all duration-300
-          pt-16 md:pt-0 pb-20 md:pb-0
-          ${isCollapsed ? 'md:ml-20' : 'md:ml-56'}
-        `}
+        className={cn(
+          'min-h-screen transition-all duration-300 ease-in-out',
+          'pt-16 md:pt-0 pb-20 md:pb-0',
+          isCollapsed ? 'md:ml-20' : 'md:ml-56'
+        )}
       >
         <div className="px-4 md:px-8 py-8">
           {children}
@@ -53,6 +64,11 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
       </main>
     </div>
   )
+}
+
+// Add cn utility import
+function cn(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
 }
 
 export default function DashboardLayout({
