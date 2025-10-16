@@ -41,12 +41,20 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
 
   // Transcribe when recording stops and we have audio
   useEffect(() => {
+    console.log('[VOICE-REC] State changed:', {
+      hasAudioBlob: !!audioBlob,
+      isRecording,
+      isTranscribing
+    })
+    
     if (audioBlob && !isRecording && !isTranscribing) {
+      console.log('[VOICE-REC] Conditions met for transcription, calling transcribeAudio')
       transcribeAudio(audioBlob)
     }
-  }, [audioBlob, isRecording])
+  }, [audioBlob, isRecording, isTranscribing, transcribeAudio])
 
-  const transcribeAudio = async (blob: Blob) => {
+  const transcribeAudio = useCallback(async (blob: Blob) => {
+    console.log('[TRANSCRIBE] Starting transcription, blob size:', blob.size)
     setIsTranscribing(true)
     setError(null)
     setInterimTranscript('Transcribing...')
@@ -56,7 +64,7 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
       const formData = new FormData()
       formData.append('audio', blob, 'recording.webm')
 
-      console.log('Sending audio to Whisper API...')
+      console.log('[TRANSCRIBE] Sending to Whisper API...')
 
       // Send to Whisper API endpoint
       const response = await fetch('/api/learning-hub/transcribe', {
@@ -71,7 +79,7 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
 
       const data = await response.json()
       
-      console.log('Transcription result:', data.transcript)
+      console.log('[TRANSCRIBE] Success! Transcript:', data.transcript)
 
       // Set the transcript
       const newTranscript = data.transcript.trim()
@@ -80,13 +88,14 @@ export function useVoiceRecognition(): UseVoiceRecognitionReturn {
       clearRecording()
 
     } catch (err: any) {
-      console.error('Transcription error:', err)
+      console.error('[TRANSCRIBE] Error:', err)
       setError(err.message || 'Failed to transcribe audio')
       setInterimTranscript('')
     } finally {
+      console.log('[TRANSCRIBE] Completed, setting isTranscribing to false')
       setIsTranscribing(false)
     }
-  }
+  }, [clearRecording])
 
   const startListening = useCallback(async () => {
     setError(null)
