@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X } from 'lucide-react'
+import { Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X, Robot } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/contexts/SidebarContext'
