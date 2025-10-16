@@ -25,6 +25,7 @@ export function VoiceInterface({
 }: VoiceInterfaceProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentResponse, setCurrentResponse] = useState('')
+  const [silenceCountdown, setSilenceCountdown] = useState(3)
   const { toast } = useToast()
 
   const {
@@ -37,6 +38,23 @@ export function VoiceInterface({
     stopListening,
     resetTranscript,
   } = useVoiceRecognition()
+
+  // Countdown timer for visual feedback
+  useEffect(() => {
+    if (isListening && (transcript || interimTranscript)) {
+      setSilenceCountdown(3)
+      const interval = setInterval(() => {
+        setSilenceCountdown(prev => {
+          if (prev <= 0) {
+            clearInterval(interval)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+      return () => clearInterval(interval)
+    }
+  }, [isListening, transcript, interimTranscript])
 
   const {
     isSpeaking,
@@ -126,7 +144,7 @@ export function VoiceInterface({
           Voice Mode Not Available
         </h2>
         <p className="text-gray-600 mb-4">
-          Your browser doesn&apos;t support voice features. Try using Chrome, Edge, or Safari.
+          Your browser doesn't support voice features. Try using Chrome, Edge, or Safari.
         </p>
         <p className="text-sm text-gray-500">
           Voice recognition and text-to-speech require modern browser features.
@@ -173,7 +191,7 @@ export function VoiceInterface({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-green-700">You&apos;re saying:</span>
+              <span className="text-sm font-semibold text-green-700">You're saying:</span>
             </div>
             <p className="text-gray-800 leading-relaxed">
               {displayText}
@@ -227,7 +245,7 @@ export function VoiceInterface({
               <li>Speak clearly and pause when finished</li>
               <li>The system auto-stops after 3 seconds of silence</li>
               <li>You can pause/resume my responses anytime</li>
-              <li>Switch to text mode if voice isn&apos;t working well</li>
+              <li>Switch to text mode if voice isn't working well</li>
             </ul>
           </div>
         </div>
