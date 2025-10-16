@@ -214,7 +214,7 @@ What would you like to work on today?`,
           </Button>
         </div>
         <p className="text-xs text-gray-500 mt-2 text-center">
-          💡 I'm here to help you learn, not do your homework for you!
+          💡 I&apos;m here to help you learn, not do your homework for you!
         </p>
       </div>
     </div>
