@@ -1,7 +1,7 @@
 // src/components/learning-hub/VoiceInterface.tsx
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition'
 import { useTextToSpeech } from '@/hooks/useTextToSpeech'
 import { AIAvatar } from './AIAvatar'
@@ -28,7 +28,7 @@ export function VoiceInterface({
   const [conversationActive, setConversationActive] = useState(true)
   const [hasShownWelcome, setHasShownWelcome] = useState(false)
   const { toast } = useToast()
-  const processingRef = useRef(false)
+  const lastTranscriptRef = useRef('')
 
   const {
     isListening,
@@ -59,65 +59,14 @@ export function VoiceInterface({
     setSpeed,
   } = useTextToSpeech()
 
-  // Show welcome message and start listening on first load
-  useEffect(() => {
-    if (!hasShownWelcome && voiceSupported && ttsSupported) {
-      setHasShownWelcome(true)
-      const welcome = `Hi ${userName}! I'm ready to chat. Just start speaking, and I'll listen automatically.`
-      setCurrentResponse(welcome)
-      
-      // Speak welcome, then start listening
-      speak(welcome).then(() => {
-        // Start listening after welcome finishes
-        setTimeout(() => {
-          if (conversationActive) {
-            startListening()
-          }
-        }, 500)
-      })
-    }
-  }, [hasShownWelcome, voiceSupported, ttsSupported, userName])
-
-  // Auto-send message after transcription completes
-  useEffect(() => {
-    if (!isTranscribing && !isListening && transcript && !processingRef.current && conversationActive) {
-      console.log('Auto-sending message:', transcript)
-      processingRef.current = true
-      handleSendMessage()
-    }
-  }, [isTranscribing, isListening, transcript, conversationActive])
-
-  // Auto-restart listening after AI finishes speaking
-  useEffect(() => {
-    if (!isSpeaking && !isListening && !isProcessing && conversationActive && hasShownWelcome) {
-      console.log('AI finished speaking, restarting listening...')
-      setTimeout(() => {
-        if (!isListening && conversationActive) {
-          startListening()
-        }
-      }, 1000)
-    }
-  }, [isSpeaking, isListening, isProcessing, conversationActive, hasShownWelcome])
-
-  // Show errors
-  useEffect(() => {
-    if (voiceError) {
-      toast({
-        title: 'Voice Error',
-        description: voiceError,
-        variant: 'destructive'
-      })
-    }
-  }, [voiceError, toast])
-
-  const handleSendMessage = async () => {
-    if (!transcript.trim() || isProcessing) {
-      console.log('Cannot send - no transcript or already processing')
+  // Stable callback for sending messages
+  const handleSendMessage = useCallback(async (messageText: string) => {
+    if (!messageText.trim() || isProcessing) {
+      console.log('Cannot send - no message or already processing')
       return
     }
 
-    const userMessage = transcript.trim()
-    console.log('Sending message to AI:', userMessage)
+    console.log('[AUTO-SEND] Sending message:', messageText)
     
     setIsProcessing(true)
     stopSpeaking()
@@ -127,7 +76,7 @@ export function VoiceInterface({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: userMessage,
+          message: messageText,
           sessionId,
         })
       })
@@ -140,13 +89,10 @@ export function VoiceInterface({
       const data = await response.json()
       const aiResponse = data.response
 
-      console.log('AI response received:', aiResponse.substring(0, 100) + '...')
+      console.log('[AUTO-SEND] AI response received')
 
       setCurrentResponse(aiResponse)
-      
-      // Clear transcript after successful send
-      resetTranscript()
-      processingRef.current = false
+      lastTranscriptRef.current = '' // Clear after successful send
       
       // Speak the response immediately
       await speak(aiResponse, {
@@ -156,19 +102,16 @@ export function VoiceInterface({
 
       // Notify parent
       if (onNewMessage) {
-        onNewMessage(userMessage, aiResponse)
+        onNewMessage(messageText, aiResponse)
       }
 
-      // Listening will auto-restart after speaking finishes (via useEffect)
-
     } catch (error: any) {
-      console.error('Error processing voice message:', error)
+      console.error('[AUTO-SEND] Error:', error)
       toast({
         title: 'Error',
         description: error.message || 'Failed to process your message. Please try again.',
         variant: 'destructive'
       })
-      processingRef.current = false
       
       // Restart listening after error
       if (conversationActive) {
@@ -177,7 +120,88 @@ export function VoiceInterface({
     } finally {
       setIsProcessing(false)
     }
-  }
+  }, [isProcessing, sessionId, speak, selectedVoice, speed, onNewMessage, stopSpeaking, toast, conversationActive, startListening])
+
+  // Show welcome message and start listening on first load
+  useEffect(() => {
+    if (!hasShownWelcome && voiceSupported && ttsSupported) {
+      setHasShownWelcome(true)
+      const welcome = `Hi ${userName}! I'm ready to chat. Just start speaking, and I'll listen automatically.`
+      setCurrentResponse(welcome)
+      
+      // Speak welcome, then start listening
+      speak(welcome).then(() => {
+        // Start listening after welcome finishes
+        setTimeout(() => {
+          if (conversationActive) {
+            console.log('[INIT] Starting initial listening')
+            startListening()
+          }
+        }, 500)
+      })
+    }
+  }, [hasShownWelcome, voiceSupported, ttsSupported, userName, speak, conversationActive, startListening])
+
+  // Auto-send when transcription completes
+  useEffect(() => {
+    console.log('[AUTO-SEND CHECK]', {
+      isTranscribing,
+      isListening,
+      hasTranscript: !!transcript,
+      transcript: transcript.substring(0, 50),
+      isProcessing,
+      conversationActive,
+      lastTranscript: lastTranscriptRef.current.substring(0, 50)
+    })
+
+    // Check if we have a new transcript and we're ready to send
+    if (!isTranscribing && 
+        !isListening && 
+        transcript && 
+        transcript.trim() !== '' &&
+        transcript !== lastTranscriptRef.current &&
+        !isProcessing && 
+        conversationActive) {
+      
+      console.log('[AUTO-SEND] Conditions met! Sending in 500ms...')
+      lastTranscriptRef.current = transcript
+      
+      // Small delay to ensure everything is settled
+      const timer = setTimeout(() => {
+        console.log('[AUTO-SEND] Triggering send now')
+        resetTranscript() // Clear transcript before sending
+        handleSendMessage(transcript)
+      }, 500)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [isTranscribing, isListening, transcript, isProcessing, conversationActive, handleSendMessage, resetTranscript])
+
+  // Auto-restart listening after AI finishes speaking
+  useEffect(() => {
+    if (!isSpeaking && !ttsLoading && !isListening && !isProcessing && conversationActive && hasShownWelcome) {
+      console.log('[AUTO-RESTART] AI finished, restarting listening in 1s...')
+      const timer = setTimeout(() => {
+        if (!isListening && conversationActive) {
+          console.log('[AUTO-RESTART] Starting listening now')
+          startListening()
+        }
+      }, 1000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [isSpeaking, ttsLoading, isListening, isProcessing, conversationActive, hasShownWelcome, startListening])
+
+  // Show errors
+  useEffect(() => {
+    if (voiceError) {
+      toast({
+        title: 'Voice Error',
+        description: voiceError,
+        variant: 'destructive'
+      })
+    }
+  }, [voiceError, toast])
 
   const handleTestVoice = async () => {
     const wasActive = conversationActive
@@ -203,22 +227,25 @@ export function VoiceInterface({
   const toggleConversation = () => {
     if (conversationActive) {
       // Pause conversation
+      console.log('[CONTROL] Pausing conversation')
       setConversationActive(false)
       stopListening()
       stopSpeaking()
     } else {
       // Resume conversation
+      console.log('[CONTROL] Resuming conversation')
       setConversationActive(true)
       startListening()
     }
   }
 
   const resetConversation = () => {
+    console.log('[CONTROL] Resetting conversation')
     stopListening()
     stopSpeaking()
     resetTranscript()
     setCurrentResponse('')
-    processingRef.current = false
+    lastTranscriptRef.current = ''
     setConversationActive(true)
     
     // Restart listening after reset
@@ -373,6 +400,17 @@ export function VoiceInterface({
             <p>{conversationActive ? 'Ready to listen...' : 'Conversation paused'}</p>
           </div>
         )}
+      </Card>
+
+      {/* Debug Info (temporary - remove after testing) */}
+      <Card className="w-full max-w-2xl p-3 bg-gray-50 border-gray-200 text-xs">
+        <div className="font-mono">
+          <div>Listening: {isListening ? '✅' : '❌'}</div>
+          <div>Transcribing: {isTranscribing ? '✅' : '❌'}</div>
+          <div>Processing: {isProcessing ? '✅' : '❌'}</div>
+          <div>Transcript: {transcript ? `"${transcript.substring(0, 50)}..."` : 'none'}</div>
+          <div>Countdown: {silenceCountdown}s</div>
+        </div>
       </Card>
 
       {/* Tips */}
