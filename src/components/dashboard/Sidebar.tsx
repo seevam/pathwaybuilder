@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X } from 'lucide-react'
+import { Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/contexts/SidebarContext'
@@ -47,7 +46,7 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
         <Button
           variant="ghost"
           size="sm"
-          onClick={toggleCollapse}
+          onClick={toggleSidebar}
           className={cn('h-8 w-8 p-0', isCollapsed && 'mx-auto')}
         >
           {isCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
