@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect, notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { RIASECAssessmentWrapper } from '@/components/activities/RIASECAssessmentWrapper'
+import { CareerClustersExplorationWrapper } from '@/components/activities/CareerClustersExplorationWrapper'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -49,8 +50,12 @@ export default async function Module2ActivityPage({
           <RIASECAssessmentWrapper activityId={activity.id} />
         )}
         
+        {params.activity === 'career-clusters' && (
+          <CareerClustersExplorationWrapper activityId={activity.id} />
+        )}
+        
         {/* Placeholder for other Module 2 activities */}
-        {!['riasec-assessment'].includes(params.activity) && (
+        {!['riasec-assessment', 'career-clusters'].includes(params.activity) && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
               This activity is coming soon...
