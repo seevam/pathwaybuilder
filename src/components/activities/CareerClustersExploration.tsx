@@ -279,7 +279,7 @@ function MapView({
                 Ready to Continue?
               </h3>
               <p className="text-gray-600">
-                You've explored {exploredClusters.size} clusters. Great work!
+                You&apos;ve explored {exploredClusters.size} clusters. Great work!
               </p>
             </div>
             <Button
@@ -479,7 +479,7 @@ function DetailView({
             <p className="text-sm text-gray-600">{cluster.studentProfile.school}</p>
           </div>
           <p className="text-gray-700 italic">
-            "{cluster.studentProfile.story}"
+            &quot;{cluster.studentProfile.story}&quot;
           </p>
           <div className="pt-3 border-t border-purple-200">
             <p className="text-sm font-medium text-purple-900">
