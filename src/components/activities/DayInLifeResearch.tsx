@@ -60,10 +60,10 @@ export function DayInLifeResearch({
 
   // Filter careers based on search
   const filteredCareers = useMemo(() => {
-    if (!searchQuery) return SAMPLE_CAREERS
+    if (!searchQuery) return CAREERS
     
     const query = searchQuery.toLowerCase()
-    return SAMPLE_CAREERS.filter(career =>
+    return CAREERS.filter(career =>
       career.title.toLowerCase().includes(query) ||
       career.cluster.toLowerCase().includes(query) ||
       career.category.toLowerCase().includes(query) ||
@@ -126,7 +126,7 @@ export function DayInLifeResearch({
         {view === 'research' && (
           <ResearchView
             key="research"
-            career={SAMPLE_CAREERS.find(c => c.id === selectedCareers[currentResearchIndex])!}
+            career={CAREERS.find(c => c.id === selectedCareers[currentResearchIndex])!}
             currentIndex={currentResearchIndex}
             totalCareers={selectedCareers.length}
             existingData={researchData[selectedCareers[currentResearchIndex]]}
@@ -138,7 +138,7 @@ export function DayInLifeResearch({
         {view === 'comparison' && (
           <ComparisonView
             key="comparison"
-            careers={SAMPLE_CAREERS.filter(c => selectedCareers.includes(c.id))}
+            careers={CAREERS.filter(c => selectedCareers.includes(c.id))}
             researchData={researchData}
             shortlist={shortlist}
             onToggleShortlist={(careerId) => {
