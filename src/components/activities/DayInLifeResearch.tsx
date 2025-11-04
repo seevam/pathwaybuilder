@@ -195,7 +195,7 @@ function SelectionView({
               Career Deep Research
             </h2>
             <p className="text-gray-600">
-              Select 1-3 careers to research in-depth. You'll explore what professionals actually do, required education, salary, and more.
+              Select 1-3 careers to research in-depth. You&apos;ll explore what professionals actually do, required education, salary, and more.
             </p>
           </div>
         </div>
@@ -252,7 +252,7 @@ function SelectionView({
       {careers.length === 0 && (
         <Card className="p-12 text-center">
           <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-600">No careers found matching "{searchQuery}"</p>
+          <p className="text-gray-600">No careers found matching &quot;{searchQuery}&quot;</p>
           <Button
             variant="outline"
             onClick={() => onSearchChange('')}
@@ -272,7 +272,7 @@ function SelectionView({
                 Ready to Research?
               </h3>
               <p className="text-gray-600">
-                You've selected {selectedCareers.length} career{selectedCareers.length > 1 ? 's' : ''} to explore
+                You&apos;ve selected {selectedCareers.length} career{selectedCareers.length > 1 ? 's' : ''} to explore
               </p>
             </div>
             <Button
