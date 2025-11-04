@@ -4,6 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { RIASECAssessmentWrapper } from '@/components/activities/RIASECAssessmentWrapper'
 import { CareerClustersExplorationWrapper } from '@/components/activities/CareerClustersExplorationWrapper'
+import { DayInLifeResearchWrapper } from '@/components/activities/DayInLifeResearchWrapper'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -53,9 +54,13 @@ export default async function Module2ActivityPage({
         {params.activity === 'career-clusters' && (
           <CareerClustersExplorationWrapper activityId={activity.id} />
         )}
+
+        {params.activity === 'day-in-life' && (
+          <DayInLifeResearchWrapper activityId={activity.id} />
+        )}
         
         {/* Placeholder for other Module 2 activities */}
-        {!['riasec-assessment', 'career-clusters'].includes(params.activity) && (
+        {!['riasec-assessment', 'career-clusters', 'day-in-life'].includes(params.activity) && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
               This activity is coming soon...
