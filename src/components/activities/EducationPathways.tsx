@@ -263,7 +263,7 @@ export function EducationPathways({ onComplete }: EducationPathwaysProps) {
 
           {interestedPathways.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Pathways You're Interested In</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Pathways You&apos;re Interested In</h3>
               <div className="space-y-4">
                 {interestedPathways.map(pathwayId => {
                   const p = PATHWAY_OPTIONS.find(opt => opt.id === pathwayId)
