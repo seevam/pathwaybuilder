@@ -81,7 +81,8 @@ export function SMARTGoals({ onComplete }: SMARTGoalsProps) {
     timeBound: ''
   })
 
-  const criterion = SMART_CRITERIA[currentStep]
+  // Adjust indexing: step 0 is title, steps 1-5 use SMART_CRITERIA[0-4]
+  const criterion = currentStep > 0 ? SMART_CRITERIA[currentStep - 1] : SMART_CRITERIA[0]
 
   const handleStartNewGoal = () => {
     setCreatingGoal(true)
@@ -251,7 +252,7 @@ export function SMARTGoals({ onComplete }: SMARTGoalsProps) {
             ← Back
           </Button>
           <Button onClick={handleNextStep} disabled={currentValue.length < 3}>
-            {currentStep === SMART_CRITERIA.length - 1 ? 'Complete Goal ✓' : 'Next →'}
+            {currentStep === SMART_CRITERIA.length ? 'Complete Goal ✓' : 'Next →'}
           </Button>
         </div>
       </div>
