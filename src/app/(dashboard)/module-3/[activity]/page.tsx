@@ -1,21 +1,21 @@
-// src/app/(dashboard)/module-2/[activity]/page.tsx
+// src/app/(dashboard)/module-3/[activity]/page.tsx
 import { auth } from '@clerk/nextjs/server'
 import { redirect, notFound } from 'next/navigation'
 import { db } from '@/lib/db'
-import { RIASECAssessmentWrapper } from '@/components/activities/RIASECAssessmentWrapper'
-import { CareerClustersExplorationWrapper } from '@/components/activities/CareerClustersExplorationWrapper'
-import { DayInLifeResearchWrapper } from '@/components/activities/DayInLifeResearchWrapper'
-import { CareerReflectionWrapper } from '@/components/activities/CareerReflectionWrapper'
+import { DISCAssessmentWrapper } from '@/components/activities/DISCAssessmentWrapper'
+import { WorkPreferencesWrapper } from '@/components/activities/WorkPreferencesWrapper'
+import { CollaborationStyleWrapper } from '@/components/activities/CollaborationStyleWrapper'
+import { WorkStyleReflectionWrapper } from '@/components/activities/WorkStyleReflectionWrapper'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
-export default async function Module2ActivityPage({
+export default async function Module3ActivityPage({
   params,
 }: {
   params: { activity: string }
 }) {
   const { userId } = await auth()
-  
+
   if (!userId) {
     redirect('/sign-in')
   }
@@ -32,8 +32,8 @@ export default async function Module2ActivityPage({
     <div className="container mx-auto p-6 max-w-4xl">
       {/* Back button */}
       <div className="mb-6">
-        <Link href="/module-2">
-          <Button variant="ghost" size="sm">← Back to Module 2</Button>
+        <Link href="/module-3">
+          <Button variant="ghost" size="sm">← Back to Module 3</Button>
         </Link>
       </div>
 
@@ -48,24 +48,23 @@ export default async function Module2ActivityPage({
 
       {/* Activity Content */}
       <div className="bg-card border rounded-lg p-6">
-        {params.activity === 'riasec-assessment' && (
-          <RIASECAssessmentWrapper activityId={activity.id} />
-        )}
-        
-        {params.activity === 'career-clusters' && (
-          <CareerClustersExplorationWrapper activityId={activity.id} />
+        {params.activity === 'disc-assessment' && (
+          <DISCAssessmentWrapper activityId={activity.id} />
         )}
 
-        {params.activity === 'day-in-life' && (
-          <DayInLifeResearchWrapper activityId={activity.id} />
+        {params.activity === 'work-preferences' && (
+          <WorkPreferencesWrapper activityId={activity.id} />
         )}
 
-        {params.activity === 'career-reflection' && (
-          <CareerReflectionWrapper activityId={activity.id} />
+        {params.activity === 'collaboration-style' && (
+          <CollaborationStyleWrapper activityId={activity.id} />
         )}
 
-        {/* Placeholder for other Module 2 activities */}
-        {!['riasec-assessment', 'career-clusters', 'day-in-life', 'career-reflection'].includes(params.activity) && (
+        {params.activity === 'work-style-reflection' && (
+          <WorkStyleReflectionWrapper activityId={activity.id} />
+        )}
+
+        {!['disc-assessment', 'work-preferences', 'collaboration-style', 'work-style-reflection'].includes(params.activity) && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
               This activity is coming soon...
