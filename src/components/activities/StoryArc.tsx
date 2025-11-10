@@ -80,7 +80,7 @@ export function StoryArc({ onComplete }: StoryArcProps) {
             <div>
               <h4 className="font-semibold text-purple-900 mb-2">Your Story Matters</h4>
               <p className="text-sm text-purple-800">
-                This narrative is uniquely yours. Use it in college essays, job interviews, and whenever you need to share who you are and where you're going.
+                This narrative is uniquely yours. Use it in college essays, job interviews, and whenever you need to share who you are and where you&apos;re going.
               </p>
             </div>
           </div>

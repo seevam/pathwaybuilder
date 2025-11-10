@@ -152,7 +152,7 @@ export function CollaborationStyle({ onComplete }: CollaborationStyleProps) {
               Your Collaboration Style
             </h2>
             <p className="text-gray-600">
-              Here's how you work best with others
+              Here&apos;s how you work best with others
             </p>
           </div>
 
@@ -191,7 +191,7 @@ export function CollaborationStyle({ onComplete }: CollaborationStyleProps) {
               <h4 className="font-semibold text-purple-900 mb-2">What This Means</h4>
               <p className="text-sm text-purple-800 leading-relaxed">
                 Your collaboration style reflects how you naturally interact in teams. Understanding this helps you:
-                communicate your needs to teammates, identify roles where you'll excel, and recognize when to
+                communicate your needs to teammates, identify roles where you&apos;ll excel, and recognize when to
                 stretch outside your comfort zone. Remember, effective collaborators can adapt their style
                 to different situations and team needs.
               </p>

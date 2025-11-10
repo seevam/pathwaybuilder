@@ -157,16 +157,16 @@ export function SMARTGoals({ onComplete }: SMARTGoalsProps) {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-3xl font-bold mb-2">Create a SMART Goal</h2>
-                <p className="text-purple-100">Let's build a goal that you can actually achieve</p>
+                <p className="text-purple-100">Let&apos;s build a goal that you can actually achieve</p>
               </div>
               <Target className="w-12 h-12 text-purple-200" />
             </div>
           </Card>
 
           <Card className="p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">What's your goal?</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">What&apos;s your goal?</h3>
             <p className="text-gray-600 mb-4">
-              Give your goal a clear, concise title. We'll make it SMART in the next steps.
+              Give your goal a clear, concise title. We&apos;ll make it SMART in the next steps.
             </p>
             <Input
               value={newGoal.title}
@@ -352,7 +352,7 @@ export function SMARTGoals({ onComplete }: SMARTGoalsProps) {
               <div>
                 <h4 className="font-semibold text-green-900 mb-2">Great Progress!</h4>
                 <p className="text-sm text-green-800">
-                  You've created {goals.length} SMART goal{goals.length > 1 ? 's' : ''}.
+                  You&apos;ve created {goals.length} SMART goal{goals.length > 1 ? 's' : ''}.
                   These will be the foundation of your action plan.
                 </p>
               </div>

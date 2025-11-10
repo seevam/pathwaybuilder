@@ -120,7 +120,7 @@ export function PathwayReflection({ onComplete }: PathwayReflectionProps) {
               <p className="text-sm text-indigo-800 leading-relaxed">
                 Your pathway is a living plan that will evolve as you grow and learn.
                 Revisit your timeline and goals regularly, adjust as needed, and celebrate
-                your progress along the way. You've got this!
+                your progress along the way. You&apos;ve got this!
               </p>
             </div>
           </div>

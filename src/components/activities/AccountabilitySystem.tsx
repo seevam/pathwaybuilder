@@ -53,7 +53,7 @@ export function AccountabilitySystem({ onComplete }: AccountabilitySystemProps) 
       <div className="space-y-6">
         <Card className="p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
           <h2 className="text-3xl font-bold mb-2">Accountability System</h2>
-          <p className="text-purple-100">Choose how you'll stay on track</p>
+          <p className="text-purple-100">Choose how you&apos;ll stay on track</p>
         </Card>
 
         <div className="space-y-4">

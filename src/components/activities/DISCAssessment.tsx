@@ -232,30 +232,30 @@ export function DISCAssessment({ onComplete }: DISCAssessmentProps) {
             <h3 className="text-xl font-bold text-gray-900 mb-4">What This Means for Your Work Style</h3>
             {profile === 'D' && (
               <div className="space-y-3 text-gray-700">
-                <p><strong>Strengths:</strong> You're results-driven, decisive, and excel at problem-solving. You naturally take charge and aren't afraid of challenges.</p>
+                <p><strong>Strengths:</strong> You&apos;re results-driven, decisive, and excel at problem-solving. You naturally take charge and aren&apos;t afraid of challenges.</p>
                 <p><strong>Work Preferences:</strong> You thrive in fast-paced environments with clear goals and the autonomy to make decisions.</p>
                 <p><strong>Growth Area:</strong> Consider practicing patience and active listening to build stronger team relationships.</p>
               </div>
             )}
             {profile === 'I' && (
               <div className="space-y-3 text-gray-700">
-                <p><strong>Strengths:</strong> You're enthusiastic, persuasive, and excel at building relationships. Your optimism energizes teams.</p>
+                <p><strong>Strengths:</strong> You&apos;re enthusiastic, persuasive, and excel at building relationships. Your optimism energizes teams.</p>
                 <p><strong>Work Preferences:</strong> You thrive in collaborative, social environments where you can interact with others and share ideas.</p>
                 <p><strong>Growth Area:</strong> Focus on follow-through and attention to detail to complement your big-picture thinking.</p>
               </div>
             )}
             {profile === 'S' && (
               <div className="space-y-3 text-gray-700">
-                <p><strong>Strengths:</strong> You're patient, supportive, and excel at creating harmony. Your reliability makes you a trusted team member.</p>
+                <p><strong>Strengths:</strong> You&apos;re patient, supportive, and excel at creating harmony. Your reliability makes you a trusted team member.</p>
                 <p><strong>Work Preferences:</strong> You thrive in stable, team-oriented environments with clear expectations and minimal conflict.</p>
                 <p><strong>Growth Area:</strong> Practice speaking up for your ideas and embracing change as an opportunity for growth.</p>
               </div>
             )}
             {profile === 'C' && (
               <div className="space-y-3 text-gray-700">
-                <p><strong>Strengths:</strong> You're analytical, precise, and excel at quality work. Your attention to detail ensures accuracy.</p>
+                <p><strong>Strengths:</strong> You&apos;re analytical, precise, and excel at quality work. Your attention to detail ensures accuracy.</p>
                 <p><strong>Work Preferences:</strong> You thrive in structured environments where you can work independently with clear standards.</p>
-                <p><strong>Growth Area:</strong> Balance perfectionism with timely decision-making and be open to others' perspectives.</p>
+                <p><strong>Growth Area:</strong> Balance perfectionism with timely decision-making and be open to others&apos; perspectives.</p>
               </div>
             )}
           </Card>
@@ -269,7 +269,7 @@ export function DISCAssessment({ onComplete }: DISCAssessmentProps) {
               <p className="text-sm text-blue-800 leading-relaxed">
                 DISC measures your communication and work style preferences. Most people have a blend of all four traits,
                 but your dominant style influences how you approach work, make decisions, and interact with others.
-                Understanding your profile helps you find work environments where you'll thrive.
+                Understanding your profile helps you find work environments where you&apos;ll thrive.
               </p>
             </div>
           </div>

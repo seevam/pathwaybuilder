@@ -55,7 +55,7 @@ export function FinalReflection({ onComplete }: FinalReflectionProps) {
           <div className="text-center mb-8">
             <div className="text-6xl mb-4">🎉</div>
             <h2 className="text-4xl font-bold text-gray-900 mb-2">Congratulations!</h2>
-            <p className="text-xl text-gray-600">You've completed your pathway journey</p>
+            <p className="text-xl text-gray-600">You&apos;ve completed your pathway journey</p>
           </div>
 
           <div className="space-y-6">
@@ -74,9 +74,9 @@ export function FinalReflection({ onComplete }: FinalReflectionProps) {
           <div className="flex items-center gap-4 mb-6">
             <Sparkles className="w-12 h-12" />
             <div>
-              <h3 className="text-2xl font-bold mb-2">You're Ready!</h3>
+              <h3 className="text-2xl font-bold mb-2">You&apos;re Ready!</h3>
               <p className="text-purple-100">
-                You've discovered who you are, explored your options, planned your path, and learned to tell your story. The future is yours to create!
+                You&apos;ve discovered who you are, explored your options, planned your path, and learned to tell your story. The future is yours to create!
               </p>
             </div>
           </div>

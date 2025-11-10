@@ -73,9 +73,9 @@ export function ActionPlanReflection({ onComplete }: ActionPlanReflectionProps) 
           <div className="flex gap-3">
             <div className="text-2xl">💡</div>
             <div>
-              <h4 className="font-semibold text-green-900 mb-2">You're Ready!</h4>
+              <h4 className="font-semibold text-green-900 mb-2">You&apos;re Ready!</h4>
               <p className="text-sm text-green-800">
-                You've created a comprehensive action plan. Now it's time to execute. Start with your first step and build momentum. Remember: progress, not perfection!
+                You&apos;ve created a comprehensive action plan. Now it&apos;s time to execute. Start with your first step and build momentum. Remember: progress, not perfection!
               </p>
             </div>
           </div>

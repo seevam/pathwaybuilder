@@ -164,7 +164,7 @@ export function WorkPreferences({ onComplete }: WorkPreferencesProps) {
               Your Work Preferences
             </h2>
             <p className="text-gray-600">
-              Here's what you've discovered about your ideal work environment
+              Here&apos;s what you&apos;ve discovered about your ideal work environment
             </p>
           </div>
 

@@ -118,7 +118,7 @@ export function WorkStyleReflection({ onComplete }: WorkStyleReflectionProps) {
             <div>
               <h4 className="font-semibold text-green-900 mb-2">Moving Forward</h4>
               <p className="text-sm text-green-800 leading-relaxed">
-                Understanding your work style is key to finding careers and workplaces where you'll thrive.
+                Understanding your work style is key to finding careers and workplaces where you&apos;ll thrive.
                 Use these insights when researching career paths, evaluating job opportunities, and
                 communicating your needs to future employers or teammates.
               </p>

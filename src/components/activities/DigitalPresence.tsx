@@ -27,6 +27,7 @@ export function DigitalPresence({ onComplete }: DigitalPresenceProps) {
   const [platformDetails, setPlatformDetails] = useState<Record<string, any>>({})
   const [bio, setBio] = useState('')
   const [goals, setGoals] = useState<string[]>([])
+  const [newGoal, setNewGoal] = useState('')
   const [step, setStep] = useState<'platforms' | 'bio' | 'goals' | 'summary'>('platforms')
 
   const handleTogglePlatform = (id: string) => {
@@ -97,7 +98,7 @@ export function DigitalPresence({ onComplete }: DigitalPresenceProps) {
         <Card className="p-6">
           <h3 className="font-semibold text-gray-900 mb-4">Your Bio (150-200 words)</h3>
           <p className="text-sm text-gray-600 mb-4">
-            Include: Who you are, what you're passionate about, what you're working toward, and what makes you unique.
+            Include: Who you are, what you&apos;re passionate about, what you&apos;re working toward, and what makes you unique.
           </p>
           <Textarea
             value={bio}
@@ -122,8 +123,6 @@ export function DigitalPresence({ onComplete }: DigitalPresenceProps) {
   }
 
   if (step === 'goals') {
-    const [newGoal, setNewGoal] = useState('')
-
     return (
       <div className="space-y-6">
         <Card className="p-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white">
