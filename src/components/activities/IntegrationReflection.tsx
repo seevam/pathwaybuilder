@@ -1,13 +1,14 @@
 // src/components/activities/IntegrationReflection.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-import { Loader2, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react'
+import { Loader2, Sparkles, CheckCircle2, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { AISupport } from './AISupport'
 
 const REFLECTION_PROMPTS = [
   {
@@ -37,20 +38,57 @@ const REFLECTION_PROMPTS = [
 ]
 
 interface IntegrationReflectionProps {
+  activityId: string
   onComplete: (data: { responses: Record<string, string>; aiInsight: any }) => void
 }
 
-export function IntegrationReflection({ onComplete }: IntegrationReflectionProps) {
+export function IntegrationReflection({ activityId, onComplete }: IntegrationReflectionProps) {
   const { toast } = useToast()
   const [currentPrompt, setCurrentPrompt] = useState(0)
   const [responses, setResponses] = useState<Record<string, string>>({})
   const [aiInsight, setAiInsight] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [showInsight, setShowInsight] = useState(false)
+  const [previousResponses, setPreviousResponses] = useState<any[]>([])
+  const [showPreviousResponses, setShowPreviousResponses] = useState(false)
+  const [loadingPrevious, setLoadingPrevious] = useState(true)
 
   const prompt = REFLECTION_PROMPTS[currentPrompt]
   const currentResponse = responses[prompt.id] || ''
   const allPromptsCompleted = REFLECTION_PROMPTS.every(p => responses[p.id]?.trim().length > 0)
+
+  // Fetch previous activity responses from the same module
+  useEffect(() => {
+    const fetchPreviousResponses = async () => {
+      try {
+        setLoadingPrevious(true)
+
+        // First, get the current activity to find its module
+        const activityResponse = await fetch(`/api/activities/${activityId}`)
+        if (!activityResponse.ok) throw new Error('Failed to fetch activity')
+
+        const activityData = await activityResponse.json()
+        const moduleId = activityData.activity?.moduleId
+
+        if (moduleId) {
+          // Fetch all completed responses from this module
+          const responsesResponse = await fetch(`/api/activities/responses?moduleId=${moduleId}`)
+          if (!responsesResponse.ok) throw new Error('Failed to fetch responses')
+
+          const data = await responsesResponse.json()
+          // Filter out the current activity from previous responses
+          const previous = data.responses?.filter((r: any) => r.activityId !== activityId) || []
+          setPreviousResponses(previous)
+        }
+      } catch (error) {
+        console.error('Error fetching previous responses:', error)
+      } finally {
+        setLoadingPrevious(false)
+      }
+    }
+
+    fetchPreviousResponses()
+  }, [activityId])
 
   const handleNext = () => {
     if (currentResponse.trim().length < 10) {
@@ -258,6 +296,90 @@ export function IntegrationReflection({ onComplete }: IntegrationReflectionProps
 
   return (
     <div className="space-y-6">
+      {/* Previous Responses Section */}
+      {!loadingPrevious && previousResponses.length > 0 && (
+        <Card className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-blue-600" />
+              <h3 className="font-semibold text-gray-900">
+                Your Previous Responses ({previousResponses.length} {previousResponses.length === 1 ? 'activity' : 'activities'})
+              </h3>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowPreviousResponses(!showPreviousResponses)}
+            >
+              {showPreviousResponses ? (
+                <>
+                  <EyeOff className="w-4 h-4 mr-1" />
+                  Hide
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4 mr-1" />
+                  View
+                </>
+              )}
+            </Button>
+          </div>
+
+          {showPreviousResponses && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="space-y-3 mt-4"
+            >
+              {previousResponses.map((response, idx) => (
+                <Card key={response.activityId} className="p-4 bg-white">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">{idx === 0 ? '🎯' : idx === 1 ? '💎' : '💪'}</span>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 mb-1">
+                        {response.activityTitle}
+                      </h4>
+                      <div className="text-sm text-gray-600">
+                        {response.activitySlug === 'who-am-i' && response.data && (
+                          <div className="space-y-2">
+                            {Object.entries(response.data).map(([key, values]: [string, any]) => (
+                              <div key={key}>
+                                <span className="font-medium">Question {key}: </span>
+                                <span>{Array.isArray(values) ? values.join(', ') : JSON.stringify(values)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {response.activitySlug === 'values-card-sort' && response.data && (
+                          <div>
+                            <span className="font-medium">Top Values: </span>
+                            {response.data.topValues ? response.data.topValues.join(', ') : 'Completed'}
+                          </div>
+                        )}
+                        {response.activitySlug === 'strengths-discovery' && response.data && (
+                          <div>
+                            <span className="font-medium">Top Strengths: </span>
+                            {response.data.selectedStrengths ? response.data.selectedStrengths.join(', ') : 'Completed'}
+                          </div>
+                        )}
+                        {!['who-am-i', 'values-card-sort', 'strengths-discovery'].includes(response.activitySlug) && (
+                          <span className="italic">Activity completed ✓</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </motion.div>
+          )}
+
+          <p className="text-xs text-gray-600 mt-2">
+            Use these responses to help reflect on patterns and connections in your self-discovery journey
+          </p>
+        </Card>
+      )}
+
       {/* Progress */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
@@ -326,11 +448,19 @@ export function IntegrationReflection({ onComplete }: IntegrationReflectionProps
           onClick={handleNext}
           disabled={currentResponse.trim().length < 10}
         >
-          {currentPrompt === REFLECTION_PROMPTS.length - 1 
-            ? 'Generate Insights ✨' 
+          {currentPrompt === REFLECTION_PROMPTS.length - 1
+            ? 'Generate Insights ✨'
             : 'Next →'}
         </Button>
       </div>
+
+      {/* AI Support Button */}
+      <AISupport
+        activityId={activityId}
+        activityTitle="Integration Reflection"
+        activityType="REFLECTION"
+        currentProgress={{ currentPrompt, responses }}
+      />
     </div>
   )
 }

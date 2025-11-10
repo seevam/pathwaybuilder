@@ -53,5 +53,5 @@ export function IntegrationReflectionWrapper({ activityId }: IntegrationReflecti
     }
   }
 
-  return <IntegrationReflection onComplete={handleComplete} />
+  return <IntegrationReflection activityId={activityId} onComplete={handleComplete} />
 }

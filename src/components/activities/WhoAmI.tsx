@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 import { CheckCircle2 } from 'lucide-react'
+import { AISupport } from './AISupport'
 
 const PROMPTS = [
   {
@@ -270,6 +271,14 @@ export function WhoAmI({ activityId }: WhoAmIProps) {
           Please select at least {prompt.minSelections} option{prompt.minSelections > 1 ? 's' : ''} to continue
         </p>
       )}
+
+      {/* AI Support Button */}
+      <AISupport
+        activityId={activityId}
+        activityTitle="Who Am I?"
+        activityType="INTERACTIVE"
+        currentProgress={{ currentPrompt, answers }}
+      />
     </div>
   )
 }
