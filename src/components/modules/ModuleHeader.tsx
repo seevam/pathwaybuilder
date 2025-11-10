@@ -72,7 +72,7 @@ export function ModuleHeader({ module, progress, nextActivity }: ModuleHeaderPro
                   <span>{nextActivity.estimatedMinutes} minutes</span>
                 </div>
               </div>
-              <Link href={`/module-1/${nextActivity.slug}`}>
+              <Link href={`/module-${module.orderIndex}/${nextActivity.slug}`}>
                 <Button size="lg" className="gap-2">
                   {hasStarted ? (
                     <>

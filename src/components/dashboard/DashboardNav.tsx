@@ -12,7 +12,6 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: Home },
   { href: '/profile', label: 'Profile', icon: User },
   { href: '/projects', label: 'Projects', icon: Rocket },
-  { href: '/module-1', label: 'Modules', icon: BookOpen },
   { href: '/help', label: 'Help', icon: HelpCircle },
 ]
 
