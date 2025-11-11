@@ -115,6 +115,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
       <ModuleDeliverable
         moduleId={moduleData.id}
+        orderIndex={moduleData.orderIndex}
         unlocked={deliverableUnlocked}
         progress={progress}
       />

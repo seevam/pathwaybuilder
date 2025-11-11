@@ -109,6 +109,7 @@ export default async function Module3Page() {
       {deliverableUnlocked && (
         <ModuleDeliverable
           moduleId={moduleData.id}
+        orderIndex={moduleData.orderIndex}
           unlocked={deliverableUnlocked}
           progress={progress}
         />
