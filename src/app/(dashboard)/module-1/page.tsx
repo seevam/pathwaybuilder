@@ -84,6 +84,7 @@ export default async function Module1Page() {
       {/* Module Deliverable */}
       <ModuleDeliverable
         moduleId={moduleData.id}
+        orderIndex={moduleData.orderIndex}
         unlocked={deliverableUnlocked}
         progress={progress}
       />

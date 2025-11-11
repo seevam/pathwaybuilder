@@ -109,6 +109,7 @@ model User {
   projects       Project[]
   moduleProgress ModuleProgress[]
   learningSessions LearningSession[]
+  deliverables   ModuleDeliverable[]
   
   @@index([clerkId])
   @@index([email])
@@ -390,20 +391,41 @@ model LearningMessage {
   id          String   @id @default(cuid())
   sessionId   String
   session     LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  
+
   role        MessageRole
   content     String @db.Text
   category    QuestionCategory?
-  
+
   // Voice specific (Phase 2)
   audioUrl    String?
   transcript  String? @db.Text
-  
+
   // AI metadata
   modelUsed   String?
   tokens      Int?
-  
+
   createdAt   DateTime @default(now())
-  
+
   @@index([sessionId])
+}
+
+// Module Deliverables
+model ModuleDeliverable {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moduleId    String
+
+  title       String
+  fileUrl     String
+  fileName    String
+  fileSize    Int
+  mimeType    String
+
+  submittedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, moduleId])
+  @@index([userId])
+  @@index([moduleId])
 }
