@@ -34,11 +34,11 @@ export async function POST(req: Request) {
     }
 
     // Verify module exists
-    const module = await db.module.findFirst({
+    const moduleData = await db.module.findFirst({
       where: { id: moduleId },
     })
 
-    if (!module) {
+    if (!moduleData) {
       return new NextResponse('Module not found', { status: 404 })
     }
 

@@ -85,7 +85,7 @@ function IdentityCollageTemplate() {
           <div className="border-l-4 border-blue-500 pl-4">
             <h3 className="font-medium">Section 2: Key Strengths</h3>
             <p className="text-sm text-gray-600">
-              Highlight 3-5 key strengths you discovered. Provide examples of how you've demonstrated
+              Highlight 3-5 key strengths you discovered. Provide examples of how you&apos;ve demonstrated
               these strengths.
             </p>
           </div>
@@ -149,7 +149,7 @@ function CareerPortfolioTemplate() {
           </div>
 
           <div className="border-l-4 border-green-500 pl-4">
-            <h3 className="font-medium">3. "Day in the Life" Research</h3>
+            <h3 className="font-medium">3. &quot;Day in the Life&quot; Research</h3>
             <p className="text-sm text-gray-600">
               Provide detailed research for 2-3 specific careers, including typical tasks, work
               environment, and requirements.
@@ -294,7 +294,7 @@ function ActionPlanTemplate() {
           <div className="border-l-4 border-green-500 pl-4">
             <h3 className="font-medium">3. Story Arc</h3>
             <p className="text-sm text-gray-600">
-              Write your personal narrative: where you've been, where you are, and where you're
+              Write your personal narrative: where you&apos;ve been, where you are, and where you&apos;re
               going.
             </p>
           </div>
@@ -302,7 +302,7 @@ function ActionPlanTemplate() {
           <div className="border-l-4 border-orange-500 pl-4">
             <h3 className="font-medium">4. Accountability System</h3>
             <p className="text-sm text-gray-600">
-              Identify your support network, check-in schedule, and how you'll track progress.
+              Identify your support network, check-in schedule, and how you&apos;ll track progress.
             </p>
           </div>
 

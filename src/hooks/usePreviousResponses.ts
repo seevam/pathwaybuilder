@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 interface ActivityCompletion {
   id: string
@@ -17,11 +17,7 @@ export function usePreviousResponses(moduleId?: string) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchResponses()
-  }, [moduleId])
-
-  const fetchResponses = async () => {
+  const fetchResponses = useCallback(async () => {
     try {
       const url = moduleId
         ? `/api/activities/responses?moduleId=${moduleId}`
@@ -38,7 +34,11 @@ export function usePreviousResponses(moduleId?: string) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [moduleId])
+
+  useEffect(() => {
+    fetchResponses()
+  }, [fetchResponses])
 
   const getResponseBySlug = (slug: string) => {
     return responses.find(r => r.activity.slug === slug)

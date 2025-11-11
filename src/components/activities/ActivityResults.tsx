@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card } from '@/components/ui/card'
 import { CheckCircle2, Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
@@ -22,11 +22,7 @@ export function ActivityResults({ activityId, activityTitle }: ActivityResultsPr
   const [completion, setCompletion] = useState<ActivityCompletion | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchResults()
-  }, [activityId])
-
-  const fetchResults = async () => {
+  const fetchResults = useCallback(async () => {
     try {
       const response = await fetch(`/api/activities/responses?activityId=${activityId}`)
       if (!response.ok) throw new Error('Failed to fetch results')
@@ -38,7 +34,11 @@ export function ActivityResults({ activityId, activityTitle }: ActivityResultsPr
     } finally {
       setLoading(false)
     }
-  }
+  }, [activityId])
+
+  useEffect(() => {
+    fetchResults()
+  }, [fetchResults])
 
   if (loading) {
     return (

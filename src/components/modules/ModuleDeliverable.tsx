@@ -1,7 +1,7 @@
 // src/components/modules/ModuleDeliverable.tsx
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Lock, Upload, CheckCircle2, FileText, Loader2, Eye } from 'lucide-react'
@@ -25,15 +25,7 @@ export function ModuleDeliverable({ moduleId, orderIndex, unlocked, progress }: 
 
   const deliverableConfig = getModuleDeliverableByModuleId(moduleId)
 
-  useEffect(() => {
-    if (unlocked) {
-      fetchExistingDeliverable()
-    } else {
-      setLoadingDeliverable(false)
-    }
-  }, [moduleId, unlocked])
-
-  const fetchExistingDeliverable = async () => {
+  const fetchExistingDeliverable = useCallback(async () => {
     try {
       const response = await fetch(`/api/deliverables/upload?moduleId=${moduleId}`)
       if (response.ok) {
@@ -45,7 +37,15 @@ export function ModuleDeliverable({ moduleId, orderIndex, unlocked, progress }: 
     } finally {
       setLoadingDeliverable(false)
     }
-  }
+  }, [moduleId])
+
+  useEffect(() => {
+    if (unlocked) {
+      fetchExistingDeliverable()
+    } else {
+      setLoadingDeliverable(false)
+    }
+  }, [unlocked, fetchExistingDeliverable])
 
   const handleFileSelect = () => {
     fileInputRef.current?.click()

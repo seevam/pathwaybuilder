@@ -89,7 +89,7 @@ export function AISupportButton({
             AI Guidance: {activityTitle}
           </DialogTitle>
           <DialogDescription>
-            Here's some personalized guidance to help you complete this activity successfully.
+            Here&apos;s some personalized guidance to help you complete this activity successfully.
           </DialogDescription>
         </DialogHeader>
 
