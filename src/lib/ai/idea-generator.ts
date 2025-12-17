@@ -1,5 +1,5 @@
 import { openai } from './index';
-import { UserProfile } from '@prisma/client';
+import { Profile } from '@prisma/client';
 
 export interface GeneratedIdea {
   id: string;
@@ -14,7 +14,7 @@ export interface GeneratedIdea {
 }
 
 export class IdeaGenerator {
-  async generateIdeas(profile: UserProfile, ratings?: Record<number, number>): Promise<GeneratedIdea[]> {
+  async generateIdeas(profile: Profile, ratings?: Record<number, number>): Promise<GeneratedIdea[]> {
     const prompt = this.buildPrompt(profile, ratings);
 
     try {
@@ -75,7 +75,7 @@ CRITICAL: Projects must be:
 ✓ Build perseverance and grit`;
   }
 
-  private buildPrompt(profile: UserProfile, ratings?: Record<number, number>): string {
+  private buildPrompt(profile: Profile, ratings?: Record<number, number>): string {
     const topValues = Array.isArray(profile.topValues) ? profile.topValues.join(', ') : '';
     const problemFocus = Array.isArray(profile.problemFocus) ? profile.problemFocus.join(', ') : '';
     const currentActivities = Array.isArray(profile.currentActivities) ? profile.currentActivities.join(', ') : '';
@@ -191,7 +191,7 @@ Do not combine multiple categories - choose the most fitting single category.${r
 
   private validateAndEnhance(
     ideas: any[],
-    profile: UserProfile
+    profile: Profile
   ): GeneratedIdea[] {
     const validCategories = ['CREATIVE', 'SOCIAL_IMPACT', 'ENTREPRENEURIAL', 'RESEARCH', 'TECHNICAL', 'LEADERSHIP'];
 
@@ -226,7 +226,7 @@ Do not combine multiple categories - choose the most fitting single category.${r
       .slice(0, 10);
   }
 
-  private calculateFeasibility(idea: any, profile: UserProfile): number {
+  private calculateFeasibility(idea: any, profile: Profile): number {
     let score = idea.feasibilityScore || 70;
 
     // Adjust based on time commitment
