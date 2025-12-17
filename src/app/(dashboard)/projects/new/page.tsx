@@ -176,7 +176,7 @@ function NewProjectForm() {
           Create Your Project
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Let's bring your idea to life
+          Let&apos;s bring your idea to life
         </p>
       </div>
 
@@ -339,7 +339,7 @@ function NewProjectForm() {
                             Collaboration Description
                           </Label>
                           <p className="mb-2 text-sm text-muted-foreground">
-                            Tell potential collaborators what you're looking for
+                            Tell potential collaborators what you&apos;re looking for
                           </p>
                           <textarea
                             id="collaborationDesc"
@@ -469,10 +469,10 @@ function NewProjectForm() {
                   <div className="text-center">
                     <div className="mb-3 text-5xl">🎉</div>
                     <h3 className="text-xl font-bold text-gray-900">
-                      You're Ready to Start!
+                      You&apos;re Ready to Start!
                     </h3>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      After creating your project, you'll be able to:
+                      After creating your project, you&apos;ll be able to:
                     </p>
                     <ul className="mt-3 space-y-1 text-sm text-gray-700">
                       <li>✓ Set milestones and track progress</li>
