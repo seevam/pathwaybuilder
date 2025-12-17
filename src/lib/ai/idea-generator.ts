@@ -230,12 +230,12 @@ Do not combine multiple categories - choose the most fitting single category.${r
     let score = idea.feasibilityScore || 70;
 
     // Adjust based on time commitment
-    if (profile.timeCommitment < 4 && idea.timeEstimate?.includes('6+')) {
+    if (profile.timeCommitment && profile.timeCommitment < 4 && idea.timeEstimate?.includes('6+')) {
       score -= 15;
     }
 
     // Adjust based on challenge level
-    if (profile.challengeLevel < 5 && idea.uniqueness === 'HIGH') {
+    if (profile.challengeLevel && profile.challengeLevel < 5 && idea.uniqueness === 'HIGH') {
       score -= 10;
     }
 
