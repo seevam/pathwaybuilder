@@ -41,7 +41,6 @@ export async function POST(
         nextSteps: validated.nextSteps || null,
         hoursLogged: validated.hoursLogged || null,
         moodRating: validated.moodRating || null,
-        energyLevel: validated.energyLevel || null,
       },
     });
 
