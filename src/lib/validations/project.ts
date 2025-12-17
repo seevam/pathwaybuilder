@@ -59,5 +59,4 @@ export const ProjectCheckInSchema = z.object({
   nextSteps: z.string().optional(),
   hoursLogged: z.number().int().min(0).max(24).optional(),
   moodRating: z.number().int().min(1).max(5).optional(),
-  energyLevel: z.number().int().min(1).max(5).optional(),
 });
