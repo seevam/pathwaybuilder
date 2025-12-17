@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({})); // Get ratings if provided
 
     // Get user profile
-    const profile = await db.userProfile.findUnique({
+    const profile = await db.profile.findUnique({
       where: { userId: user.id },
     });
 

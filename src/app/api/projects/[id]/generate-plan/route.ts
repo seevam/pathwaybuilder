@@ -28,7 +28,7 @@ export async function POST(
     }
 
     // Get user profile for additional context
-    const profile = await db.userProfile.findUnique({
+    const profile = await db.profile.findUnique({
       where: { userId: user.id },
     });
 

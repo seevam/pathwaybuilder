@@ -95,7 +95,7 @@ export async function GET(req: Request) {
     });
 
     // Get user's profile for match scoring
-    const userProfile = await db.userProfile.findUnique({
+    const userProfile = await db.profile.findUnique({
       where: { userId: user.id },
     });
 

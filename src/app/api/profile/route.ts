@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const user = await requireAuth();
 
-    const profile = await db.userProfile.findUnique({
+    const profile = await db.profile.findUnique({
       where: { userId: user.id },
     });
 
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // Use upsert to create or update profile
-    const profile = await db.userProfile.upsert({
+    const profile = await db.profile.upsert({
       where: { userId: user.id },
       update: {
         gradeLevel: body.gradeLevel,
@@ -82,7 +82,7 @@ export async function PATCH(req: Request) {
     const user = await requireAuth();
     const body = await req.json();
 
-    const profile = await db.userProfile.update({
+    const profile = await db.profile.update({
       where: { userId: user.id },
       data: body,
     });
