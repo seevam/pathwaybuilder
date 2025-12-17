@@ -460,7 +460,7 @@ UPDATE "Project" SET
   "currentStreak" = COALESCE("currentStreak", 0),
   "portfolioPublished" = COALESCE("portfolioPublished", false),
   "showcaseInGallery" = COALESCE("showcaseInGallery", false),
-  "idealTeamSize" = COALESCE("idealTeamSize", 'SOLO'::TeamSize),
+  "idealTeamSize" = COALESCE("idealTeamSize", 'SOLO'),
   "openForCollaboration" = COALESCE("openForCollaboration", false),
   "maxTeamSize" = COALESCE("maxTeamSize", 1),
   "currentTeamSize" = COALESCE("currentTeamSize", 1),
