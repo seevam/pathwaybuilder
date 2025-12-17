@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Map, User, Rocket, Menu } from 'lucide-react'
+import { Home, Map, User, Rocket, Menu, Lightbulb, Users, TrophyIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,10 @@ interface MobileNavProps {
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home },
   { href: '/profile', label: 'Profile', icon: User },
+  { href: '/ideas', label: 'Discover Ideas', icon: Lightbulb },
   { href: '/projects', label: 'Projects', icon: Rocket },
+  { href: '/discover', label: 'Find Collaborations', icon: Users },
+  { href: '/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
 ]
 
 export function MobileNav({ userName }: MobileNavProps) {

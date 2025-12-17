@@ -89,6 +89,48 @@ enum QuestionCategory {
   OTHER
 }
 
+// New Enums for Core Features Integration
+enum AchievementType {
+  BADGE
+  LEVEL_UP
+  STREAK_MILESTONE
+  PROJECT_MILESTONE
+  SPECIAL
+}
+
+enum NotificationType {
+  STREAK_WARNING
+  MILESTONE_COMPLETE
+  ACHIEVEMENT_UNLOCKED
+  WEEKLY_SUMMARY
+  PROJECT_UPDATE
+  COLLABORATION_REQUEST
+  COLLABORATION_ACCEPTED
+  COLLABORATION_REJECTED
+  TEAM_MEMBER_JOINED
+  TASK_ASSIGNED
+}
+
+enum TeamSize {
+  SOLO
+  DUO
+  SMALL_TEAM     // 3-4 people
+  LARGE_TEAM     // 5+ people
+}
+
+enum CollaborationRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+enum ProjectMemberRole {
+  OWNER
+  CO_LEAD
+  MEMBER
+}
+
 
 // User model - synced with Clerk
 model User {
@@ -97,11 +139,24 @@ model User {
   email     String   @unique
   name      String
   grade     Int?
-  
+  avatar    String?
+
+  // Gamification (Core Features Integration)
+  xp              Int      @default(0)
+  level           Int      @default(1)
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastActiveAt    DateTime @default(now())
+
+  // Preferences
+  emailOptIn      Boolean  @default(true)
+  pushOptIn       Boolean  @default(true)
+  publicProfile   Boolean  @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  
+
   // Relations
   profile        Profile?
   activities     ActivityCompletion[]
@@ -110,9 +165,18 @@ model User {
   moduleProgress ModuleProgress[]
   learningSessions LearningSession[]
   deliverables   ModuleDeliverable[]
-  
+
+  // Core Features Relations
+  projectIdeas   ProjectIdea[]
+  achievements   Achievement[]
+  notifications  Notification[]
+  projectMemberships  ProjectMember[]
+  collaborationRequests CollaborationRequest[]
+  assignedTasks  Task[]  @relation("AssignedTasks")
+
   @@index([clerkId])
   @@index([email])
+  @@index([lastActiveAt])
 
 
 }
@@ -122,23 +186,80 @@ model Profile {
   id        String   @id @default(cuid())
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   bio       String?
   avatarUrl String?
-  
+
   // Onboarding data
   goals     Json?    // Array of goal strings from onboarding
-  
+
   // Progress tracking
   moduleOneProgress Int @default(0) // 0-100
   overallProgress   Int @default(0) // 0-100
-  
+
   // Discoveries from Module 1
-  topValues    String[] // Array of top 5 values
-  topStrengths String[] // Array of top 5 strengths
-  
+  topValues    String[] @default([]) // Array of top 5 values
+  topStrengths String[] @default([]) // Array of top 5 strengths
+
+  // Core Features Integration: Quick Start Survey Data
+  gradeLevel        Int?
+  collegeTimeline   String?  // "applying-2025", "2026", etc
+  timeCommitment    Int?     // hours per week
+  currentActivities String[] @default([])
+  favoriteSubjects  String[] @default([]) // ranked array
+  skillsConfidence  Json?    // {coding: 7, writing: 9, ...}
+  workStyle         String?  // "solo", "small-team", "large-team"
+  impactPreference  String?  // "friends", "school", "community", "world"
+  challengeLevel    Int?     // 1-10 scale
+  learningStyle     String?  // derived from quiz
+
+  // Deep Dive Module Data
+  strengthsRadar    Json?    // {creativity: 8, leadership: 6, ...}
+  interestClusters  Json?    // AI-generated themes
+  problemFocus      String[] @default([]) // what they care about
+  dreamCareer       String?  @db.Text
+
+  // Scientific Assessment Data (based on validated psychological frameworks)
+  // Intrinsic Motivation (Self-Determination Theory: Deci & Ryan)
+  autonomyScore     Int?     // 1-10: preference for self-direction
+  competenceScore   Int?     // 1-10: confidence in abilities
+  relatednessScore  Int?     // 1-10: desire for social connection
+  motivationProfile Json?    // detailed SDT responses
+
+  // Passion & Interest Depth (Interest Development Theory: Hidi & Renninger)
+  interestDepth     Json?    // area-specific depth scores {tech: 8, art: 6...}
+  passionIndicators Json?    // flow states, persistence, re-engagement patterns
+  passionType       String?  // "harmonious", "obsessive", "emerging"
+  flowFrequency     Int?     // 1-10: how often they experience flow
+
+  // Grit & Persistence (Duckworth's Grit Scale)
+  gritScore         Int?     // 1-10: overall grit
+  perseveranceScore Int?     // 1-10: perseverance of effort
+  consistencyScore  Int?     // 1-10: consistency of interests
+  pastCompletions   Json?    // history of completed projects/commitments
+
+  // Growth Mindset (Dweck)
+  growthMindsetScore Int?    // 1-10: growth vs fixed mindset
+  challengeResponse  String? // "embrace", "avoid", "neutral"
+  failureAttribution Json?   // how they explain setbacks
+
+  // Career Interest Profile (RIASEC Model: Holland)
+  riasecScores      Json?    // {realistic, investigative, artistic, social, enterprising, conventional}
+  careerClusters    String[] @default([]) // matched career clusters based on profile
+
+  // Discovery Activity Results
+  projectDNA        Json?    // complete DNA structure
+  approachStyle     String?  // "build-first", "research-first", etc
+  activityChoices   Json?    // all choices made during quest
+
+  // Progress Tracking
+  completionPercent Int      @default(0)
+  completedAt       DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 // Module model
@@ -256,37 +377,65 @@ model Project {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   title       String
   description String   @db.Text
   category    ProjectCategory
-  
+
   status      ProjectStatus @default(IDEATION)
   healthScore Int      @default(50)
-  
+
   // AI-generated idea metadata
   ideaSource  Json?    // Original AI-generated idea
-  
+  ideaSourceId String? // FK to ProjectIdea
+  feasibilityScore Int?
+  matchingPercent  Int?
+
   // Goals and planning
   goals       Json?    // Array of SMART goals
   resources   Json?    // Resource planning data
   metrics     Json?    // Impact metrics
-  
+  charter     Json?    // mission, goals, success criteria
+  skillGaps   Json?    // skills to develop
+
+  // Tracking Metrics
+  hoursLogged    Int      @default(0)
+  currentStreak  Int      @default(0)
+  lastWorkedAt   DateTime?
+
   startedAt   DateTime?
   targetCompletionAt DateTime?
   completedAt DateTime?
-  
+  archivedAt  DateTime?
+
+  // Portfolio (Core Features Integration)
+  portfolioPublished Boolean  @default(false)
+  portfolioUrl       String?  @unique
+  showcaseInGallery  Boolean  @default(false)
+
+  // Team & Collaboration (Core Features Integration)
+  idealTeamSize        TeamSize @default(SOLO)
+  openForCollaboration Boolean  @default(false)
+  maxTeamSize          Int      @default(1)  // Max number of team members
+  currentTeamSize      Int      @default(1)  // Current number of team members
+  skillsNeeded         String[] @default([]) // Skills looking for in collaborators
+  collaborationDesc    String?  @db.Text     // Description for potential collaborators
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   // Relations
   milestones  Milestone[]
   tasks       Task[]
   checkIns    ProjectCheckIn[]
   documents   ProjectDocument[]
-  
+  members     ProjectMember[]
+  collaborationRequests CollaborationRequest[]
+
   @@index([userId])
   @@index([status])
+  @@index([showcaseInGallery])
+  @@index([openForCollaboration])
 }
 
 model Milestone {
@@ -312,18 +461,30 @@ model Task {
   id            String   @id @default(cuid())
   projectId     String
   project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
+
+  milestoneId   String?  // optional grouping
+  orderIndex    Int      @default(0) // order within milestone or project
+
   title         String
   description   String?
   estimatedHours Int?
-  
+
+  // Assignment (Core Features Integration)
+  assignedToId  String?  // FK to User
+  assignedTo    User?    @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedAt    DateTime?
+
+  priority      String   @default("medium") // "low", "medium", "high"
   completed     Boolean  @default(false)
   completedAt   DateTime?
-  
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  
+
   @@index([projectId])
+  @@index([completed])
+  @@index([milestoneId])
+  @@index([assignedToId])
 }
 
 model ProjectCheckIn {
@@ -428,4 +589,155 @@ model ModuleDeliverable {
   @@unique([userId, moduleId])
   @@index([userId])
   @@index([moduleId])
+}
+
+// ============================================================================
+// CORE FEATURES INTEGRATION - NEW MODELS
+// ============================================================================
+
+// AI-Generated Project Ideas
+model ProjectIdea {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Idea Details
+  title              String
+  description        String  @db.Text
+  category           ProjectCategory
+  feasibilityScore   Int
+  matchingPercent    Int
+  timeEstimate       String
+  uniqueness         String  // "HIGH", "MEDIUM", "LOW"
+  impactMetrics      String[]
+
+  // Context
+  generationPrompt   String  @db.Text
+  profileSnapshot    Json    // snapshot of profile at time of generation
+  activitySnapshot   Json?   // quest choices that led to this idea
+
+  // Status
+  status       String  @default("suggested") // "suggested", "saved", "started", "rejected"
+  selectedAt   DateTime?
+  rejectedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Team Collaboration
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role      ProjectMemberRole @default(MEMBER)
+
+  // Contribution tracking
+  tasksCompleted Int @default(0)
+  hoursContributed Int @default(0)
+
+  joinedAt  DateTime @default(now())
+  leftAt    DateTime?
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+model CollaborationRequest {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status    CollaborationRequestStatus @default(PENDING)
+
+  // Request details
+  message   String?  @db.Text  // Why they want to join
+  skills    String[] @default([]) // Skills they can contribute
+
+  // Response
+  responseMessage String? @db.Text // Owner's response
+  respondedAt     DateTime?
+  respondedBy     String? // userId of who responded
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+}
+
+// Gamification
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievementType AchievementType
+  achievementId   String   // "first-project", "level-5", "30-day-streak"
+
+  name            String
+  description     String
+  iconUrl         String
+  xpAwarded       Int
+
+  // Context
+  metadata        Json?    // related project, milestone, etc
+
+  unlockedAt DateTime @default(now())
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementType])
+}
+
+model Leaderboard {
+  id          String   @id @default(cuid())
+  userId      String
+
+  // Snapshot for period
+  period      String   // "2024-W47", "2024-11"
+
+  xpEarned    Int
+  projectsCompleted Int
+  streakDays  Int
+
+  rank        Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, period])
+  @@index([period, rank])
+}
+
+// Notifications
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type        NotificationType
+  title       String
+  message     String   @db.Text
+
+  actionUrl   String?
+  metadata    Json?
+
+  read        Boolean  @default(false)
+  readAt      DateTime?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([createdAt])
 }
