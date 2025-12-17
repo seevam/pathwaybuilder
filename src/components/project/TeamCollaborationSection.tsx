@@ -330,7 +330,7 @@ export default function TeamCollaborationSection({
 
                   {request.message && (
                     <p className="mb-2 text-sm text-gray-700">
-                      "{request.message}"
+                      &ldquo;{request.message}&rdquo;
                     </p>
                   )}
 

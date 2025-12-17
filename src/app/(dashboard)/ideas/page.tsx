@@ -228,7 +228,7 @@ export default function IdeasPage() {
             <CardHeader>
               <CardTitle className="text-2xl">Rate Your Interest</CardTitle>
               <p className="text-muted-foreground">
-                To help us generate ideas you'll love, please rate how interested you are in each of these project ideas on a scale of 1-10.
+                To help us generate ideas you&apos;ll love, please rate how interested you are in each of these project ideas on a scale of 1-10.
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
