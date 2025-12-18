@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { CreateTaskSchema } from '@/lib/validations/project';
+import { GamificationService } from '@/lib/services/gamification';
 
 // POST /api/projects/[id]/tasks - Create task
 export async function POST(
@@ -109,11 +110,8 @@ export async function POST(
       });
     }
 
-    // Award XP
-    await db.user.update({
-      where: { id: user.id },
-      data: { xp: { increment: 5 } },
-    });
+    // Award XP using GamificationService
+    await GamificationService.awardXP(user.id, 5, 'Created task');
 
     return NextResponse.json(
       {
