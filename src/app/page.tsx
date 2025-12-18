@@ -344,7 +344,7 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
               Your journey in 3 simple steps
             </h2>
-            <p className="text-xl text-gray-600">It&aposs engaging, fun, and actually works</p>
+            <p className="text-xl text-gray-600">It&apos;s engaging, fun, and actually works</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -460,7 +460,7 @@ export default function Home() {
                 GET STARTED FOR FREE
               </Button>
             </Link>
-            <p className="text-sm text-gray-500">No credit card required • Free forever</p>
+            <p className="text-sm text-gray-500">No credit card required/p>
           </div>
         </div>
       </section>
@@ -476,7 +476,7 @@ export default function Home() {
                 </div>
                 <span className="text-xl font-bold">Pathway</span>
               </div>
-              <p className="text-gray-400 text-sm">The free, fun way to discover yourself and build your college story.</p>
+              <p className="text-gray-400 text-sm">The proven, fun way to discover yourself and build your college story.</p>
             </div>
             <div>
               <h4 className="font-bold mb-4">Product</h4>
