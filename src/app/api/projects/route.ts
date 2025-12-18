@@ -86,6 +86,12 @@ export async function GET(req: Request) {
             milestones: true,
             tasks: true,
             checkIns: true,
+            documents: true,
+          },
+        },
+        milestones: {
+          select: {
+            status: true,
           },
         },
       },
