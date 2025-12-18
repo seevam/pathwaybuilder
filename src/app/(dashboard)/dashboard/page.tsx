@@ -186,9 +186,6 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Video Tutorial Card */}
-      <VideoCard />
-
       {/* Module Tracker - Full Width */}
       <ModuleTracker modules={modulesWithProgress} />
 
@@ -207,6 +204,9 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <QuickActions />
+
+      {/* Video Tutorial Card */}
+      <VideoCard />
 
       {/* Recent Activity */}
       {user.activities.length > 0 && (
