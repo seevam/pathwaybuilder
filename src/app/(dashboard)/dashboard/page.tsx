@@ -7,6 +7,7 @@ import { PassionProjectCard } from '@/components/dashboard/PassionProjectCard'
 import { StatsCard } from '@/components/dashboard/StatsCard'
 import { QuickActions } from '@/components/dashboard/QuickActions'
 import { RecentActivity } from '@/components/dashboard/RecentActivity'
+import { VideoCard } from '@/components/dashboard/VideoCard'
 import { Flame, Target, Clock, Award } from 'lucide-react'
 
 export default async function DashboardPage() {
@@ -203,6 +204,9 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <QuickActions />
+
+      {/* Video Tutorial Card */}
+      <VideoCard />
 
       {/* Recent Activity */}
       {user.activities.length > 0 && (
