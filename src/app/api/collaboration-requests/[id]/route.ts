@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
+import { GamificationService } from '@/lib/services/gamification';
 
 const UpdateRequestSchema = z.object({
   action: z.enum(['accept', 'reject', 'cancel']),
@@ -126,15 +127,10 @@ export async function PATCH(
             },
           },
         });
-
-        // Award XP for joining a project
-        await tx.user.update({
-          where: { id: request.userId },
-          data: {
-            xp: { increment: 30 },
-          },
-        });
       });
+
+      // Award XP for joining a project (outside transaction)
+      await GamificationService.awardXP(request.userId, 30, 'Joined project team');
     } else if (validated.action === 'reject') {
       // Reject the request
       await db.$transaction(async (tx) => {

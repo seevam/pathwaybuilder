@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { ProjectCheckInSchema } from '@/lib/validations/project';
+import { GamificationService } from '@/lib/services/gamification';
 
 // POST /api/projects/[id]/check-ins - Create check-in
 export async function POST(
@@ -54,21 +55,40 @@ export async function POST(
       },
     });
 
-    // Award XP for check-in
+    // Award XP for check-in (using GamificationService for proper level calculation)
     const xpAward = 20 + (hoursToAdd * 2); // Base 20 + 2 per hour
-    await db.user.update({
-      where: { id: user.id },
-      data: {
-        xp: { increment: xpAward },
-        lastActiveAt: new Date(),
+    const { leveledUp, newLevel, oldLevel } = await GamificationService.awardXP(
+      user.id,
+      xpAward,
+      'Project check-in'
+    );
+
+    // Update streak
+    await GamificationService.updateStreak(user.id);
+
+    // Check for first check-in achievement
+    const checkInCount = await db.projectCheckIn.count({
+      where: {
+        project: {
+          userId: user.id,
+        },
       },
     });
+    if (checkInCount === 1) {
+      await GamificationService.unlockAchievement(user.id, 'first-checkin');
+    }
+
+    // Check other achievements
+    await GamificationService.checkAchievements(user.id);
 
     return NextResponse.json(
       {
         success: true,
         checkIn,
         xpAwarded: xpAward,
+        leveledUp,
+        newLevel: leveledUp ? newLevel : undefined,
+        oldLevel: leveledUp ? oldLevel : undefined,
       },
       { status: 201 }
     );
