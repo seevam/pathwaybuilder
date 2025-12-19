@@ -190,6 +190,10 @@ model Profile {
   bio       String?
   avatarUrl String?
 
+  // Profile customization
+  skills       String[] @default([]) // User's skills and expertise
+  socialLinks  Json?    // Social media links: {twitter, linkedin, github, instagram, portfolio}
+
   // Onboarding data
   goals     Json?    // Array of goal strings from onboarding
 

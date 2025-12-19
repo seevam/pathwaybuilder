@@ -11,6 +11,8 @@ import {
   ProfileAchievements,
   ProfileProjects,
   ProfileInfo,
+  ProfileSkills,
+  ProfileSocialLinks,
 } from '@/components/profile';
 
 export default async function ProfilePage() {
@@ -65,7 +67,7 @@ export default async function ProfilePage() {
             grade={user.grade}
             createdAt={user.createdAt}
             level={user.level}
-            avatar={user.avatar}
+            avatar={user.profile?.avatarUrl || user.avatar}
           />
 
           {/* Gamification Stats */}
@@ -83,6 +85,12 @@ export default async function ProfilePage() {
             topValues={user.profile?.topValues || []}
             topStrengths={user.profile?.topStrengths || []}
           />
+
+          {/* Skills & Expertise */}
+          <ProfileSkills skills={user.profile?.skills || []} />
+
+          {/* Social Media Links */}
+          <ProfileSocialLinks socialLinks={user.profile?.socialLinks} />
 
           {/* Achievements */}
           <ProfileAchievements achievements={user.achievements} />
