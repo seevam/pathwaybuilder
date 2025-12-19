@@ -3,6 +3,7 @@
 import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
+import { Header } from '@/components/dashboard/Header'
 import { useAuth } from '@clerk/nextjs'
 import { useEffect, useState } from 'react'
 
@@ -58,6 +59,10 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
           isCollapsed ? 'md:ml-20' : 'md:ml-56'
         )}
       >
+        {/* Header - Visible on desktop */}
+        <div className="hidden md:block">
+          <Header />
+        </div>
         <div className="px-4 md:px-8 py-8">
           {children}
         </div>

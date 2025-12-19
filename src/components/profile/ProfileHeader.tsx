@@ -33,12 +33,16 @@ export function ProfileHeader({
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
           {/* Avatar */}
           <div className="relative">
-            {avatar ? (
+            {avatar && avatar.startsWith('http') ? (
               <img
                 src={avatar}
                 alt={name}
                 className="h-24 w-24 rounded-full border-4 border-white shadow-xl"
               />
+            ) : avatar ? (
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-primary-500 to-accent-500 text-5xl shadow-xl">
+                {avatar}
+              </div>
             ) : (
               <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-primary-500 to-accent-500 text-3xl font-bold text-white shadow-xl">
                 {initials}

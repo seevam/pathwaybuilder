@@ -2,6 +2,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { Toaster as Sonner } from 'sonner';
 import { AIMascot } from '@/components/ai-mascot/AIMascot';
 import type { Metadata } from 'next';
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         <body className={inter.className}>
           {children}
           <Toaster />
+          <Sonner />
           <AIMascot />
         </body>
       </html>
