@@ -15,6 +15,14 @@ import {
   ProfileSocialLinks,
 } from '@/components/profile';
 
+type SocialLinks = {
+  twitter?: string;
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
+  portfolio?: string;
+} | null;
+
 export default async function ProfilePage() {
   const { userId } = await auth();
 
@@ -90,7 +98,9 @@ export default async function ProfilePage() {
           <ProfileSkills skills={user.profile?.skills || []} />
 
           {/* Social Media Links */}
-          <ProfileSocialLinks socialLinks={user.profile?.socialLinks} />
+          <ProfileSocialLinks
+            socialLinks={user.profile?.socialLinks as SocialLinks}
+          />
 
           {/* Achievements */}
           <ProfileAchievements achievements={user.achievements} />
