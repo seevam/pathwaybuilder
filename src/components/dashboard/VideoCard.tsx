@@ -13,7 +13,7 @@ interface VideoCardProps {
 export function VideoCard({
   title = 'How to Use PathwayBuilder',
   description = 'Learn how to make the most of your PathwayBuilder experience with this quick tutorial.',
-  videoUrl = 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Placeholder - update with actual product video
+  videoUrl = 'https://youtu.be/h0vzUf0BmgA', // Placeholder - update with actual product video
   thumbnail
 }: VideoCardProps) {
   return (
