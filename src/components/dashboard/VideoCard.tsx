@@ -10,12 +10,50 @@ interface VideoCardProps {
   thumbnail?: string
 }
 
+// Helper function to convert YouTube URLs to embed format
+function getYouTubeEmbedUrl(url: string): string {
+  try {
+    // If already an embed URL, return as-is
+    if (url.includes('/embed/')) {
+      return url
+    }
+
+    // Extract video ID from various YouTube URL formats
+    const urlObj = new URL(url)
+    let videoId = ''
+
+    // Handle youtube.com/watch?v=VIDEO_ID
+    if (urlObj.hostname.includes('youtube.com') && urlObj.searchParams.has('v')) {
+      videoId = urlObj.searchParams.get('v') || ''
+    }
+    // Handle youtu.be/VIDEO_ID
+    else if (urlObj.hostname === 'youtu.be') {
+      videoId = urlObj.pathname.slice(1)
+    }
+    // Handle youtube.com/v/VIDEO_ID
+    else if (urlObj.pathname.startsWith('/v/')) {
+      videoId = urlObj.pathname.split('/')[2]
+    }
+
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}`
+    }
+
+    return url
+  } catch {
+    // If URL parsing fails, return original URL
+    return url
+  }
+}
+
 export function VideoCard({
   title = 'How to Use PathwayBuilder',
   description = 'Learn how to make the most of your PathwayBuilder experience with this quick tutorial.',
-  videoUrl = 'https://www.youtube.com/watch?v=h0vzUf0BmgA', // Placeholder - update with actual product video
+  videoUrl = 'https://www.youtube.com/embed/h0vzUf0BmgA', // Placeholder - update with actual product video
   thumbnail
 }: VideoCardProps) {
+  const embedUrl = getYouTubeEmbedUrl(videoUrl)
+
   return (
     <Card className="p-6 bg-gradient-to-br from-purple-50 via-blue-50 to-green-50 border-2 border-purple-200">
       <div className="flex items-center gap-2 mb-4">
@@ -31,7 +69,7 @@ export function VideoCard({
         <div className="relative pb-[56.25%]"> {/* 16:9 aspect ratio */}
           <iframe
             className="absolute top-0 left-0 w-full h-full"
-            src={videoUrl}
+            src={embedUrl}
             title={title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
