@@ -453,14 +453,14 @@ export default function Home() {
               Join thousands of students discovering their path to college success
             </p>
             <Link href="/sign-up">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="rounded-2xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-xl px-12 py-8 shadow-2xl hover:shadow-3xl transition-all"
               >
                 GET STARTED FOR FREE
               </Button>
             </Link>
-            <p className="text-sm text-gray-500">No credit card required/p>
+            <p className="text-sm text-gray-500">No credit card required</p>
           </div>
         </div>
       </section>
