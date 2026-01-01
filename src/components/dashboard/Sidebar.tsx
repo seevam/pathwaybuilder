@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X, Bot, Lightbulb, Users, TrophyIcon, Settings } from 'lucide-react'
+import { Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X, Bot, Lightbulb, Users, TrophyIcon, Settings, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/contexts/SidebarContext'
@@ -21,6 +21,7 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
   const navItems = [
     { href: '/dashboard', label: 'My Journey', icon: Map },
     { href: '/profile', label: 'Profile', icon: User },
+    { href: '/courses', label: 'Courses', icon: BookOpen },
     { href: '/ideas', label: 'Discover Ideas', icon: Lightbulb },
     { href: '/projects', label: 'Projects', icon: Rocket },
     { href: '/discover', label: 'Find Collaborations', icon: Users },

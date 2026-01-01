@@ -129,6 +129,32 @@ enum CreditTransactionType {
   ADMIN_ADJUSTMENT
 }
 
+enum CourseCategory {
+  LEADERSHIP
+  TECHNOLOGY
+  CREATIVE_ARTS
+  STEM
+  SOCIAL_IMPACT
+  ENTREPRENEURSHIP
+  PERSONAL_DEVELOPMENT
+  COLLEGE_PREP
+  RESEARCH
+  COMMUNICATION
+}
+
+enum CourseDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseEnrollmentStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  DROPPED
+}
+
 enum TeamSize {
   SOLO
   DUO
@@ -199,6 +225,11 @@ model User {
   // Subscription & Credits Relations
   subscription   UserSubscription?
   creditTransactions CreditTransaction[]
+
+  // Course Relations
+  courseEnrollments CourseEnrollment[]
+  courseProgress    CourseProgress[]
+  courseReviews     CourseReview[]
 
   @@index([clerkId])
   @@index([email])
@@ -835,4 +866,183 @@ model CreditTransaction {
   @@index([userId])
   @@index([type])
   @@index([createdAt])
+}
+
+// ============================================================================
+// COURSES & LEARNING PATHS
+// ============================================================================
+
+// Course Catalog
+model Course {
+  id          String   @id @default(cuid())
+
+  // Basic Info
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  shortDescription String? // Brief description for cards
+
+  // Content
+  thumbnailUrl String?
+  videoPreviewUrl String?
+  syllabus    Json?    // Course structure and outline
+  learningObjectives String[] @default([])
+
+  // Categorization
+  category    CourseCategory
+  tags        String[] @default([])
+  difficulty  CourseDifficulty
+
+  // Metadata
+  duration    Int      // Total duration in minutes
+  creditCost  Int      @default(0) // Credits required to enroll
+  isPremium   Boolean  @default(false) // Premium-only course
+  isFeatured  Boolean  @default(false)
+  isPublished Boolean  @default(false)
+
+  // Stats
+  enrollmentCount Int   @default(0)
+  averageRating   Float @default(0)
+  totalReviews    Int   @default(0)
+
+  // Instructor
+  instructorName  String?
+  instructorBio   String?  @db.Text
+  instructorAvatar String?
+
+  // Recommendation Engine Data
+  recommendedFor  Json?    // Profile characteristics this course suits
+  skillsGained    String[] @default([])
+  prerequisites   String[] @default([])
+
+  // Relations
+  enrollments CourseEnrollment[]
+  lessons     CourseLesson[]
+  reviews     CourseReview[]
+  progress    CourseProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([difficulty])
+  @@index([isFeatured])
+  @@index([isPublished])
+  @@index([slug])
+}
+
+// Course Lessons/Modules
+model CourseLesson {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  orderIndex  Int
+  title       String
+  description String?  @db.Text
+
+  // Content
+  contentType String   // "video", "text", "interactive", "quiz"
+  contentUrl  String?
+  content     Json?    // Flexible content structure
+  duration    Int?     // Duration in minutes
+
+  // Requirements
+  isRequired  Boolean  @default(true)
+  unlockAfter String?  // Lesson ID that must be completed first
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courseId, orderIndex])
+  @@index([courseId])
+}
+
+// User Course Enrollments
+model CourseEnrollment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  status      CourseEnrollmentStatus @default(NOT_STARTED)
+
+  // Progress
+  progressPercent Int  @default(0)
+  completedLessons Int @default(0)
+  totalLessons    Int  @default(0)
+
+  // Tracking
+  enrolledAt  DateTime @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  lastAccessedAt DateTime?
+
+  // Engagement
+  timeSpent   Int      @default(0) // Total time in minutes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
+}
+
+// Detailed Progress Tracking
+model CourseProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  lessonId    String
+
+  completed   Boolean  @default(false)
+  timeSpent   Int      @default(0) // Minutes spent on this lesson
+
+  // Quiz/Assessment data
+  score       Int?
+  attempts    Int      @default(0)
+
+  completedAt DateTime?
+  lastAccessedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId, lessonId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([lessonId])
+}
+
+// Course Reviews & Ratings
+model CourseReview {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  rating      Int      // 1-5 stars
+  title       String?
+  review      String?  @db.Text
+
+  // Helpful votes
+  helpfulCount Int     @default(0)
+
+  // Moderation
+  isPublished Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+  @@index([rating])
+  @@index([isPublished])
 }
