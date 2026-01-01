@@ -39,15 +39,29 @@ export async function POST(req: Request) {
   // Handle user.created event
   if (evt.type === 'user.created') {
     const { id, email_addresses, first_name, last_name } = evt.data
-    
-    await db.user.create({
+
+    const INITIAL_CREDITS = 100
+
+    const newUser = await db.user.create({
       data: {
         clerkId: id,
         email: email_addresses[0].email_address,
         name: `${first_name || ''} ${last_name || ''}`.trim(),
+        credits: INITIAL_CREDITS,
         profile: {
           create: {},
         },
+      },
+    })
+
+    // Create initial credit transaction record
+    await db.creditTransaction.create({
+      data: {
+        userId: newUser.id,
+        type: 'SIGNUP_BONUS',
+        amount: INITIAL_CREDITS,
+        balance: INITIAL_CREDITS,
+        description: 'Welcome bonus - 100 free credits!',
       },
     })
   }

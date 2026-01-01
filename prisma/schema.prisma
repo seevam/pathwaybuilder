@@ -111,6 +111,24 @@ enum NotificationType {
   TASK_ASSIGNED
 }
 
+enum SubscriptionPlan {
+  FREE
+  PREMIUM_MONTHLY
+  PREMIUM_ANNUAL
+}
+
+enum CreditTransactionType {
+  SIGNUP_BONUS
+  SUBSCRIPTION_RENEWAL
+  ACTIVITY_COMPLETION
+  MODULE_COMPLETION
+  PROJECT_MILESTONE
+  PURCHASE
+  USAGE
+  REFUND
+  ADMIN_ADJUSTMENT
+}
+
 enum TeamSize {
   SOLO
   DUO
@@ -148,6 +166,10 @@ model User {
   longestStreak   Int      @default(0)
   lastActiveAt    DateTime @default(now())
 
+  // Credits & Subscription
+  credits         Int      @default(0)
+  subscriptionPlan SubscriptionPlan @default(FREE)
+
   // Preferences
   emailOptIn      Boolean  @default(true)
   pushOptIn       Boolean  @default(true)
@@ -173,6 +195,10 @@ model User {
   projectMemberships  ProjectMember[]
   collaborationRequests CollaborationRequest[]
   assignedTasks  Task[]  @relation("AssignedTasks")
+
+  // Subscription & Credits Relations
+  subscription   UserSubscription?
+  creditTransactions CreditTransaction[]
 
   @@index([clerkId])
   @@index([email])
@@ -743,5 +769,70 @@ model Notification {
   createdAt   DateTime @default(now())
 
   @@index([userId, read])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// SUBSCRIPTION & CREDITS SYSTEM
+// ============================================================================
+
+// User Subscription Details
+model UserSubscription {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan        SubscriptionPlan
+  status      String   @default("active") // active, cancelled, expired, past_due
+
+  // Billing
+  stripeCustomerId      String?  @unique
+  stripeSubscriptionId  String?  @unique
+  stripePriceId         String?
+
+  // Billing cycle
+  currentPeriodStart    DateTime?
+  currentPeriodEnd      DateTime?
+  cancelAtPeriodEnd     Boolean  @default(false)
+  cancelledAt           DateTime?
+
+  // Pricing
+  amount                Int?     // in cents
+  currency              String   @default("usd")
+
+  // Metadata
+  metadata              Json?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+}
+
+// Credit Transaction History
+model CreditTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type        CreditTransactionType
+  amount      Int      // positive for credits added, negative for credits used
+  balance     Int      // user's credit balance after this transaction
+
+  // Context
+  description String?  @db.Text
+  metadata    Json?    // related activity, module, project, etc.
+
+  // For tracking what consumed credits
+  relatedActivityId String?
+  relatedModuleId   String?
+  relatedProjectId  String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([type])
   @@index([createdAt])
 }

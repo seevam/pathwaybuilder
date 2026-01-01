@@ -84,18 +84,20 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <Button 
+                  <Button
                     variant="ghost"
                     className="rounded-full text-sm font-semibold text-gray-700 hover:bg-white/60"
                   >
                     Features
                   </Button>
-                  <Button 
-                    variant="ghost"
-                    className="rounded-full text-sm font-semibold text-gray-700 hover:bg-white/60"
-                  >
-                    About
-                  </Button>
+                  <Link href="/pricing">
+                    <Button
+                      variant="ghost"
+                      className="rounded-full text-sm font-semibold text-gray-700 hover:bg-white/60"
+                    >
+                      Pricing
+                    </Button>
+                  </Link>
                   <div className="w-px h-6 bg-gray-300 mx-2" />
                   <Link href="/sign-in">
                     <Button 
@@ -161,18 +163,20 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <Button 
+                  <Button
                     variant="ghost"
                     className="w-full justify-start rounded-2xl text-sm font-semibold text-gray-700 hover:bg-white/60"
                   >
                     Features
                   </Button>
-                  <Button 
-                    variant="ghost"
-                    className="w-full justify-start rounded-2xl text-sm font-semibold text-gray-700 hover:bg-white/60"
-                  >
-                    About
-                  </Button>
+                  <Link href="/pricing" className="block">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start rounded-2xl text-sm font-semibold text-gray-700 hover:bg-white/60"
+                    >
+                      Pricing
+                    </Button>
+                  </Link>
                   <div className="h-px bg-gray-300 my-2" />
                   <Link href="/sign-in" className="block">
                     <Button 
