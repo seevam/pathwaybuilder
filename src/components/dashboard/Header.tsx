@@ -1,7 +1,7 @@
 'use client'
 
 import { useClerk, useUser } from '@clerk/nextjs'
-import { Settings, LogOut, User, ChevronDown } from 'lucide-react'
+import { Settings, LogOut, User, ChevronDown, Crown } from 'lucide-react'
 import Link from 'next/link'
 import {
   DropdownMenu,
@@ -74,6 +74,12 @@ export function Header() {
                 <Link href="/settings" className="flex items-center cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/pricing" className="flex items-center cursor-pointer text-indigo-600 focus:text-indigo-600">
+                  <Crown className="mr-2 h-4 w-4" />
+                  <span className="font-semibold">Upgrade to Premium</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
