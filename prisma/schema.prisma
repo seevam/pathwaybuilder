@@ -131,6 +131,12 @@ enum ProjectMemberRole {
   MEMBER
 }
 
+enum DashboardFeature {
+  CAREER_EXPLORATION
+  PASSION_PROJECT
+  IB_LEARNING
+}
+
 
 // User model - synced with Clerk
 model User {
@@ -264,6 +270,9 @@ model Profile {
   // Progress Tracking
   completionPercent Int      @default(0)
   completedAt       DateTime?
+
+  // Dashboard Feature Selection
+  selectedFeature   DashboardFeature @default(CAREER_EXPLORATION)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

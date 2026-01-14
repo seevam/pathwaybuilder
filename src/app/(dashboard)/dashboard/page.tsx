@@ -1,20 +1,16 @@
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import { db } from '@/lib/db'
-import { ModuleTracker } from '@/components/dashboard/ModuleTracker'
-import { StrengthsCard } from '@/components/dashboard/StrengthsCard'
-import { PassionProjectCard } from '@/components/dashboard/PassionProjectCard'
-import { StatsCard } from '@/components/dashboard/StatsCard'
-import { QuickActions } from '@/components/dashboard/QuickActions'
-import { RecentActivity } from '@/components/dashboard/RecentActivity'
-import { VideoCard } from '@/components/dashboard/VideoCard'
-import { Flame, Target, Clock, Award } from 'lucide-react'
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { db } from '@/lib/db';
+import { FeatureSelector } from '@/components/dashboard/FeatureSelector';
+import { CareerExplorationDashboard } from '@/components/dashboard/CareerExplorationDashboard';
+import { PassionProjectDashboard } from '@/components/dashboard/PassionProjectDashboard';
+import { IBLearningDashboard } from '@/components/dashboard/IBLearningDashboard';
 
 export default async function DashboardPage() {
-  const { userId } = await auth()
-  
+  const { userId } = await auth();
+
   if (!userId) {
-    redirect('/sign-in')
+    redirect('/sign-in');
   }
 
   const user = await db.user.findUnique({
@@ -27,122 +23,255 @@ export default async function DashboardPage() {
           activity: true,
         },
         orderBy: {
-          completedAt: 'desc'
+          completedAt: 'desc',
         },
-        take: 10
+        take: 10,
       },
       projects: {
         where: {
           status: {
-            in: ['PLANNING', 'IN_PROGRESS']
-          }
+            in: ['PLANNING', 'IN_PROGRESS'],
+          },
         },
         include: {
           milestones: true,
           tasks: true,
         },
         orderBy: { updatedAt: 'desc' },
-        take: 1
-      }
+      },
+      ibUserStats: true,
     },
-  })
+  });
 
   if (!user) {
-    redirect('/sign-in')
+    redirect('/sign-in');
   }
 
-  const totalActivities = await db.activity.count()
-  const completedActivities = user.activities.filter(a => a.completed).length
-  
-  const currentStreak = 0
-  
-  const totalTimeSeconds = user.activities.reduce((acc, a) => acc + (a.timeSpent || 0), 0)
-  const hoursInvested = Math.round(totalTimeSeconds / 3600)
+  // Get or create profile with default feature selection
+  let profile = user.profile;
+  if (!profile) {
+    profile = await db.profile.create({
+      data: {
+        userId: user.id,
+        selectedFeature: 'CAREER_EXPLORATION',
+      },
+    });
+  }
 
-  const allModules = await db.module.findMany({
-    where: { status: 'PUBLISHED' },
-    orderBy: { orderIndex: 'asc' }
-  })
+  const selectedFeature = profile.selectedFeature || 'CAREER_EXPLORATION';
 
-  const modulesWithProgress = await Promise.all(
-    allModules.map(async (module) => {
-      const progress = await db.moduleProgress.findUnique({
-        where: {
-          userId_moduleId: {
-            userId: user.id,
-            moduleId: module.id
-          }
-        }
-      })
+  // Common stats
+  const totalActivities = await db.activity.count();
+  const completedActivities = user.activities.filter((a) => a.completed).length;
+  const currentStreak = user.currentStreak || 0;
+  const totalTimeSeconds = user.activities.reduce((acc, a) => acc + (a.timeSpent || 0), 0);
+  const hoursInvested = Math.round(totalTimeSeconds / 3600);
 
-      let isUnlocked = module.orderIndex === 1
+  // Render the appropriate dashboard based on selected feature
+  const renderFeatureDashboard = async () => {
+    if (selectedFeature === 'CAREER_EXPLORATION') {
+      // Fetch career exploration data
+      const allModules = await db.module.findMany({
+        where: { status: 'PUBLISHED' },
+        orderBy: { orderIndex: 'asc' },
+      });
 
-      if (module.orderIndex > 1) {
-        const previousModule = await db.module.findFirst({
-          where: { orderIndex: module.orderIndex - 1 }
-        })
-
-        if (previousModule) {
-          const previousProgress = await db.moduleProgress.findUnique({
+      const modulesWithProgress = await Promise.all(
+        allModules.map(async (module) => {
+          const progress = await db.moduleProgress.findUnique({
             where: {
               userId_moduleId: {
                 userId: user.id,
-                moduleId: previousModule.id
-              }
+                moduleId: module.id,
+              },
+            },
+          });
+
+          let isUnlocked = module.orderIndex === 1;
+
+          if (module.orderIndex > 1) {
+            const previousModule = await db.module.findFirst({
+              where: { orderIndex: module.orderIndex - 1 },
+            });
+
+            if (previousModule) {
+              const previousProgress = await db.moduleProgress.findUnique({
+                where: {
+                  userId_moduleId: {
+                    userId: user.id,
+                    moduleId: previousModule.id,
+                  },
+                },
+              });
+
+              isUnlocked = previousProgress?.status === 'COMPLETED';
             }
-          })
+          }
 
-          isUnlocked = previousProgress?.status === 'COMPLETED'
-        }
-      }
+          const progressPercent = progress?.progressPercent ?? 0;
 
-      const progressPercent = progress?.progressPercent ?? 0
-      
-      return {
-        ...module,
-        icon: module.icon ?? undefined,
-        progress: progressPercent,
-        status: progressPercent === 100 ? 'completed' : 
-                progressPercent > 0 ? 'active' : 'pending',
-        isUnlocked
-      }
-    })
-  )
+          return {
+            ...module,
+            icon: module.icon ?? undefined,
+            progress: progressPercent,
+            status:
+              progressPercent === 100
+                ? 'completed'
+                : progressPercent > 0
+                ? 'active'
+                : 'pending',
+            isUnlocked,
+          };
+        })
+      );
 
-  const completedModules = modulesWithProgress.filter(m => m.status === 'completed').length
-  const totalAchievements = completedModules + (completedActivities >= 10 ? 1 : 0)
+      const strengthsActivity = await db.activityCompletion.findFirst({
+        where: {
+          userId: user.id,
+          activity: { slug: 'strengths-discovery' },
+          completed: true,
+        },
+      });
 
-  const activeProject = user.projects[0]
-  const projectData = activeProject ? {
-    projectTitle: activeProject.title,
-    progress: activeProject.healthScore,
-    milestonesCompleted: activeProject.milestones.filter(m => m.status === 'COMPLETED').length,
-    totalMilestones: activeProject.milestones.length,
-    streak: 5,
-    nextActions: activeProject.tasks.slice(0, 3).map(task => ({
-      id: task.id,
-      title: task.title,
-      completed: task.completed
-    }))
-  } : {}
+      const strengthsData = strengthsActivity?.data as any;
+      const traits = strengthsData?.categoryScores
+        ? Object.entries(strengthsData.categoryScores).map(([name, score]) => ({
+            name: name.charAt(0).toUpperCase() + name.slice(1),
+            score: score as number,
+            color: 'bg-blue-100 text-blue-700 border-blue-300',
+          }))
+        : undefined;
 
-  const strengthsActivity = await db.activityCompletion.findFirst({
-    where: {
-      userId: user.id,
-      activity: { slug: 'strengths-discovery' },
-      completed: true
+      return (
+        <CareerExplorationDashboard
+          modules={modulesWithProgress}
+          traits={traits}
+          stats={{
+            overallProgress: profile.overallProgress || 0,
+            currentStreak,
+            completedActivities,
+            totalActivities,
+            hoursInvested,
+          }}
+          careerClusters={profile.careerClusters}
+          topValues={profile.topValues}
+        />
+      );
+    } else if (selectedFeature === 'PASSION_PROJECT') {
+      // Fetch passion project data
+      const allProjects = await db.project.findMany({
+        where: { userId: user.id },
+        include: {
+          milestones: true,
+          tasks: true,
+        },
+        orderBy: { updatedAt: 'desc' },
+      });
+
+      const activeProject = user.projects[0];
+      const projectData = activeProject
+        ? {
+            projectTitle: activeProject.title,
+            progress: activeProject.healthScore,
+            milestonesCompleted: activeProject.milestones.filter(
+              (m) => m.status === 'COMPLETED'
+            ).length,
+            totalMilestones: activeProject.milestones.length,
+            streak: activeProject.currentStreak || 0,
+            nextActions: activeProject.tasks.slice(0, 3).map((task) => ({
+              id: task.id,
+              title: task.title,
+              completed: task.completed,
+            })),
+          }
+        : undefined;
+
+      const projectStats = {
+        totalProjects: allProjects.length,
+        completedProjects: allProjects.filter((p) => p.status === 'COMPLETED').length,
+        activeProjects: allProjects.filter((p) =>
+          ['PLANNING', 'IN_PROGRESS'].includes(p.status)
+        ).length,
+        totalHoursLogged: allProjects.reduce((acc, p) => acc + (p.hoursLogged || 0), 0),
+      };
+
+      const recentProjects = allProjects.slice(0, 5).map((p) => ({
+        id: p.id,
+        title: p.title,
+        category: p.category,
+        status: p.status,
+        updatedAt: p.updatedAt,
+      }));
+
+      return (
+        <PassionProjectDashboard
+          activeProject={projectData}
+          projectStats={projectStats}
+          recentProjects={recentProjects}
+        />
+      );
+    } else if (selectedFeature === 'IB_LEARNING') {
+      // Fetch IB Learning data
+      const ibStats = user.ibUserStats || {
+        totalQuestionsAttempted: 0,
+        totalQuestionsCorrect: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+      };
+
+      const subjects = await db.iBSubjectModel.findMany({
+        include: {
+          _count: {
+            select: { questions: true },
+          },
+        },
+        orderBy: { displayName: 'asc' },
+      });
+
+      const subjectsData = subjects.map((s) => ({
+        id: s.id,
+        name: s.name,
+        displayName: s.displayName,
+        icon: s.icon || '📚',
+        description: s.description || '',
+        questionCount: s._count.questions,
+      }));
+
+      // Get recent activity
+      const recentProgress = await db.iBUserProgress.findMany({
+        where: { userId: user.id },
+        include: {
+          question: {
+            include: {
+              subject: true,
+            },
+          },
+        },
+        orderBy: { lastAttemptedAt: 'desc' },
+        take: 5,
+      });
+
+      const recentActivity = recentProgress
+        .filter((p) => p.lastAttemptedAt && p.score)
+        .map((p) => ({
+          subjectName: p.question.subject.displayName,
+          questionTitle: p.question.title,
+          score: p.score || 0,
+          attemptedAt: p.lastAttemptedAt!,
+        }));
+
+      return (
+        <IBLearningDashboard
+          stats={ibStats}
+          subjects={subjectsData}
+          recentActivity={recentActivity}
+        />
+      );
     }
-  })
-
-  const strengthsData = strengthsActivity?.data as any
-  const traits = strengthsData?.categoryScores ? Object.entries(strengthsData.categoryScores).map(([name, score]) => ({
-    name: name.charAt(0).toUpperCase() + name.slice(1),
-    score: score as number,
-    color: 'bg-blue-100 text-blue-700 border-blue-300'
-  })) : undefined
+  };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Welcome Section */}
       <div className="space-y-2">
         <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 bg-clip-text text-transparent">
@@ -153,87 +282,11 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {/* Stats Overview - 4 Cards */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <StatsCard
-          icon={<Target className="w-6 h-6 text-blue-600" />}
-          title="Overall Progress"
-          value={`${user.profile?.overallProgress || 0}%`}
-          description="Across all modules"
-          circularProgress={user.profile?.overallProgress || 0}
-        />
-        <StatsCard
-          icon={<Flame className="w-6 h-6 text-orange-500" />}
-          title="Current Streak"
-          value={`${currentStreak}`}
-          description="Keep it going!"
-          highlighted={currentStreak >= 7}
-          unit="days"
-        />
-        <StatsCard
-          icon={<Award className="w-6 h-6 text-green-600" />}
-          title="Activities"
-          value={`${completedActivities}`}
-          description={`of ${totalActivities} total`}
-          progress={(completedActivities / totalActivities) * 100}
-        />
-        <StatsCard
-          icon={<Clock className="w-6 h-6 text-purple-600" />}
-          title="Time Invested"
-          value={`${hoursInvested}`}
-          description="Hours learning"
-          unit="hours"
-        />
-      </div>
+      {/* Feature Selector */}
+      <FeatureSelector currentFeature={selectedFeature as any} />
 
-      {/* Module Tracker - Full Width */}
-      <ModuleTracker modules={modulesWithProgress} />
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Passion Project Card - 2 columns */}
-        <div className="lg:col-span-2">
-          <PassionProjectCard {...projectData} />
-        </div>
-
-        {/* Strengths Card - 1 column */}
-        <div className="lg:col-span-1">
-          <StrengthsCard traits={traits} />
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <QuickActions />
-
-      {/* Video Tutorial Card */}
-      <VideoCard />
-
-      {/* Recent Activity */}
-      {user.activities.length > 0 && (
-        <RecentActivity activities={user.activities} />
-      )}
-
-      {/* Achievements Preview */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Award className="w-6 h-6 text-yellow-500" />
-            Your Achievements
-          </h2>
-        </div>
-        <div className="flex gap-4 items-center flex-wrap">
-          <div className="flex gap-3">
-            <span className="text-4xl opacity-100" title="First Steps">🏅</span>
-            <span className="text-4xl opacity-100" title="Module Complete">🎯</span>
-            <span className="text-4xl opacity-40" title="Locked">🔒</span>
-            <span className="text-4xl opacity-40" title="Locked">🔒</span>
-            <span className="text-4xl opacity-40" title="Locked">🔒</span>
-          </div>
-          <p className="text-sm text-gray-500 ml-4">
-            Unlock more achievements as you progress through your journey!
-          </p>
-        </div>
-      </div>
+      {/* Feature-specific Dashboard */}
+      {await renderFeatureDashboard()}
     </div>
-  )
+  );
 }
