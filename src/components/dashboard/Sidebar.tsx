@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X, Bot, Lightbulb, Users, TrophyIcon, Settings } from 'lucide-react'
+import { Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X, Bot, Lightbulb, Users, TrophyIcon, Settings, GraduationCap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/contexts/SidebarContext'
@@ -27,6 +27,7 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
     { href: '/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
     { href: '/insights', label: 'Insights', icon: Award },
     { href: '/learning-hub', label: 'Yoda AI', icon: Bot },
+    { href: '/ib-learning', label: 'IB Learning', icon: GraduationCap },
     { href: '/settings', label: 'Settings', icon: Settings },
   ]
 
