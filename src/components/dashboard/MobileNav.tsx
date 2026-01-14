@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Map, User, Rocket, Menu, Lightbulb, Users, TrophyIcon, Settings } from 'lucide-react'
+import { Home, Map, User, Rocket, Menu, Lightbulb, Users, TrophyIcon, Settings, GraduationCap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -19,6 +19,7 @@ const navItems = [
   { href: '/projects', label: 'Projects', icon: Rocket },
   { href: '/discover', label: 'Find Collaborations', icon: Users },
   { href: '/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
+  { href: '/ib-learning', label: 'IB Learning', icon: GraduationCap },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
