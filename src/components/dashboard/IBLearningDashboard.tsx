@@ -196,7 +196,7 @@ export function IBLearningDashboard({
               1
             </div>
             <p className="text-sm text-blue-900">
-              <strong>Use the AI Tutor:</strong> Don't just get answers - ask questions and let the AI guide you through the problem-solving process
+              <strong>Use the AI Tutor:</strong> Don&apos;t just get answers - ask questions and let the AI guide you through the problem-solving process
             </p>
           </div>
           <div className="flex items-start gap-2">
@@ -212,7 +212,7 @@ export function IBLearningDashboard({
               3
             </div>
             <p className="text-sm text-blue-900">
-              <strong>Mix Difficulty Levels:</strong> Challenge yourself with harder questions, but don't skip the basics
+              <strong>Mix Difficulty Levels:</strong> Challenge yourself with harder questions, but don&apos;t skip the basics
             </p>
           </div>
         </CardContent>
