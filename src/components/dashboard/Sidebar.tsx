@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Map, User, Rocket, Award, Star, Flame, Trophy, Menu, X, Bot, Lightbulb, Users, TrophyIcon, Settings, GraduationCap } from 'lucide-react'
+import { Map, User, Rocket, Award, Menu, X, Bot, Lightbulb, Users, TrophyIcon, Settings, GraduationCap, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/contexts/SidebarContext'
+import { AIMascot } from '@/components/ai-mascot/AIMascot'
 
 interface SidebarProps {
   userName: string
@@ -18,17 +19,28 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
   const pathname = usePathname()
   const { isCollapsed, toggleSidebar } = useSidebar()
 
+  // Organize navigation by feature relevance
   const navItems = [
-    { href: '/dashboard', label: 'My Journey', icon: Map },
-    { href: '/profile', label: 'Profile', icon: User },
-    { href: '/ideas', label: 'Discover Ideas', icon: Lightbulb },
-    { href: '/projects', label: 'Projects', icon: Rocket },
-    { href: '/discover', label: 'Find Collaborations', icon: Users },
-    { href: '/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
-    { href: '/insights', label: 'Insights', icon: Award },
-    { href: '/learning-hub', label: 'Yoda AI', icon: Bot },
-    { href: '/ib-learning', label: 'IB Learning', icon: GraduationCap },
-    { href: '/settings', label: 'Settings', icon: Settings },
+    // Core Navigation (always visible)
+    { href: '/dashboard', label: 'Dashboard', icon: Map, section: 'core' },
+    { href: '/profile', label: 'Profile', icon: User, section: 'core' },
+
+    // Career Exploration
+    { href: '/module-1', label: 'Modules', icon: BookOpen, section: 'career' },
+    { href: '/insights', label: 'Insights', icon: Award, section: 'career' },
+
+    // IB Learning
+    { href: '/ib-learning', label: 'IB Learning', icon: GraduationCap, section: 'ib' },
+    { href: '/learning-hub', label: 'AI Tutor', icon: Bot, section: 'ib' },
+
+    // Passion Projects
+    { href: '/projects', label: 'Projects', icon: Rocket, section: 'projects' },
+    { href: '/ideas', label: 'Discover Ideas', icon: Lightbulb, section: 'projects' },
+    { href: '/discover', label: 'Collaborations', icon: Users, section: 'projects' },
+
+    // Community & Settings
+    { href: '/leaderboard', label: 'Leaderboard', icon: TrophyIcon, section: 'community' },
+    { href: '/settings', label: 'Settings', icon: Settings, section: 'core' },
   ]
 
   return (
@@ -60,109 +72,49 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
-        {navItems.map((item) => {
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        {navItems.map((item, index) => {
           const Icon = item.icon
           const isActive = pathname === item.href
-          
+          const prevSection = index > 0 ? navItems[index - 1].section : null
+          const showDivider = prevSection && prevSection !== item.section
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 px-3 py-3 rounded-lg transition-all group relative',
-                isActive
-                  ? 'bg-blue-50 text-blue-600 font-semibold'
-                  : 'text-gray-600 hover:bg-gray-50',
-                isCollapsed && 'justify-center'
+            <div key={item.href}>
+              {/* Section Divider */}
+              {showDivider && (
+                <div className="my-3 border-t border-gray-200" />
               )}
-              title={isCollapsed ? item.label : undefined}
-            >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
-              
-              {/* Tooltip when collapsed */}
-              {isCollapsed && (
-                <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                  {item.label}
-                </span>
-              )}
-            </Link>
+
+              <Link
+                href={item.href}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-3 rounded-lg transition-all group relative',
+                  isActive
+                    ? 'bg-blue-50 text-blue-600 font-semibold'
+                    : 'text-gray-600 hover:bg-gray-50',
+                  isCollapsed && 'justify-center'
+                )}
+                title={isCollapsed ? item.label : undefined}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+
+                {/* Tooltip when collapsed */}
+                {isCollapsed && (
+                  <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            </div>
           )
         })}
       </nav>
 
-      {/* My Status Section */}
+      {/* AI Mascot at bottom */}
       <div className="p-3 border-t border-gray-200">
-        {!isCollapsed ? (
-          <>
-            <div className="mb-3 px-2">
-              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                My Status
-              </div>
-              <div className="text-sm text-gray-700 truncate">
-                <span className="font-semibold">{userName}</span>
-              </div>
-            </div>
-
-            {/* Achievement Icons - Expanded */}
-            <div className="flex items-center justify-around gap-2 py-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                  <Star className="w-5 h-5 text-yellow-600 fill-yellow-600" />
-                </div>
-                <div className="text-xs font-semibold text-gray-600 mt-1">{completedModules}</div>
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                  <Flame className="w-5 h-5 text-orange-600 fill-orange-600" />
-                </div>
-                <div className="text-xs font-semibold text-gray-600 mt-1">{currentStreak}</div>
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-purple-600 fill-purple-600" />
-                </div>
-                <div className="text-xs font-semibold text-gray-600 mt-1">{totalAchievements}</div>
-              </div>
-            </div>
-          </>
-        ) : (
-          /* Achievement Icons - Collapsed (stacked vertically) */
-          <div className="space-y-3">
-            <div className="flex flex-col items-center group relative">
-              <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                <Star className="w-5 h-5 text-yellow-600 fill-yellow-600" />
-              </div>
-              <div className="text-xs font-semibold text-gray-600 mt-1">{completedModules}</div>
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                Modules Completed
-              </span>
-            </div>
-            
-            <div className="flex flex-col items-center group relative">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                <Flame className="w-5 h-5 text-orange-600 fill-orange-600" />
-              </div>
-              <div className="text-xs font-semibold text-gray-600 mt-1">{currentStreak}</div>
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                Day Streak
-              </span>
-            </div>
-            
-            <div className="flex flex-col items-center group relative">
-              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-purple-600 fill-purple-600" />
-              </div>
-              <div className="text-xs font-semibold text-gray-600 mt-1">{totalAchievements}</div>
-              <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                Achievements
-              </span>
-            </div>
-          </div>
-        )}
+        <AIMascot inSidebar={true} isCollapsed={isCollapsed} />
       </div>
     </aside>
   )
