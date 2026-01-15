@@ -270,25 +270,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-12 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600">
+      {/* Stats Section - Revision Dojo Style */}
+      <section className="py-16 bg-white border-y border-gray-200">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 max-w-5xl mx-auto">
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-black text-white mb-2">400K+</div>
-              <div className="text-green-100 font-semibold">Active Students</div>
+              <div className="text-5xl md:text-6xl font-black text-gray-900 mb-3">400K+</div>
+              <div className="text-sm text-gray-600 font-medium">Active students using Pathway Builder</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-black text-white mb-2">180+</div>
-              <div className="text-blue-100 font-semibold">Countries</div>
+              <div className="text-5xl md:text-6xl font-black text-gray-900 mb-3">180+</div>
+              <div className="text-sm text-gray-600 font-medium">Countries represented worldwide</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-black text-white mb-2">1M+</div>
-              <div className="text-purple-100 font-semibold">Practice Questions</div>
+              <div className="text-5xl md:text-6xl font-black text-gray-900 mb-3">1M+</div>
+              <div className="text-sm text-gray-600 font-medium">Practice questions available</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-black text-white mb-2">24/7</div>
-              <div className="text-green-100 font-semibold">AI Support</div>
+              <div className="text-5xl md:text-6xl font-black text-gray-900 mb-3">24/7</div>
+              <div className="text-sm text-gray-600 font-medium">AI tutor support always on</div>
             </div>
           </div>
         </div>
@@ -392,75 +392,308 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works - Simple */}
+      {/* Our Methodology - 4 Pillars */}
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-              How it works
+              Our Methodology
             </h2>
-            <p className="text-xl text-gray-600">Getting started is easy</p>
+            <p className="text-xl text-gray-600">Built on 4 pillars of student success</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              {
-                step: '1',
-                icon: '🎯',
-                title: 'Sign up for free',
-                description: 'Create your account in under 60 seconds. No credit card required.'
-              },
-              {
-                step: '2',
-                icon: '✨',
-                title: 'Choose your path',
-                description: 'Pick from Career Exploration, IB Learning, or Passion Projects — or try all three!'
-              },
-              {
-                step: '3',
-                icon: '🚀',
-                title: 'Start learning',
-                description: 'Progress at your own pace with AI guidance, earn rewards, and achieve your goals.'
-              }
-            ].map((item, idx) => (
-              <div key={idx} className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-blue-600 text-white font-black text-2xl mb-6">
-                  {item.step}
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Joy */}
+            <div className="bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-green-300 hover:shadow-2xl transition-all group">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-3xl">
+                    😊
+                  </div>
                 </div>
-                <div className="text-6xl mb-4">{item.icon}</div>
-                <h3 className="text-2xl font-black text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-black text-gray-900 mb-3">Joy</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Reduce stress & anxiety for all. Learning should be enjoyable, not overwhelming. We design every experience to bring joy to your educational journey.
+                  </p>
+                </div>
               </div>
-            ))}
+            </div>
+
+            {/* Outcomes */}
+            <div className="bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all group">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-3xl">
+                    🎯
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-black text-gray-900 mb-3">Outcomes</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Improve academic outcomes for every student. Real results matter. Our methods are proven to boost performance and help you achieve your goals.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Journey */}
+            <div className="bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-purple-300 hover:shadow-2xl transition-all group">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-3xl">
+                    🚀
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-black text-gray-900 mb-3">Journey</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Make every student's learning journey engaging and enjoyable. Progress through gamification, streaks, and rewards that keep you motivated.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Opportunity */}
+            <div className="bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-orange-300 hover:shadow-2xl transition-all group">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-3xl">
+                    💡
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-black text-gray-900 mb-3">Opportunity</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Create innovative opportunities as the universally best IBDP study platform. Access world-class resources and tools to unlock your potential.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features - Quick Benefits */}
-      <section className="py-20 bg-white">
+      {/* How It Works - Interactive */}
+      <section className="py-20 bg-white relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-b from-green-50/30 to-blue-50/30 opacity-50" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+              How it works
+            </h2>
+            <p className="text-xl text-gray-600">Start achieving your goals in 3 simple steps</p>
+          </div>
+
+          <div className="max-w-6xl mx-auto">
+            {/* Step 1 */}
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-16">
+              <div className="md:w-1/2 order-2 md:order-1">
+                <div className="bg-white rounded-3xl p-8 border-4 border-green-200 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-black text-xl">
+                      1
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900">Sign up for free</h3>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed text-lg mb-4">
+                    Create your account in under 60 seconds. No credit card required. Get instant access to all three pathways.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">Free forever</span>
+                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">No commitment</span>
+                  </div>
+                </div>
+              </div>
+              <div className="md:w-1/2 order-1 md:order-2">
+                <div className="text-9xl text-center animate-bounce">🎯</div>
+              </div>
+            </div>
+
+            {/* Connector Line */}
+            <div className="flex justify-center mb-8">
+              <div className="w-1 h-12 bg-gradient-to-b from-green-300 to-blue-300 rounded-full" />
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-16">
+              <div className="md:w-1/2">
+                <div className="text-9xl text-center animate-pulse">✨</div>
+              </div>
+              <div className="md:w-1/2">
+                <div className="bg-white rounded-3xl p-8 border-4 border-blue-200 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-black text-xl">
+                      2
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900">Choose your path</h3>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed text-lg mb-4">
+                    Pick from Career Exploration, IB Learning, or Passion Projects. Or explore all three! Our AI adapts to your goals.
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                      <span className="text-sm text-gray-700">Personalized learning paths</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                      <span className="text-sm text-gray-700">Switch between pathways anytime</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Connector Line */}
+            <div className="flex justify-center mb-8">
+              <div className="w-1 h-12 bg-gradient-to-b from-blue-300 to-purple-300 rounded-full" />
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="md:w-1/2 order-2 md:order-1">
+                <div className="bg-white rounded-3xl p-8 border-4 border-purple-200 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-black text-xl">
+                      3
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900">Start learning</h3>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed text-lg mb-4">
+                    Progress at your own pace with 24/7 AI guidance. Earn XP, build streaks, unlock achievements, and watch your skills grow.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-3 bg-purple-50 rounded-xl">
+                      <div className="text-2xl font-black text-purple-600">🏆</div>
+                      <div className="text-xs font-semibold text-purple-700 mt-1">Earn rewards</div>
+                    </div>
+                    <div className="text-center p-3 bg-purple-50 rounded-xl">
+                      <div className="text-2xl font-black text-purple-600">🔥</div>
+                      <div className="text-xs font-semibold text-purple-700 mt-1">Build streaks</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="md:w-1/2 order-1 md:order-2">
+                <div className="text-9xl text-center">🚀</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* All Features - Revision Dojo Style */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-              Why students choose Pathway
+              All Features
             </h2>
-            <p className="text-xl text-gray-600">Built for students, loved by 400,000+</p>
+            <p className="text-xl text-gray-600">Everything you need to succeed</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {[
-              { icon: '🎮', title: 'Gamified Learning', description: 'Earn XP, build streaks, unlock achievements as you learn' },
-              { icon: '🤖', title: 'AI That Never Judges', description: 'Get instant help 24/7 from Pathway Pat, your friendly AI tutor' },
-              { icon: '📚', title: 'Expert Content', description: 'Real IB questions, top-scoring notes, and proven strategies' },
-              { icon: '⚡', title: 'Quick & Effective', description: 'Just 15 minutes a day to make meaningful progress' },
-              { icon: '📊', title: 'Track Progress', description: 'Visual dashboards show your growth across all three pathways' },
-              { icon: '🌍', title: 'Global Community', description: 'Connect with students from 180+ countries on the same journey' },
-            ].map((feature, idx) => (
-              <div key={idx} className="bg-white rounded-3xl p-6 border-2 border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all cursor-pointer">
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {/* Gamified Learning */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-green-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">🎮</div>
               </div>
-            ))}
+              <h3 className="text-xl font-black text-gray-900 mb-3">Gamified Learning</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Earn XP, build streaks, and unlock achievements as you learn. Stay motivated with rewards that make studying fun.
+              </p>
+            </div>
+
+            {/* AI Chat */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-purple-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">🤖</div>
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Pathway Pat AI</h3>
+              <p className="text-gray-600 leading-relaxed">
+                AI tutor that never gets tired of your questions. Available 24/7 to help you understand any concept.
+              </p>
+            </div>
+
+            {/* Question Bank */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">📚</div>
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Question Bank</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Thousands of real exam questions that actually prepare you. Filter by topic and difficulty level.
+              </p>
+            </div>
+
+            {/* Smart Flashcards */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-orange-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">💡</div>
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Smart Flashcards</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Flashcards that know when you're forgetting. Spaced repetition helps you retain information longer.
+              </p>
+            </div>
+
+            {/* Progress Tracking */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-green-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">📊</div>
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Track Progress</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Visual dashboards show your growth across all pathways. See exactly where you stand.
+              </p>
+            </div>
+
+            {/* Mock Exams */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-purple-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">📝</div>
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Mock Exams</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Custom exams that target your weak spots. Practice under real exam conditions.
+              </p>
+            </div>
+
+            {/* Career Tools */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-blue-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">🎯</div>
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Career Discovery</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Self-discovery tools and career matching AI to find your perfect path forward.
+              </p>
+            </div>
+
+            {/* Project Builder */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-orange-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">🚀</div>
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Project Builder</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Tools and templates to create passion projects that stand out in college applications.
+              </p>
+            </div>
+
+            {/* Community */}
+            <div className="group bg-white rounded-3xl p-8 border-2 border-gray-200 hover:border-green-300 hover:shadow-2xl transition-all cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div className="text-4xl">🌍</div>
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Global Community</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Connect with 400,000+ students from 180+ countries on the same journey as you.
+              </p>
+            </div>
           </div>
         </div>
       </section>
