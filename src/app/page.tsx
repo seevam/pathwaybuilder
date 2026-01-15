@@ -13,30 +13,51 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const howItWorksRef = useRef<HTMLElement>(null);
+  const rafRef = useRef<number | null>(null);
   const { userId } = useAuth();
   const { signOut } = useClerk();
   const isSignedIn = !!userId;
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
 
-      // Calculate scroll progress for "How It Works" section
-      if (howItWorksRef.current) {
-        const rect = howItWorksRef.current.getBoundingClientRect();
-        const sectionHeight = howItWorksRef.current.offsetHeight;
-        const viewportHeight = window.innerHeight;
+          // Calculate scroll progress for "How It Works" section
+          if (howItWorksRef.current) {
+            const rect = howItWorksRef.current.getBoundingClientRect();
+            const sectionHeight = howItWorksRef.current.offsetHeight;
+            const viewportHeight = window.innerHeight;
 
-        // Calculate progress from 0 to 1 as user scrolls through the section
-        const scrolled = -rect.top;
-        const total = sectionHeight - viewportHeight;
-        const progress = Math.max(0, Math.min(1, scrolled / total));
+            // Calculate progress from 0 to 1 as user scrolls through the section
+            const scrolled = -rect.top;
+            const total = sectionHeight - viewportHeight;
+            const progress = Math.max(0, Math.min(1, scrolled / total));
 
-        setScrollProgress(progress);
+            // Only update if progress changed significantly (reduces re-renders)
+            setScrollProgress((prev) => {
+              const diff = Math.abs(prev - progress);
+              return diff > 0.01 ? progress : prev;
+            });
+          }
+
+          ticking = false;
+        });
+
+        ticking = true;
       }
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   // Determine active step based on scroll progress
@@ -515,11 +536,11 @@ export default function Home() {
               {/* Left side - Dynamic visual */}
               <div className="relative">
                 <div className="text-center">
-                  <div className="text-8xl mb-8 transition-all duration-500 transform hover:scale-110" style={{
-                    animation: activeStep === 1 ? 'bounce 1s infinite' :
-                               activeStep === 2 ? 'pulse 2s infinite' :
-                               'none'
-                  }}>
+                  <div className={`text-8xl mb-8 transition-all duration-500 transform hover:scale-110 ${
+                    activeStep === 1 ? 'animate-bounce' :
+                    activeStep === 2 ? 'animate-pulse' :
+                    ''
+                  }`}>
                     {stepVisuals[activeStep as keyof typeof stepVisuals].emoji}
                   </div>
                   <div className="space-y-4">
