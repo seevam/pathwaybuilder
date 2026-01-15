@@ -268,9 +268,8 @@ export default function Home() {
                   <Image
                     src="/heroimagev1.png"
                     alt="Pathway mascot illustration representing a student building their future"
-                    layout="fill"
-                    objectFit="cover" // 'cover' or 'contain' depending on desired cropping
-                    className="z-0" // Ensure image is behind the text overlay
+                    fill
+                    className="object-cover z-0" // Ensure image is behind the text overlay
                   />
 
                   {/* Optional: Add a subtle overlay directly over the image for better text contrast if needed */}
