@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { X, Send, Sparkles, Loader2 } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
+import { cn } from '@/lib/utils'
 
 interface Message {
   id: string
