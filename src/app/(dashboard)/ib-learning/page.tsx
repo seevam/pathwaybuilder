@@ -49,7 +49,7 @@ export default async function IBLearningPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-bold tracking-tight">IB Learning Platform</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Exam Prep Platform</h1>
         <p className="text-muted-foreground mt-2">
           Master IB subjects with AI-powered Socratic tutoring
         </p>

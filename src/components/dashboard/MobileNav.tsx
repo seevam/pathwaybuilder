@@ -19,7 +19,7 @@ const navItems = [
   { href: '/projects', label: 'Projects', icon: Rocket },
   { href: '/discover', label: 'Find Collaborations', icon: Users },
   { href: '/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
-  { href: '/ib-learning', label: 'IB Learning', icon: GraduationCap },
+  { href: '/ib-learning', label: 'Exam Prep', icon: GraduationCap },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 

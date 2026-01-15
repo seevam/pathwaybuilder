@@ -29,8 +29,8 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
     { href: '/module-1', label: 'Modules', icon: BookOpen, section: 'career' },
     { href: '/insights', label: 'Insights', icon: Award, section: 'career' },
 
-    // IB Learning
-    { href: '/ib-learning', label: 'IB Learning', icon: GraduationCap, section: 'ib' },
+    // Exam Prep
+    { href: '/ib-learning', label: 'Exam Prep', icon: GraduationCap, section: 'ib' },
     { href: '/learning-hub', label: 'AI Tutor', icon: Bot, section: 'ib' },
 
     // Passion Projects

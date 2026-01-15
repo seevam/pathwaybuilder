@@ -220,7 +220,7 @@ export default function Home() {
               </h1>
 
               <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed">
-                Career exploration, IB exam prep, and passion projects — everything you need to stand out and succeed. <strong>All in one place.</strong>
+                Career exploration, exam prep, and passion projects — everything you need to stand out and succeed. <strong>All in one place.</strong>
               </p>
 
               {/* Feature Pills */}
@@ -231,7 +231,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center gap-2 bg-purple-50 px-4 py-2 rounded-full border border-purple-200">
                   <GraduationCap className="h-4 w-4 text-purple-600" />
-                  <span className="text-sm font-semibold text-purple-700">IB Learning</span>
+                  <span className="text-sm font-semibold text-purple-700">Exam Prep</span>
                 </div>
                 <div className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-full border border-orange-200">
                   <Rocket className="h-4 w-4 text-orange-600" />
@@ -380,12 +380,12 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* IB Learning */}
+            {/* Exam Prep */}
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 border-4 border-purple-200 rounded-3xl p-8 hover:scale-105 transition-transform cursor-pointer">
               <div className="h-16 w-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
                 <GraduationCap className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-3">IB Exam Prep</h3>
+              <h3 className="text-2xl font-black text-gray-900 mb-3">Exam Prep</h3>
               <p className="text-gray-700 mb-6 leading-relaxed">
                 Master IB curriculum with expert-written questions, AI grading, and 24/7 tutoring. Practice smarter, score higher.
               </p>
@@ -612,7 +612,7 @@ export default function Home() {
                       <h3 className="text-xl font-black text-gray-900">Choose your path</h3>
                     </div>
                     <p className="text-gray-600 leading-relaxed">
-                      Pick from Career Exploration, IB Learning, or Passion Projects.
+                      Pick from Career Exploration, Exam Prep, or Passion Projects.
                     </p>
                     {activeStep === 2 && (
                       <div className="flex flex-wrap gap-2 mt-3 animate-fadeIn">
@@ -833,13 +833,13 @@ export default function Home() {
                 <span className="text-3xl">🎓</span>
                 <span className="text-xl font-bold">Pathway Builder</span>
               </div>
-              <p className="text-gray-400 text-sm">All-in-one platform for student success. Career exploration, IB prep, and passion projects.</p>
+              <p className="text-gray-400 text-sm">All-in-one platform for student success. Career exploration, exam prep, and passion projects.</p>
             </div>
             <div>
               <h4 className="font-bold mb-4">Features</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><a href="#" className="hover:text-white">Career Exploration</a></li>
-                <li><a href="#" className="hover:text-white">IB Learning</a></li>
+                <li><a href="#" className="hover:text-white">Exam Prep</a></li>
                 <li><a href="#" className="hover:text-white">Passion Projects</a></li>
                 <li><a href="#" className="hover:text-white">AI Tutor</a></li>
               </ul>
