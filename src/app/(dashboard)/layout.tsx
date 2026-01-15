@@ -38,18 +38,46 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         })
         .catch(() => {})
 
-      // Fetch gamification stats
-      fetch('/api/gamification/stats')
-        .then(res => res.json())
-        .then(data => {
-          setGamificationStats({
-            xp: data.xp || 0,
-            level: data.level || 1,
-            currentStreak: data.currentStreak || 0,
-            longestStreak: data.longestStreak || 0
-          })
+      // Fetch gamification stats and profile to determine which stats to show
+      Promise.all([
+        fetch('/api/gamification/stats').then(res => res.json()),
+        fetch('/api/profile').then(res => res.json())
+      ])
+        .then(([gamificationData, profileData]) => {
+          const selectedFeature = profileData.selectedFeature || 'CAREER_EXPLORATION'
+
+          // If IB Learning is selected and user has IB stats, use those
+          if (selectedFeature === 'IB_LEARNING' && profileData.ibUserStats) {
+            setGamificationStats({
+              xp: gamificationData.stats?.xp || 0,
+              level: gamificationData.stats?.level || 1,
+              currentStreak: profileData.ibUserStats.currentStreak || 0,
+              longestStreak: profileData.ibUserStats.longestStreak || 0
+            })
+          } else {
+            // Otherwise use global gamification stats
+            setGamificationStats({
+              xp: gamificationData.stats?.xp || 0,
+              level: gamificationData.stats?.level || 1,
+              currentStreak: gamificationData.stats?.currentStreak || 0,
+              longestStreak: gamificationData.stats?.longestStreak || 0
+            })
+          }
         })
-        .catch(() => {})
+        .catch(() => {
+          // Fallback to just gamification stats if profile fetch fails
+          fetch('/api/gamification/stats')
+            .then(res => res.json())
+            .then(data => {
+              setGamificationStats({
+                xp: data.stats?.xp || 0,
+                level: data.stats?.level || 1,
+                currentStreak: data.stats?.currentStreak || 0,
+                longestStreak: data.stats?.longestStreak || 0
+              })
+            })
+            .catch(() => {})
+        })
     }
   }, [userId])
 

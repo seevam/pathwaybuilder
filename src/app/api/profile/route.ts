@@ -11,9 +11,19 @@ export async function GET() {
       where: { userId: user.id },
     });
 
+    // Also fetch IB stats for header display
+    const userData = await db.user.findUnique({
+      where: { id: user.id },
+      include: {
+        ibUserStats: true,
+      },
+    });
+
     return NextResponse.json({
       success: true,
       profile,
+      selectedFeature: profile?.selectedFeature,
+      ibUserStats: userData?.ibUserStats,
     });
   } catch (error) {
     console.error('[GET_PROFILE]', error);

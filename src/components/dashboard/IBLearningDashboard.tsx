@@ -39,7 +39,7 @@ export function IBLearningDashboard({
   return (
     <div className="space-y-6">
       {/* IB Learning Stats */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         <StatsCard
           icon={<BookOpen className="w-6 h-6 text-blue-600" />}
           title="Questions Attempted"
@@ -52,19 +52,6 @@ export function IBLearningDashboard({
           value={`${accuracy}%`}
           description={`${stats.totalQuestionsCorrect} correct`}
           circularProgress={accuracy}
-        />
-        <StatsCard
-          icon={<Flame className="w-6 h-6 text-orange-500" />}
-          title="Current Streak"
-          value={`${stats.currentStreak}`}
-          description="days"
-          highlighted={stats.currentStreak >= 7}
-        />
-        <StatsCard
-          icon={<Award className="w-6 h-6 text-yellow-500" />}
-          title="Longest Streak"
-          value={`${stats.longestStreak}`}
-          description="days"
         />
       </div>
 
