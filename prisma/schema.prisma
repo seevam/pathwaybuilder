@@ -206,7 +206,9 @@ model Profile {
   socialLinks  Json?    // Social media links: {twitter, linkedin, github, instagram, portfolio}
 
   // Onboarding data
-  goals     Json?    // Array of goal strings from onboarding
+  goals     Json?    // Array of goal strings from onboarding (legacy)
+  onboardingData Json? // New gamified onboarding data
+  onboardingCompleted Boolean @default(false) // Whether user completed onboarding
 
   // Progress tracking
   moduleOneProgress Int @default(0) // 0-100
