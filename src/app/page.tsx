@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Star, Zap, Trophy, Users, TrendingUp, Sparkles, Target, Award, Menu, X, GraduationCap, Rocket, BookOpen, Brain, Flame } from 'lucide-react';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth, useClerk } from '@clerk/nextjs';
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const howItWorksRef = useRef<HTMLElement>(null);
   const { userId } = useAuth();
   const { signOut } = useClerk();
   const isSignedIn = !!userId;
@@ -18,10 +20,34 @@ export default function Home() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+
+      // Calculate scroll progress for "How It Works" section
+      if (howItWorksRef.current) {
+        const rect = howItWorksRef.current.getBoundingClientRect();
+        const sectionHeight = howItWorksRef.current.offsetHeight;
+        const viewportHeight = window.innerHeight;
+
+        // Calculate progress from 0 to 1 as user scrolls through the section
+        const scrolled = -rect.top;
+        const total = sectionHeight - viewportHeight;
+        const progress = Math.max(0, Math.min(1, scrolled / total));
+
+        setScrollProgress(progress);
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Determine active step based on scroll progress
+  const activeStep = scrollProgress < 0.33 ? 1 : scrollProgress < 0.66 ? 2 : 3;
+
+  // Dynamic content for each step
+  const stepVisuals = {
+    1: { emoji: '🎯', color: 'green' },
+    2: { emoji: '🚀', color: 'blue' },
+    3: { emoji: '🎓', color: 'purple' }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -474,115 +500,148 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works - Interactive */}
-      <section className="py-20 bg-white relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 bg-gradient-to-b from-green-50/30 to-blue-50/30 opacity-50" />
+      {/* How It Works - Scrollytelling */}
+      <section ref={howItWorksRef} className="relative bg-white">
+        <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+          {/* Background decoration */}
+          <div className={`absolute inset-0 transition-all duration-700 ${
+            activeStep === 1 ? 'bg-gradient-to-b from-green-50/30 to-green-50/10' :
+            activeStep === 2 ? 'bg-gradient-to-b from-blue-50/30 to-blue-50/10' :
+            'bg-gradient-to-b from-purple-50/30 to-purple-50/10'
+          }`} />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-              How it works
-            </h2>
-            <p className="text-xl text-gray-600">Start achieving your goals in 3 simple steps</p>
-          </div>
-
-          <div className="max-w-6xl mx-auto">
-            {/* Step 1 */}
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-16">
-              <div className="md:w-1/2 order-2 md:order-1">
-                <div className="bg-white rounded-3xl p-8 border-4 border-green-200 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-black text-xl">
-                      1
-                    </div>
-                    <h3 className="text-2xl font-black text-gray-900">Sign up for free</h3>
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+              {/* Left side - Dynamic visual */}
+              <div className="relative">
+                <div className="text-center">
+                  <div className="text-8xl mb-8 transition-all duration-500 transform hover:scale-110" style={{
+                    animation: activeStep === 1 ? 'bounce 1s infinite' :
+                               activeStep === 2 ? 'pulse 2s infinite' :
+                               'none'
+                  }}>
+                    {stepVisuals[activeStep as keyof typeof stepVisuals].emoji}
                   </div>
-                  <p className="text-gray-600 leading-relaxed text-lg mb-4">
-                    Create your account in under 60 seconds. No credit card required. Get instant access to all three pathways.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">Free forever</span>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">No commitment</span>
-                  </div>
-                </div>
-              </div>
-              <div className="md:w-1/2 order-1 md:order-2">
-                <div className="text-9xl text-center animate-bounce">🎯</div>
-              </div>
-            </div>
-
-            {/* Connector Line */}
-            <div className="flex justify-center mb-8">
-              <div className="w-1 h-12 bg-gradient-to-b from-green-300 to-blue-300 rounded-full" />
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-16">
-              <div className="md:w-1/2">
-                <div className="text-9xl text-center animate-pulse">✨</div>
-              </div>
-              <div className="md:w-1/2">
-                <div className="bg-white rounded-3xl p-8 border-4 border-blue-200 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-black text-xl">
-                      2
-                    </div>
-                    <h3 className="text-2xl font-black text-gray-900">Choose your path</h3>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed text-lg mb-4">
-                    Pick from Career Exploration, IB Learning, or Passion Projects. Or explore all three! Our AI adapts to your goals.
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-blue-600" />
-                      <span className="text-sm text-gray-700">Personalized learning paths</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-blue-600" />
-                      <span className="text-sm text-gray-700">Switch between pathways anytime</span>
-                    </div>
+                  <div className="space-y-4">
+                    <div className={`h-2 rounded-full transition-all duration-700 ${
+                      activeStep === 1 ? 'w-full bg-gradient-to-r from-green-400 to-green-600' :
+                      activeStep === 2 ? 'w-full bg-gradient-to-r from-blue-400 to-blue-600' :
+                      'w-full bg-gradient-to-r from-purple-400 to-purple-600'
+                    }`}></div>
+                    <div className={`mx-auto h-2 rounded-full transition-all duration-700 ${
+                      activeStep >= 2 ? 'w-4/5 bg-gradient-to-r from-blue-400 to-blue-600' : 'w-4/5 bg-gray-200'
+                    }`}></div>
+                    <div className={`mx-auto h-2 rounded-full transition-all duration-700 ${
+                      activeStep >= 3 ? 'w-3/5 bg-gradient-to-r from-purple-400 to-purple-600' : 'w-3/5 bg-gray-200'
+                    }`}></div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Connector Line */}
-            <div className="flex justify-center mb-8">
-              <div className="w-1 h-12 bg-gradient-to-b from-blue-300 to-purple-300 rounded-full" />
-            </div>
+              {/* Right side - Dynamic content */}
+              <div>
+                <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+                  How it works
+                </h2>
+                <p className="text-xl text-gray-600 mb-8">Start achieving your goals in 3 simple steps</p>
 
-            {/* Step 3 */}
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="md:w-1/2 order-2 md:order-1">
-                <div className="bg-white rounded-3xl p-8 border-4 border-purple-200 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-black text-xl">
-                      3
+                {/* Step indicators */}
+                <div className="space-y-6">
+                  {/* Step 1 */}
+                  <div className={`bg-white rounded-3xl p-6 border-4 shadow-xl transition-all duration-700 ${
+                    activeStep === 1
+                      ? 'border-green-400 shadow-green-200/50 opacity-100 scale-105'
+                      : 'border-green-200 opacity-60 scale-100'
+                  }`}>
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-lg transition-all duration-700 ${
+                        activeStep === 1
+                          ? 'bg-gradient-to-br from-green-500 to-green-600 scale-110'
+                          : 'bg-gradient-to-br from-green-400 to-green-500'
+                      }`}>
+                        1
+                      </div>
+                      <h3 className="text-xl font-black text-gray-900">Sign up for free</h3>
                     </div>
-                    <h3 className="text-2xl font-black text-gray-900">Start learning</h3>
+                    <p className="text-gray-600 leading-relaxed mb-3">
+                      Create your account in under 60 seconds. No credit card required.
+                    </p>
+                    {activeStep === 1 && (
+                      <div className="flex flex-wrap gap-2 animate-fadeIn">
+                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Free forever</span>
+                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">No commitment</span>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-gray-600 leading-relaxed text-lg mb-4">
-                    Progress at your own pace with 24/7 AI guidance. Earn XP, build streaks, unlock achievements, and watch your skills grow.
-                  </p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="text-center p-3 bg-purple-50 rounded-xl">
-                      <div className="text-2xl font-black text-purple-600">🏆</div>
-                      <div className="text-xs font-semibold text-purple-700 mt-1">Earn rewards</div>
+
+                  {/* Step 2 */}
+                  <div className={`bg-white rounded-3xl p-6 border-4 shadow-xl transition-all duration-700 ${
+                    activeStep === 2
+                      ? 'border-blue-400 shadow-blue-200/50 opacity-100 scale-105'
+                      : 'border-blue-200 opacity-60 scale-100'
+                  }`}>
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-lg transition-all duration-700 ${
+                        activeStep === 2
+                          ? 'bg-gradient-to-br from-blue-500 to-blue-600 scale-110'
+                          : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                      }`}>
+                        2
+                      </div>
+                      <h3 className="text-xl font-black text-gray-900">Choose your path</h3>
                     </div>
-                    <div className="text-center p-3 bg-purple-50 rounded-xl">
-                      <div className="text-2xl font-black text-purple-600">🔥</div>
-                      <div className="text-xs font-semibold text-purple-700 mt-1">Build streaks</div>
+                    <p className="text-gray-600 leading-relaxed">
+                      Pick from Career Exploration, IB Learning, or Passion Projects.
+                    </p>
+                    {activeStep === 2 && (
+                      <div className="flex flex-wrap gap-2 mt-3 animate-fadeIn">
+                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">3 unique pathways</span>
+                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">Customize anytime</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className={`bg-white rounded-3xl p-6 border-4 shadow-xl transition-all duration-700 ${
+                    activeStep === 3
+                      ? 'border-purple-400 shadow-purple-200/50 opacity-100 scale-105'
+                      : 'border-purple-200 opacity-60 scale-100'
+                  }`}>
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-lg transition-all duration-700 ${
+                        activeStep === 3
+                          ? 'bg-gradient-to-br from-purple-500 to-purple-600 scale-110'
+                          : 'bg-gradient-to-br from-purple-400 to-purple-500'
+                      }`}>
+                        3
+                      </div>
+                      <h3 className="text-xl font-black text-gray-900">Start learning</h3>
                     </div>
+                    <p className="text-gray-600 leading-relaxed">
+                      Earn XP, build streaks, and achieve your goals.
+                    </p>
+                    {activeStep === 3 && (
+                      <div className="flex flex-wrap gap-2 mt-3 animate-fadeIn">
+                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">Gamified rewards</span>
+                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">Track progress</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-              <div className="md:w-1/2 order-1 md:order-2">
-                <div className="text-9xl text-center">🚀</div>
+
+                <p className="mt-8 text-sm text-gray-500 italic">
+                  {activeStep === 1 && '👇 Scroll down to see step 2'}
+                  {activeStep === 2 && '👇 Keep scrolling to see step 3'}
+                  {activeStep === 3 && '✨ You\'ve completed all steps!'}
+                </p>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Scroll spacers for each step */}
+        <div className="h-screen"></div>
+        <div className="h-screen"></div>
       </section>
 
       {/* All Features - Revision Dojo Style */}
