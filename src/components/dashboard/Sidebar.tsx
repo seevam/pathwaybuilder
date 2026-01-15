@@ -19,17 +19,27 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
   const pathname = usePathname()
   const { isCollapsed, toggleSidebar } = useSidebar()
 
+  // Organize navigation by feature relevance
   const navItems = [
-    { href: '/dashboard', label: 'My Journey', icon: Map },
-    { href: '/profile', label: 'Profile', icon: User },
-    { href: '/ideas', label: 'Discover Ideas', icon: Lightbulb },
-    { href: '/projects', label: 'Projects', icon: Rocket },
-    { href: '/discover', label: 'Find Collaborations', icon: Users },
-    { href: '/leaderboard', label: 'Leaderboard', icon: TrophyIcon },
-    { href: '/insights', label: 'Insights', icon: Award },
-    { href: '/learning-hub', label: 'Yoda AI', icon: Bot },
-    { href: '/ib-learning', label: 'IB Learning', icon: GraduationCap },
-    { href: '/settings', label: 'Settings', icon: Settings },
+    // Core Navigation (always visible)
+    { href: '/dashboard', label: 'Dashboard', icon: Map, section: 'core' },
+    { href: '/profile', label: 'Profile', icon: User, section: 'core' },
+
+    // Career Exploration
+    { href: '/insights', label: 'Insights', icon: Award, section: 'career' },
+
+    // IB Learning
+    { href: '/ib-learning', label: 'IB Learning', icon: GraduationCap, section: 'ib' },
+    { href: '/learning-hub', label: 'AI Tutor', icon: Bot, section: 'ib' },
+
+    // Passion Projects
+    { href: '/projects', label: 'Projects', icon: Rocket, section: 'projects' },
+    { href: '/ideas', label: 'Discover Ideas', icon: Lightbulb, section: 'projects' },
+    { href: '/discover', label: 'Collaborations', icon: Users, section: 'projects' },
+
+    // Community & Settings
+    { href: '/leaderboard', label: 'Leaderboard', icon: TrophyIcon, section: 'community' },
+    { href: '/settings', label: 'Settings', icon: Settings, section: 'core' },
   ]
 
   return (
@@ -61,34 +71,42 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
-        {navItems.map((item) => {
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        {navItems.map((item, index) => {
           const Icon = item.icon
           const isActive = pathname === item.href
-          
+          const prevSection = index > 0 ? navItems[index - 1].section : null
+          const showDivider = prevSection && prevSection !== item.section
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 px-3 py-3 rounded-lg transition-all group relative',
-                isActive
-                  ? 'bg-blue-50 text-blue-600 font-semibold'
-                  : 'text-gray-600 hover:bg-gray-50',
-                isCollapsed && 'justify-center'
+            <div key={item.href}>
+              {/* Section Divider */}
+              {showDivider && (
+                <div className="my-3 border-t border-gray-200" />
               )}
-              title={isCollapsed ? item.label : undefined}
-            >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
-              
-              {/* Tooltip when collapsed */}
-              {isCollapsed && (
-                <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                  {item.label}
-                </span>
-              )}
-            </Link>
+
+              <Link
+                href={item.href}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-3 rounded-lg transition-all group relative',
+                  isActive
+                    ? 'bg-blue-50 text-blue-600 font-semibold'
+                    : 'text-gray-600 hover:bg-gray-50',
+                  isCollapsed && 'justify-center'
+                )}
+                title={isCollapsed ? item.label : undefined}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap">{item.label}</span>}
+
+                {/* Tooltip when collapsed */}
+                {isCollapsed && (
+                  <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            </div>
           )
         })}
       </nav>
