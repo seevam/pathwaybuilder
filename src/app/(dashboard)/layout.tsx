@@ -16,6 +16,12 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
     currentStreak: 0,
     totalAchievements: 0
   })
+  const [gamificationStats, setGamificationStats] = useState({
+    xp: 0,
+    level: 1,
+    currentStreak: 0,
+    longestStreak: 0
+  })
 
   useEffect(() => {
     // Fetch user data for sidebar
@@ -28,6 +34,19 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
             completedModules: data.completedModules || 0,
             currentStreak: data.currentStreak || 0,
             totalAchievements: data.totalAchievements || 0
+          })
+        })
+        .catch(() => {})
+
+      // Fetch gamification stats
+      fetch('/api/gamification/stats')
+        .then(res => res.json())
+        .then(data => {
+          setGamificationStats({
+            xp: data.xp || 0,
+            level: data.level || 1,
+            currentStreak: data.currentStreak || 0,
+            longestStreak: data.longestStreak || 0
           })
         })
         .catch(() => {})
@@ -61,7 +80,12 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
       >
         {/* Header - Visible on desktop */}
         <div className="hidden md:block">
-          <Header />
+          <Header
+            xp={gamificationStats.xp}
+            level={gamificationStats.level}
+            currentStreak={gamificationStats.currentStreak}
+            longestStreak={gamificationStats.longestStreak}
+          />
         </div>
         <div className="px-4 md:px-8 py-8">
           {children}

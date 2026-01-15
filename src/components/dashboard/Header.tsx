@@ -13,8 +13,16 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { HeaderStats } from '@/components/dashboard/HeaderStats'
 
-export function Header() {
+interface HeaderProps {
+  xp?: number
+  level?: number
+  currentStreak?: number
+  longestStreak?: number
+}
+
+export function Header({ xp = 0, level = 1, currentStreak = 0, longestStreak = 0 }: HeaderProps) {
   const { signOut } = useClerk()
   const { user } = useUser()
 
@@ -40,7 +48,16 @@ export function Header() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          {/* Stats Display */}
+          <HeaderStats
+            xp={xp}
+            level={level}
+            currentStreak={currentStreak}
+            longestStreak={longestStreak}
+          />
+
+          {/* Account Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2 h-auto py-2 px-3">
