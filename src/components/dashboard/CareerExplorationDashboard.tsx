@@ -31,13 +31,21 @@ export function CareerExplorationDashboard({
   return (
     <div className="space-y-6">
       {/* Stats Overview */}
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <StatsCard
           icon={<Target className="w-6 h-6 text-blue-600" />}
           title="Overall Progress"
           value={`${stats.overallProgress}%`}
           description="Across all modules"
           circularProgress={stats.overallProgress}
+        />
+        <StatsCard
+          icon={<Flame className="w-6 h-6 text-orange-500" />}
+          title="Current Streak"
+          value={`${stats.currentStreak}`}
+          description="Keep it going!"
+          highlighted={stats.currentStreak >= 7}
+          unit="days"
         />
         <StatsCard
           icon={<Award className="w-6 h-6 text-green-600" />}
