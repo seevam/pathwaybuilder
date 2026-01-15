@@ -448,7 +448,7 @@ export default function Home() {
                 <div className="flex-1">
                   <h3 className="text-2xl font-black text-gray-900 mb-3">Journey</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Make every student's learning journey engaging and enjoyable. Progress through gamification, streaks, and rewards that keep you motivated.
+                    Make every student&#39;s learning journey engaging and enjoyable. Progress through gamification, streaks, and rewards that keep you motivated.
                   </p>
                 </div>
               </div>
@@ -636,7 +636,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-black text-gray-900 mb-3">Smart Flashcards</h3>
               <p className="text-gray-600 leading-relaxed">
-                Flashcards that know when you're forgetting. Spaced repetition helps you retain information longer.
+                Flashcards that know when you&#39;re forgetting. Spaced repetition helps you retain information longer.
               </p>
             </div>
 
