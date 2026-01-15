@@ -6,6 +6,7 @@ import { Map, User, Rocket, Award, Menu, X, Bot, Lightbulb, Users, TrophyIcon, S
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/contexts/SidebarContext'
+import { AIMascot } from '@/components/ai-mascot/AIMascot'
 
 interface SidebarProps {
   userName: string
@@ -92,6 +93,10 @@ export function Sidebar({ userName, completedModules, currentStreak, totalAchiev
         })}
       </nav>
 
+      {/* AI Mascot at bottom */}
+      <div className="p-3 border-t border-gray-200">
+        <AIMascot inSidebar={true} isCollapsed={isCollapsed} />
+      </div>
     </aside>
   )
 }

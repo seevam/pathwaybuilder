@@ -3,7 +3,6 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from 'sonner';
-import { AIMascot } from '@/components/ai-mascot/AIMascot';
 import type { Metadata } from 'next';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -32,7 +31,6 @@ export default function RootLayout({
           {children}
           <Toaster />
           <Sonner />
-          <AIMascot />
         </body>
       </html>
     </ClerkProvider>

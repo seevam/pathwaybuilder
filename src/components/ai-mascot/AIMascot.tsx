@@ -15,13 +15,18 @@ interface Message {
   timestamp: Date
 }
 
+interface AIMascotProps {
+  inSidebar?: boolean
+  isCollapsed?: boolean
+}
+
 const MASCOT_GREETINGS = [
   "Hi! I'm Pathway Pat, your career discovery guide! 🎓",
   "Hey there! Need help navigating your journey? 🗺️",
   "Hello! Ready to build your future? Let me help! 🚀"
 ]
 
-export function AIMascot() {
+export function AIMascot({ inSidebar = false, isCollapsed = false }: AIMascotProps = {}) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -107,39 +112,57 @@ export function AIMascot() {
 
   return (
     <>
-      {/* Floating Mascot Button */}
+      {/* Mascot Button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50"
+            className={inSidebar ? 'w-full' : 'fixed bottom-6 right-6 z-50'}
           >
-            <Button
-              onClick={() => setIsOpen(true)}
-              size="lg"
-              className="h-16 w-16 rounded-full shadow-lg bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 relative group"
-            >
-              {/* Mascot Icon */}
-              <div className="text-3xl">🎓</div>
-              
-              {/* Pulse animation */}
-              <div className="absolute inset-0 rounded-full bg-purple-400 opacity-0 group-hover:opacity-20 animate-ping" />
-              
-              {/* Sparkle effect */}
-              <Sparkles className="absolute -top-1 -right-1 w-5 h-5 text-yellow-300 animate-pulse" />
-            </Button>
+            {inSidebar ? (
+              /* Sidebar Button */
+              <Button
+                onClick={() => setIsOpen(true)}
+                className={cn(
+                  'w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg relative group',
+                  isCollapsed ? 'h-12 px-0' : 'h-12'
+                )}
+              >
+                <div className="flex items-center gap-2 justify-center">
+                  <div className="text-xl">🎓</div>
+                  {!isCollapsed && <span className="font-semibold">Ask Pathway Pat</span>}
+                  <Sparkles className={cn(
+                    'w-4 h-4 text-yellow-300 animate-pulse',
+                    isCollapsed && 'absolute -top-1 -right-1'
+                  )} />
+                </div>
+              </Button>
+            ) : (
+              /* Floating Button */
+              <div>
+                <Button
+                  onClick={() => setIsOpen(true)}
+                  size="lg"
+                  className="h-16 w-16 rounded-full shadow-lg bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 relative group"
+                >
+                  <div className="text-3xl">🎓</div>
+                  <div className="absolute inset-0 rounded-full bg-purple-400 opacity-0 group-hover:opacity-20 animate-ping" />
+                  <Sparkles className="absolute -top-1 -right-1 w-5 h-5 text-yellow-300 animate-pulse" />
+                </Button>
 
-            {/* Tooltip */}
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="absolute bottom-0 right-20 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg"
-            >
-              Need help? Ask me anything!
-              <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-gray-900" />
-            </motion.div>
+                {/* Tooltip */}
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="absolute bottom-0 right-20 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg"
+                >
+                  Need help? Ask me anything!
+                  <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-gray-900" />
+                </motion.div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
