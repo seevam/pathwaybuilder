@@ -35,7 +35,7 @@ const features = [
   },
   {
     id: 'IB_LEARNING' as Feature,
-    name: 'IB Learning',
+    name: 'Exam Prep',
     description: 'Master IB subjects with AI-powered Socratic tutoring',
     icon: GraduationCap,
     color: 'from-emerald-500 to-teal-500',
