@@ -528,7 +528,7 @@ function ExamPrepQuestionsStep({
       <motion.div className="max-w-3xl mx-auto space-y-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <div className="text-center space-y-4">
           <div className="text-6xl">🗓️</div>
-          <h2 className="text-3xl font-black text-gray-900">When's your IB exam?</h2>
+          <h2 className="text-3xl font-black text-gray-900">When&#39;s your IB exam?</h2>
         </div>
 
         <div className="space-y-3">
@@ -572,7 +572,7 @@ function ExamPrepQuestionsStep({
     <motion.div className="max-w-3xl mx-auto space-y-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="text-center space-y-4">
         <div className="text-6xl">🧠</div>
-        <h2 className="text-3xl font-black text-gray-900">What's your study style?</h2>
+        <h2 className="text-3xl font-black text-gray-900">What&#39;s your study style?</h2>
       </div>
 
       <div className="space-y-3">
@@ -764,7 +764,7 @@ function UniversalGoalStep({ onNext, onBack, primaryGoal, setPrimaryGoal }: any)
       <div className="text-center space-y-4">
         <div className="text-6xl">🎯</div>
         <h2 className="text-3xl md:text-4xl font-black text-gray-900">
-          One last thing! What's your biggest goal?
+          One last thing! What&#39;s your biggest goal?
         </h2>
       </div>
 
@@ -829,7 +829,7 @@ function CelebrationStep({ onFinish, totalXP, selectedFeature }: any) {
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 0.5, repeat: 2 }}
         >
-          You're All Set! 🎉
+          You&#39;re All Set! 🎉
         </motion.h2>
         <p className="text-xl text-gray-600">Your personalized dashboard is ready</p>
       </div>
@@ -856,7 +856,7 @@ function CelebrationStep({ onFinish, totalXP, selectedFeature }: any) {
 
       {/* What's Next */}
       <Card className="p-6 border-2 border-gray-200">
-        <h3 className="font-black text-xl text-gray-900 mb-4">✨ What's waiting for you:</h3>
+        <h3 className="font-black text-xl text-gray-900 mb-4">✨ What&#39;s waiting for you:</h3>
         <div className="space-y-3">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
