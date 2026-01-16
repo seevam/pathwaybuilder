@@ -3,7 +3,41 @@ import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, TrendingUp, Flame, Award } from 'lucide-react';
+import {
+  BookOpen, TrendingUp, Flame, Award,
+  Calculator, Binary, Atom, Beaker, Dna, BookText, Globe2,
+  Landmark, Brain, Briefcase, Code, LucideIcon
+} from 'lucide-react';
+
+// Subject icon mapping - matches database subject names
+const subjectIcons: Record<string, { icon: LucideIcon; color: string; bgColor: string }> = {
+  // Math subjects
+  'mathematics': { icon: Calculator, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  'math-aa': { icon: Calculator, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  'math-ai': { icon: Binary, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
+
+  // Sciences
+  'physics': { icon: Atom, color: 'text-purple-600', bgColor: 'bg-purple-50' },
+  'chemistry': { icon: Beaker, color: 'text-green-600', bgColor: 'bg-green-50' },
+  'biology': { icon: Dna, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+
+  // Languages
+  'english': { icon: BookText, color: 'text-red-600', bgColor: 'bg-red-50' },
+  'english-a': { icon: BookText, color: 'text-red-600', bgColor: 'bg-red-50' },
+  'english-b': { icon: BookOpen, color: 'text-pink-600', bgColor: 'bg-pink-50' },
+
+  // Social Sciences
+  'history': { icon: Landmark, color: 'text-amber-600', bgColor: 'bg-amber-50' },
+  'geography': { icon: Globe2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  'economics': { icon: TrendingUp, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  'psychology': { icon: Brain, color: 'text-violet-600', bgColor: 'bg-violet-50' },
+  'business': { icon: Briefcase, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  'business management': { icon: Briefcase, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+
+  // Technology
+  'computer science': { icon: Code, color: 'text-slate-600', bgColor: 'bg-slate-50' },
+  'cs': { icon: Code, color: 'text-slate-600', bgColor: 'bg-slate-50' }
+};
 
 export default async function IBLearningPage() {
   const { userId } = await auth();
@@ -116,31 +150,40 @@ export default async function IBLearningPage() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {subjects.map((subject) => (
-              <Link
-                key={subject.id}
-                href={`/ib-learning/${subject.name.toLowerCase()}`}
-              >
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <div className="text-4xl">{subject.icon || '📚'}</div>
-                      <div>
-                        <CardTitle>{subject.displayName}</CardTitle>
-                        <CardDescription>
-                          {subject._count.questions} questions available
-                        </CardDescription>
+            {subjects.map((subject) => {
+              const iconConfig = subjectIcons[subject.name.toLowerCase()] || {
+                icon: BookOpen,
+                color: 'text-gray-600',
+                bgColor: 'bg-gray-50'
+              };
+              const Icon = iconConfig.icon;
+
+              return (
+                <Link
+                  key={subject.id}
+                  href={`/ib-learning/${subject.name.toLowerCase()}`}
+                >
+                  <Card className={`hover:shadow-lg transition-all cursor-pointer h-full border-2 hover:border-gray-300 ${iconConfig.bgColor}`}>
+                    <CardHeader>
+                      <div className="flex items-center gap-4">
+                        <Icon className={`w-10 h-10 ${iconConfig.color}`} strokeWidth={2} />
+                        <div className="flex-1">
+                          <CardTitle>{subject.displayName}</CardTitle>
+                          <CardDescription>
+                            {subject._count.questions} questions available
+                          </CardDescription>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {subject.description || 'Practice IB-level questions with AI tutoring'}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        {subject.description || 'Practice IB-level questions with AI tutoring'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
