@@ -909,6 +909,7 @@ export default function OnboardingFlow({ userName = 'there' }: { userName?: stri
   const [showXPAnimation, setShowXPAnimation] = useState(false);
   const [lastXPGain, setLastXPGain] = useState(0);
   const [animateXPCounter, setAnimateXPCounter] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   const [data, setData] = useState<OnboardingData>({
     selectedFeature: null,
@@ -933,7 +934,11 @@ export default function OnboardingFlow({ userName = 'there' }: { userName?: stri
   };
 
   const handleNext = (xpAmount: number) => {
-    awardXP(xpAmount);
+    // Only award XP if this step hasn't been completed before
+    if (!completedSteps.has(currentStep)) {
+      awardXP(xpAmount);
+      setCompletedSteps(prev => new Set(prev).add(currentStep));
+    }
     setTimeout(() => {
       setCurrentStep(prev => prev + 1);
     }, 1000);
