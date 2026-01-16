@@ -149,13 +149,11 @@ export default async function IBLearningPage() {
                   key={subject.id}
                   href={`/ib-learning/${subject.name.toLowerCase()}`}
                 >
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <Card className={`hover:shadow-lg transition-all cursor-pointer h-full border-2 hover:border-gray-300 ${iconConfig.bgColor}`}>
                     <CardHeader>
-                      <div className="flex items-center gap-3">
-                        <div className={`w-14 h-14 rounded-xl ${iconConfig.bgColor} flex items-center justify-center`}>
-                          <Icon className={`w-7 h-7 ${iconConfig.color}`} strokeWidth={2.5} />
-                        </div>
-                        <div>
+                      <div className="flex items-center gap-4">
+                        <Icon className={`w-10 h-10 ${iconConfig.color}`} strokeWidth={2} />
+                        <div className="flex-1">
                           <CardTitle>{subject.displayName}</CardTitle>
                           <CardDescription>
                             {subject._count.questions} questions available
