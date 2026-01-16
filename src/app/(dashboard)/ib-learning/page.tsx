@@ -9,19 +9,33 @@ import {
   Landmark, Brain, Briefcase, Code, LucideIcon
 } from 'lucide-react';
 
-// Subject icon mapping
+// Subject icon mapping - matches database subject names
 const subjectIcons: Record<string, { icon: LucideIcon; color: string; bgColor: string }> = {
+  // Math subjects
+  'mathematics': { icon: Calculator, color: 'text-blue-600', bgColor: 'bg-blue-50' },
   'math-aa': { icon: Calculator, color: 'text-blue-600', bgColor: 'bg-blue-50' },
   'math-ai': { icon: Binary, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
+
+  // Sciences
   'physics': { icon: Atom, color: 'text-purple-600', bgColor: 'bg-purple-50' },
   'chemistry': { icon: Beaker, color: 'text-green-600', bgColor: 'bg-green-50' },
   'biology': { icon: Dna, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+
+  // Languages
+  'english': { icon: BookText, color: 'text-red-600', bgColor: 'bg-red-50' },
   'english-a': { icon: BookText, color: 'text-red-600', bgColor: 'bg-red-50' },
   'english-b': { icon: BookOpen, color: 'text-pink-600', bgColor: 'bg-pink-50' },
+
+  // Social Sciences
   'history': { icon: Landmark, color: 'text-amber-600', bgColor: 'bg-amber-50' },
+  'geography': { icon: Globe2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
   'economics': { icon: TrendingUp, color: 'text-orange-600', bgColor: 'bg-orange-50' },
   'psychology': { icon: Brain, color: 'text-violet-600', bgColor: 'bg-violet-50' },
   'business': { icon: Briefcase, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  'business management': { icon: Briefcase, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+
+  // Technology
+  'computer science': { icon: Code, color: 'text-slate-600', bgColor: 'bg-slate-50' },
   'cs': { icon: Code, color: 'text-slate-600', bgColor: 'bg-slate-50' }
 };
 
