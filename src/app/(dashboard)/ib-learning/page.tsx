@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   BookOpen, TrendingUp, Flame, Award,
-  Calculator, Binary, Atom, Beaker, Dna, BookText,
+  Calculator, Binary, Atom, Beaker, Dna, BookText, Globe2,
   Landmark, Brain, Briefcase, Code, LucideIcon
 } from 'lucide-react';
 
