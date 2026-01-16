@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import {
   CheckCircle2, BookOpen, GraduationCap, Rocket, Sparkles,
-  Calculator, Binary, Atom, Flask, Dna, BookText, Globe2,
+  Calculator, Binary, Atom, Beaker, Dna, BookText, Globe2,
   Landmark, TrendingUp, Brain, Briefcase, Code
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -449,7 +449,7 @@ function ExamPrepQuestionsStep({
     { id: 'math-aa', label: 'Math AA', icon: Calculator, color: 'text-blue-600', bgColor: 'bg-blue-50' },
     { id: 'math-ai', label: 'Math AI', icon: Binary, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
     { id: 'physics', label: 'Physics', icon: Atom, color: 'text-purple-600', bgColor: 'bg-purple-50' },
-    { id: 'chemistry', label: 'Chemistry', icon: Flask, color: 'text-green-600', bgColor: 'bg-green-50' },
+    { id: 'chemistry', label: 'Chemistry', icon: Beaker, color: 'text-green-600', bgColor: 'bg-green-50' },
     { id: 'biology', label: 'Biology', icon: Dna, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
     { id: 'english-a', label: 'English A', icon: BookText, color: 'text-red-600', bgColor: 'bg-red-50' },
     { id: 'english-b', label: 'English B', icon: BookOpen, color: 'text-pink-600', bgColor: 'bg-pink-50' },
