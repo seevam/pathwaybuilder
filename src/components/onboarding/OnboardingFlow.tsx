@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2, BookOpen, GraduationCap, Rocket, Sparkles } from 'lucide-react';
+import {
+  CheckCircle2, BookOpen, GraduationCap, Rocket, Sparkles,
+  Calculator, Binary, Atom, Flask, Dna, BookText, Globe2,
+  Landmark, TrendingUp, Brain, Briefcase, Code
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type Feature = 'CAREER_EXPLORATION' | 'IB_LEARNING' | 'PASSION_PROJECT';
@@ -442,18 +446,18 @@ function ExamPrepQuestionsStep({
   const [questionIndex, setQuestionIndex] = useState(0);
 
   const subjects = [
-    { id: 'math-aa', label: 'Math AA', emoji: '📐' },
-    { id: 'math-ai', label: 'Math AI', emoji: '🔢' },
-    { id: 'physics', label: 'Physics', emoji: '⚛️' },
-    { id: 'chemistry', label: 'Chemistry', emoji: '🧪' },
-    { id: 'biology', label: 'Biology', emoji: '🧬' },
-    { id: 'english-a', label: 'English A', emoji: '📚' },
-    { id: 'english-b', label: 'English B', emoji: '📖' },
-    { id: 'history', label: 'History', emoji: '🏛️' },
-    { id: 'economics', label: 'Economics', emoji: '💰' },
-    { id: 'psychology', label: 'Psychology', emoji: '🧠' },
-    { id: 'business', label: 'Business', emoji: '💼' },
-    { id: 'cs', label: 'Computer Science', emoji: '💻' }
+    { id: 'math-aa', label: 'Math AA', icon: Calculator, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+    { id: 'math-ai', label: 'Math AI', icon: Binary, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
+    { id: 'physics', label: 'Physics', icon: Atom, color: 'text-purple-600', bgColor: 'bg-purple-50' },
+    { id: 'chemistry', label: 'Chemistry', icon: Flask, color: 'text-green-600', bgColor: 'bg-green-50' },
+    { id: 'biology', label: 'Biology', icon: Dna, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+    { id: 'english-a', label: 'English A', icon: BookText, color: 'text-red-600', bgColor: 'bg-red-50' },
+    { id: 'english-b', label: 'English B', icon: BookOpen, color: 'text-pink-600', bgColor: 'bg-pink-50' },
+    { id: 'history', label: 'History', icon: Landmark, color: 'text-amber-600', bgColor: 'bg-amber-50' },
+    { id: 'economics', label: 'Economics', icon: TrendingUp, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+    { id: 'psychology', label: 'Psychology', icon: Brain, color: 'text-violet-600', bgColor: 'bg-violet-50' },
+    { id: 'business', label: 'Business', icon: Briefcase, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+    { id: 'cs', label: 'Computer Science', icon: Code, color: 'text-slate-600', bgColor: 'bg-slate-50' }
   ];
 
   const examDates = [
@@ -487,25 +491,30 @@ function ExamPrepQuestionsStep({
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {subjects.map((subject) => (
-            <button
-              key={subject.id}
-              onClick={() => toggleSubject(subject.id)}
-              className={`
-                p-4 rounded-xl border-3 text-center transition-all
-                ${ibSubjects.includes(subject.id)
-                  ? 'border-purple-500 bg-purple-50 shadow-lg'
-                  : 'border-gray-200 bg-white hover:border-purple-300'
-                }
-              `}
-            >
-              <div className="text-3xl mb-1">{subject.emoji}</div>
-              <div className="text-sm font-semibold text-gray-900">{subject.label}</div>
-              {ibSubjects.includes(subject.id) && (
-                <CheckCircle2 className="w-4 h-4 text-purple-500 mx-auto mt-1" />
-              )}
-            </button>
-          ))}
+          {subjects.map((subject) => {
+            const Icon = subject.icon;
+            return (
+              <button
+                key={subject.id}
+                onClick={() => toggleSubject(subject.id)}
+                className={`
+                  p-4 rounded-xl border-3 text-center transition-all relative
+                  ${ibSubjects.includes(subject.id)
+                    ? `border-purple-500 ${subject.bgColor} shadow-lg`
+                    : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
+                  }
+                `}
+              >
+                <div className={`flex justify-center mb-2 ${ibSubjects.includes(subject.id) ? 'text-purple-600' : subject.color}`}>
+                  <Icon className="w-8 h-8" strokeWidth={2.5} />
+                </div>
+                <div className="text-sm font-semibold text-gray-900">{subject.label}</div>
+                {ibSubjects.includes(subject.id) && (
+                  <CheckCircle2 className="w-4 h-4 text-purple-500 mx-auto mt-1" />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex gap-4 justify-between pt-4">
